@@ -16,10 +16,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
+        User::factory()->count(2)->state(['role' => 'admin'])->create();
+        User::factory()->count(5)->state(['role' => 'employer'])->create();
+        User::factory()->count(10)->state(['role' => 'candidate'])->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+
+        $this->call([
+            JobPostSeeder::class,
+            CommentSeeder::class,
+            AnalyticSeeder::class,
+            JobCategorySeeder::class,
+            ApplicationSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }
