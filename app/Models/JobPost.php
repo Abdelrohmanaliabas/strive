@@ -15,7 +15,7 @@ class JobPost extends Model
         'description',
         'responsibilities',
         'skills',
-        'qualifications',
+        'requirements',
         'salary_range',
         'benefits',
         'location',

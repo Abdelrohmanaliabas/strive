@@ -40,7 +40,7 @@ class JobPostFactory extends Factory
             'description' => $this->faker->text(),
             'responsibilities' => $this->faker->text(),
             'skills' => $this->faker->text(),
-            'qualifications' => $this->faker->text(),
+            'requirements' => $this->faker->text(),
             'salary_range' => $this->faker->randomNumber(),
             'benefits' => $this->faker->text(),
             'work_type' => $this->faker->randomElement(['remote', 'onsite', 'hybrid']),

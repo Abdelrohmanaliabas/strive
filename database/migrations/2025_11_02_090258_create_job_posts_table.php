@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->text('responsibilities');
             $table->text('skills');
-            $table->text('qualifications');
+            $table->text('requirements');
             $table->string('salary_range')->nullable();
             $table->text('benefits')->nullable();
             $table->enum('work_type', ['remote', 'onsite', 'hybrid']);
