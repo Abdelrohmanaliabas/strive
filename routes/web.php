@@ -1,12 +1,14 @@
 <?php
 
+use App\Http\Controllers\Employer\ApplicationController;
+use App\Http\Controllers\Employer\CommentController;
+use App\Http\Controllers\Employer\DashboardController;
+use App\Http\Controllers\Employer\JobController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AnalyticController;
-use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\employer\JobController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,27 +32,6 @@ Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('
 
 require __DIR__.'/auth.php';
 
-// Employer routes (dashboard + jobs)
-Route::middleware(['auth'])->group(function () {
-    Route::prefix('employer')->name('employer.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('employer.dashboard');
-        })->name('dashboard');
-
-        // reuse profile edit view but named for employer panel
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
-
-        // Job posts resource routes for employers
-        Route::resource('jobs', JobController::class);
-
-        // placeholder routes used by layout links
-        Route::get('applications', function () { return view('employer.applications.index'); })->name('applications.index');
-        Route::get('comments', function () { return view('employer.comments.index'); })->name('comments.index');
-        Route::get('analytics', function () { return view('employer.analytics'); })->name('analytics');
-        Route::get('notifications', function () { return view('employer.notifications'); })->name('notifications');
-    });
-});
-
 Route::get('/admin/posts', [JobPostController::class, 'index'])->name('admin.jobpost.index');
 Route::get('/admin/posts/{post}', [JobPostController::class, 'show'])->name('admin.jobpost.show');
 Route::get('/admin/posts/{post}/edit', [JobPostController::class, 'edit'])->name('admin.jobpost.edit');
@@ -62,5 +43,27 @@ Route::get('/admin/comments', [CommentController::class, 'index'])->name('admin.
 Route::get('/admin/comments/{comment}', [CommentController::class, 'show'])->name('admin.comments.show');
 Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
 Route::view('/admin/settings', 'admin.settings.index')->name('admin.settings.index');
-// sadsadsad
-require __DIR__ . '/auth.php';
+
+
+
+Route::middleware(['auth', 'verified', 'role:employer'])
+    ->prefix('employer')->name('employer.')->group(function () {
+        Route::get('dashboard', DashboardController::class)->name('dashboard');
+
+        Route::get('jobs', [JobController::class, 'index'])->name('jobs.index');
+        Route::get('jobs/create', [JobController::class, 'create'])->name('jobs.create');
+        Route::get('jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
+        Route::get('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+        Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+        Route::put('jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
+        Route::delete('jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
+
+        Route::get('applications', [ApplicationController::class, 'index'])->name('applications.index');
+        Route::get('applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+        Route::patch('applications/{application}/status', [ApplicationController::class, 'updateStatus'])->name('applications.update-status');
+
+        Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
+        Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
+        Route::get('analytics', function () { return view('employer.analytics'); })->name('analytics');
+        Route::get('notifications', function () { return view('employer.notifications'); })->name('notifications');
+    });

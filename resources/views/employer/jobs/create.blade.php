@@ -1,183 +1,240 @@
-@extends('layouts.employer')
+<x-employer-layout>
+    <div class="space-y-10 px-6 py-10 lg:px-12">
+        <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300/80">Launch a role</p>
+                <h1 class="mt-2 text-3xl font-bold text-white">Post a new job</h1>
+                <p class="mt-2 text-sm text-slate-400">
+                    Share the opportunity, highlight impact, and welcome candidates into your pipeline.
+                </p>
+            </div>
+            <a
+                href="{{ route('employer.jobs.index') }}"
+                class="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-cyan-400/40 hover:text-cyan-200"
+            >
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M15 19 8 12l7-7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Back to listings
+            </a>
+        </header>
 
-@section('title', 'Post a Job')
+        <form
+            action="{{ route('employer.jobs.store') }}"
+            method="POST"
+            novalidate
+            class="space-y-6 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl"
+        >
+            @csrf
 
-@section('content')
-<div class="container">
-    <h3 class="mb-4 fw-semibold">Post a New Job</h3>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Title</label>
+                    <input
+                        type="text"
+                        name="title"
+                        value="{{ old('title') }}"
+                        required
+                        placeholder="e.g., Senior Laravel Engineer"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('title')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-    <form action="{{ route('employer.jobs.store') }}" method="POST" novalidate>
-        @csrf
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Category</label>
+                    <select
+                        name="category_id"
+                        required
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white focus:border-cyan-400/50 focus:outline-none"
+                    >
+                        <option value="">Select category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        {{-- Title --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Title</label>
-            <input type="text" name="title"
-                   value="{{ old('title') }}"
-                   class="form-control @error('title') is-invalid @enderror"
-                   placeholder="e.g., Software Engineer" required>
-            @error('title')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Location</label>
+                    <input
+                        type="text"
+                        name="location"
+                        value="{{ old('location') }}"
+                        placeholder="e.g., Remote • Cairo, Egypt"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('location')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        {{-- Category --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Category</label>
-            <select name="category_id"
-                    class="form-select @error('category_id') is-invalid @enderror"
-                    required>
-                <option value="">-- Select Category --</option>
-                @foreach($categories as $c)
-                    <option value="{{ $c->id }}" {{ old('category_id') == $c->id ? 'selected' : '' }}>
-                        {{ $c->name }}
-                    </option>
-                @endforeach
-            </select>
-            @error('category_id')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Work type</label>
+                    <select
+                        name="work_type"
+                        required
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white focus:border-emerald-400/50 focus:outline-none"
+                    >
+                        <option value="">Choose work style</option>
+                        <option value="remote" @selected(old('work_type') == 'remote')>Remote</option>
+                        <option value="onsite" @selected(old('work_type') == 'onsite')>On-site</option>
+                        <option value="hybrid" @selected(old('work_type') == 'hybrid')>Hybrid</option>
+                    </select>
+                    @error('work_type')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        {{-- Location --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Location</label>
-            <input type="text" name="location"
-                   value="{{ old('location') }}"
-                   class="form-control @error('location') is-invalid @enderror"
-                   placeholder="e.g., Mansoura, Egypt">
-            @error('location')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Salary range</label>
+                    <input
+                        type="text"
+                        name="salary_range"
+                        value="{{ old('salary_range') }}"
+                        placeholder="e.g., 80,000 – 110,000 EGP"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('salary_range')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        {{-- Work Type --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Work Type</label>
-            <select name="work_type"
-                    class="form-select @error('work_type') is-invalid @enderror"
-                    required>
-                <option value="">-- Select Work Type --</option>
-                <option value="remote" {{ old('work_type') == 'remote' ? 'selected' : '' }}>Remote</option>
-                <option value="onsite" {{ old('work_type') == 'onsite' ? 'selected' : '' }}>Onsite</option>
-                <option value="hybrid" {{ old('work_type') == 'hybrid' ? 'selected' : '' }}>Hybrid</option>
-            </select>
-            @error('work_type')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Application deadline</label>
+                    <input
+                        type="date"
+                        name="application_deadline"
+                        value="{{ old('application_deadline') }}"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('application_deadline')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
-        {{-- Salary --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Salary Range</label>
-            <input type="text" name="salary_range"
-                   value="{{ old('salary_range') }}"
-                   class="form-control @error('salary_range') is-invalid @enderror"
-                   placeholder="e.g., 10,000 - 15,000 EGP">
-            @error('salary_range')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+            <div class="grid gap-6 lg:grid-cols-2">
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Responsibilities</label>
+                    <textarea
+                        name="responsibilities"
+                        rows="6"
+                        required
+                        placeholder="Outline the impact, responsibilities, and first 90 days."
+                        class="w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >{{ old('responsibilities') }}</textarea>
+                    @error('responsibilities')
+                        <p class="text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        {{-- Deadline --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Application Deadline</label>
-            <input type="date" name="application_deadline"
-                   value="{{ old('application_deadline') }}"
-                   class="form-control @error('application_deadline') is-invalid @enderror">
-            @error('application_deadline')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Requirements</label>
+                    <textarea
+                        name="requirements"
+                        rows="6"
+                        required
+                        placeholder="List the must-haves and nice-to-haves."
+                        class="w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >{{ old('requirements') }}</textarea>
+                    @error('requirements')
+                        <p class="text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
-        {{-- Responsibilities --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Responsibilities</label>
-            <textarea name="responsibilities"
-                      class="form-control @error('responsibilities') is-invalid @enderror"
-                      rows="4"
-                      placeholder="Describe key responsibilities..." required>{{ old('responsibilities') }}</textarea>
-            @error('responsibilities')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+            <div class="space-y-2">
+                <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Description</label>
+                <textarea
+                    name="description"
+                    rows="6"
+                    placeholder="Bring the role to life with mission, team context, and success outcomes."
+                    class="w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                >{{ old('description') }}</textarea>
+                @error('description')
+                    <p class="text-xs text-rose-300">{{ $message }}</p>
+                @enderror
+            </div>
 
-        {{-- Skills --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Skills</label>
-            <textarea name="skills"
-                      class="form-control @error('skills') is-invalid @enderror"
-                      rows="3"
-                      placeholder="List required skills (comma-separated)" required>{{ old('skills') }}</textarea>
-            @error('skills')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Skills</label>
+                    <textarea
+                        name="skills"
+                        rows="4"
+                        required
+                        placeholder="List core skills, tools, or languages (comma separated)."
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >{{ old('skills') }}</textarea>
+                    @error('skills')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Technologies</label>
+                    <input
+                        type="text"
+                        name="technologies"
+                        value="{{ old('technologies') }}"
+                        placeholder="e.g., PHP, Laravel, MySQL"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('technologies')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
-        {{-- Requirements --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Requirements</label>
-            <textarea name="requirements"
-                      class="form-control @error('requirements') is-invalid @enderror"
-                      rows="4"
-                      placeholder="Specify requirements..." required>{{ old('requirements') }}</textarea>
-            @error('requirements')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Benefits</label>
+                    <textarea
+                        name="benefits"
+                        rows="4"
+                        placeholder="Share perks, allowances, wellness support, or growth programs."
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >{{ old('benefits') }}</textarea>
+                    @error('benefits')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Logo URL</label>
+                    <input
+                        type="text"
+                        name="logo"
+                        value="{{ old('logo') }}"
+                        placeholder="Drop a hosted logo (optional)"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('logo')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
-        {{-- Description --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Description</label>
-            <textarea name="description"
-                      class="form-control @error('description') is-invalid @enderror"
-                      rows="5"
-                      placeholder="Provide a detailed description of the job">{{ old('description') }}</textarea>
-            @error('description')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Technologies --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Technologies (comma-separated)</label>
-            <input type="text" name="technologies"
-                   value="{{ old('technologies') }}"
-                   class="form-control @error('technologies') is-invalid @enderror"
-                   placeholder="e.g., PHP, Laravel, MySQL">
-            @error('technologies')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Benefits --}}
-        <div class="mb-3">
-            <label class="form-label fw-medium">Benefits</label>
-            <textarea name="benefits"
-                      class="form-control @error('benefits') is-invalid @enderror"
-                      rows="3"
-                      placeholder="Perks, allowances, etc.">{{ old('benefits') }}</textarea>
-            @error('benefits')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Logo URL --}}
-        <div class="mb-4">
-            <label class="form-label fw-medium">Logo URL (optional)</label>
-            <input type="text" name="logo"
-                   value="{{ old('logo') }}"
-                   class="form-control @error('logo') is-invalid @enderror"
-                   placeholder="Paste company logo URL">
-            @error('logo')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        {{-- Submit --}}
-        <button type="submit" class="btn btn-primary px-4">
-            <i class="bi bi-upload"></i> Publish Job
-        </button>
-    </form>
-</div>
-@endsection
+            <div class="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs text-slate-500">
+                    Double-check the role essentials before publishing. You can always refine later.
+                </p>
+                <button
+                    type="submit"
+                    class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-6 py-2.5 text-sm font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20"
+                >
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 5v14m7-7H5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Publish job
+                </button>
+            </div>
+        </form>
+    </div>
+</x-employer-layout>

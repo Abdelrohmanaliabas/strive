@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\employer;
+namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\JobPost;
 use App\Http\Requests\StoreJobPostRequest;
 use App\Http\Requests\UpdateJobPostRequest;
 use App\Models\JobCategory;
+use App\Models\JobPost;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class JobController extends Controller
 {
@@ -21,12 +22,12 @@ class JobController extends Controller
         $jobs = JobPost::where('employer_id', $user->id)
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%");
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%");
                 });
             })
             ->when($request->category, function ($query, $category) {
-            $query->where('category_id', $category);
+                $query->where('category_id', $category);
             })
             ->when($request->status, function ($query, $status) {
                 $query->where('status', $status);
@@ -54,20 +55,20 @@ class JobController extends Controller
      */
     public function store(StoreJobPostRequest $request)
     {
-        $data = $request->validated();
+        $data = $this->normalizeJobPayload($request->validated());
         $data['employer_id'] = auth()->id();
-        $job = JobPost::create($data);
+        JobPost::create($data);
+
         return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
     }
-
 
     /**
      * Display the specified resource.
      */
     public function show(JobPost $job)
     {
-        // dd($job);
         abort_if($job->employer_id !== auth()->id(), 403);
+
         return view('employer.jobs.show', compact('job'));
     }
 
@@ -77,7 +78,9 @@ class JobController extends Controller
     public function edit(JobPost $job)
     {
         abort_if($job->employer_id !== auth()->id(), 403);
+
         $categories = JobCategory::all();
+
         return view('employer.jobs.edit', compact('job', 'categories'));
     }
 
@@ -87,8 +90,10 @@ class JobController extends Controller
     public function update(UpdateJobPostRequest $request, JobPost $job)
     {
         abort_if($job->employer_id !== auth()->id(), 403);
-        $data = $request->validated();
+
+        $data = $this->normalizeJobPayload($request->validated());
         $job->update($data);
+
         return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
     }
 
@@ -98,7 +103,25 @@ class JobController extends Controller
     public function destroy(JobPost $job)
     {
         abort_if($job->employer_id !== auth()->id(), 403);
+
         $job->delete();
+
         return redirect()->route('employer.jobs.index')->with('success', 'Job deleted successfully.');
+    }
+
+    /**
+     * Ensure payload values are in a database-safe format.
+     */
+    private function normalizeJobPayload(array $data): array
+    {
+        if (!empty($data['application_deadline'])) {
+            try {
+                $data['application_deadline'] = Carbon::parse($data['application_deadline'])->format('Y-m-d');
+            } catch (\Throwable $exception) {
+                $data['application_deadline'] = null;
+            }
+        }
+
+        return $data;
     }
 }
