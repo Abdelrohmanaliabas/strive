@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Controllers\Employer;
+
+use App\Http\Controllers\Controller;
+use App\Models\Comment;
+use App\Models\JobPost;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+
+class CommentController extends Controller
+{
+    public function index(): View
+    {
+        $employerId = Auth::id();
+
+        $jobIds = JobPost::query()
+            ->where('employer_id', $employerId)
+            ->pluck('id');
+
+        $comments = Comment::query()
+            ->where('commentable_type', JobPost::class)
+            ->whereIn('commentable_id', $jobIds)
+            ->with('user:id,name,email')
+            ->latest('created_at')
+            ->paginate(12);
+        $jobTitles = $this->jobTitlesForComments($comments->getCollection());
+
+        return view('employer.comments.index', [
+            'comments' => $comments,
+            'jobTitles' => $jobTitles,
+        ]);
+    }
+
+    public function show(Comment $comment): View
+    {
+        $job = $this->guardAndResolveCommentJob($comment);
+
+        $comment->loadMissing('user:id,name,email');
+
+        return view('employer.comments.show', [
+            'comment' => $comment,
+            'job' => $job,
+        ]);
+    }
+
+    /**
+     * Build a lookup of job titles for the provided comments.
+     */
+    private function jobTitlesForComments(Collection $comments): Collection
+    {
+        $jobIds = $comments
+            ->pluck('commentable_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        return JobPost::query()
+            ->whereIn('id', $jobIds)
+            ->pluck('title', 'id');
+    }
+
+    /**
+     * Make sure the employer owns the job tied to this comment.
+     */
+    private function guardAndResolveCommentJob(Comment $comment): JobPost
+    {
+        abort_unless($comment->commentable_type === JobPost::class, 404);
+
+        $job = JobPost::query()->find($comment->commentable_id);
+
+        abort_unless(
+            $job !== null && (int) $job->employer_id === Auth::id(),
+            403
+        );
+
+        return $job;
+    }
+}
