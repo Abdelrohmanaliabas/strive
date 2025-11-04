@@ -5,7 +5,7 @@
     <div>
         <div class="flex items-center justify-center h-16 border-b border-indigo-500">
             <i class="bi bi-speedometer2 text-2xl"></i>
-            <span class="ml-2 font-semibold text-lg sidebar-text">Admin Panel</span>
+            <span class="ml-2 font-semibold text-lg sidebar-text">strive</span>
         </div>
 
         {{-- ====== Navigation ====== --}}
@@ -41,8 +41,8 @@
 
     {{-- ====== Bottom Section ====== --}}
     <div class="flex flex-col space-y-1 mb-4">
-        <a href="{{ route('admin.analytics.index') }}"
-           class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.analytics.index') ? 'bg-indigo-600' : '' }}">
+        <a href="{{ route('admin.settings.index') }}"
+           class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.settings.index') ? 'bg-indigo-600' : '' }}">
             <i class="bi bi-gear text-xl"></i>
             <span class="ml-3 sidebar-text">Settings</span>
         </a>
