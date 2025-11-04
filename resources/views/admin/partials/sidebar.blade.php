@@ -17,7 +17,7 @@
             </a>
 
             <a href="{{ route('admin.users.index') }}"
-               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.users.index') ? 'bg-indigo-600' : '' }}">
+               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') ? 'bg-indigo-600' : '' }}">
                 <i class="bi bi-people text-xl"></i>
                 <span class="ml-3 sidebar-text">Users</span>
             </a>
@@ -33,6 +33,9 @@
                 <i class="bi bi-chat-dots text-xl"></i>
                 <span class="ml-3 sidebar-text">Comments</span>
             </a>
+            <a href="{{ route('admin.jobpost.index') }}" class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.jobpost.index') ? 'bg-indigo-600' : '' }}">
+                <i class="bi bi-briefcase text-xl"></i> <span class="ml-3 sidebar-text">Job Post</span>
+                </a>    
         </nav>
     </div>
 

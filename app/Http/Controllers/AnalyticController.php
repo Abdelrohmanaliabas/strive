@@ -13,7 +13,8 @@ class AnalyticController extends Controller
      */
     public function index()
     {
-        //
+        $analytics = Analytic::all();
+        return view('admin.analytics.index', compact('analytics'));
     }
 
     /**
