@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
-use App\Models\JobCategory;
 use App\Http\Requests\StoreJobPostRequest;
 use App\Http\Requests\UpdateJobPostRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class JobPostController extends Controller
 {
@@ -17,38 +14,41 @@ class JobPostController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $query = JobPost::with(['employer', 'category']);
 
-        $jobs = JobPost::where('employer_id', $user->id)
-            ->when($request->search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
+        // 🔍 البحث بالعنوان أو الوصف أو الموقع
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('location', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->category, function ($query, $category) {
-            $query->where('category_id', $category);
-            })
-            ->when($request->status, function ($query, $status) {
-                $query->where('status', $status);
-            })
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+                    ->orWhere('location', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
 
-        $categories = JobCategory::all();
+        // ⚙️ الفلترة حسب الحالة (pending / approved / rejected)
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
 
-        return view('employer.jobs.index', compact('jobs', 'categories'));
+        // ⏱ الترتيب حسب الأقدم أو الأحدث
+        if ($request->filled('sort') && $request->sort === 'oldest') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // 📄 التقسيم (Pagination)
+        $jobPost = $query->paginate(8)->appends($request->all());
+
+        return view('admin.jobs.index', compact('jobPost'));
     }
-
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $categories = JobCategory::all();
-        return view('employer.jobs.create', compact('categories'));
+        //
     }
 
     /**
@@ -56,50 +56,45 @@ class JobPostController extends Controller
      */
     public function store(StoreJobPostRequest $request)
     {
-        $data = $request->validated();
-        $data['employer_id'] = auth()->id();
-        $job = JobPost::create($data);
-        return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(JobPost $job)
+
+    public function show(JobPost $post)
     {
-        // dd($job);
-        abort_if($job->employer_id !== auth()->id(), 403);
-        return view('employer.jobs.show', compact('job'));
+        $post->load(['employer', 'category', 'applications.candidate', 'comments.user']);
+
+        return view('admin.jobs.show', [
+            'jobPost' => $post,
+        ]);
     }
+
+
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobPost $job)
+    public function edit(JobPost $jobPost)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
-        $categories = JobCategory::all();
-        return view('employer.jobs.edit', compact('job', 'categories'));
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJobPostRequest $request, JobPost $job)
+    public function update(UpdateJobPostRequest $request, JobPost $jobPost)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
-        $data = $request->validated();
-        $job->update($data);
-        return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(JobPost $job)
+    public function destroy(JobPost $jobPost)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
-        $job->delete();
-        return redirect()->route('employer.jobs.index')->with('success', 'Job deleted successfully.');
+        //
     }
 }
