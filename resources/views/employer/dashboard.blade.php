@@ -60,14 +60,6 @@
                         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">{{ $card['label'] }}</p>
                         <div class="mt-4 flex items-end justify-between gap-4">
                             <p class="text-4xl font-extrabold text-white">{{ $card['value'] }}</p>
-                            @if (!empty($card['trend']))
-                                <span class="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold {{ $card['trend_class'] ?? 'text-emerald-300' }}">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4 fill-current">
-                                        <path d="M12 5l7 7h-4v7h-6v-7H5z"></path>
-                                    </svg>
-                                    {{ $card['trend'] }}
-                                </span>
-                            @endif
                         </div>
                         <p class="mt-3 text-xs text-slate-400">{{ $card['trend_copy'] ?? '' }}</p>
                     </article>

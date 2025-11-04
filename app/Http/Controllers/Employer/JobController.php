@@ -3,66 +3,125 @@
 namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreJobPostRequest;
+use App\Http\Requests\UpdateJobPostRequest;
 use App\Models\JobCategory;
 use App\Models\JobPost;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class JobController extends Controller
 {
-    public function index(): View
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $employerId = Auth::id();
+        $user = auth()->user();
 
-        $jobs = JobPost::query()
-            ->with(['category:id,name', 'analytic'])
-            ->withCount('applications')
-            ->where('employer_id', $employerId)
-            ->latest('created_at')
-            ->get();
+        $jobs = JobPost::where('employer_id', $user->id)
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                        ->orWhere('location', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->category, function ($query, $category) {
+                $query->where('category_id', $category);
+            })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-        return view('employer.jobs.index', compact('jobs'));
-    }
+        $categories = JobCategory::all();
 
-    public function create(): View
-    {
-        $categories = JobCategory::query()
-            ->orderBy('name')
-            ->get(['id', 'name']);
-
-        return view('employer.jobs.create', compact('categories'));
-    }
-
-    public function show(JobPost $job): View
-    {
-        $this->ensureEmployerOwnsJob($job);
-
-        $job->loadMissing(['category:id,name', 'analytic', 'applications.candidate:id,name,email']);
-
-        return view('employer.jobs.show', [
-            'job' => $job,
-        ]);
-    }
-
-    public function edit(JobPost $job): View
-    {
-        $this->ensureEmployerOwnsJob($job);
-
-        $categories = JobCategory::query()
-            ->orderBy('name')
-            ->get(['id', 'name']);
-
-        return view('employer.jobs.edit', [
-            'job' => $job->loadMissing(['category:id,name']),
-            'categories' => $categories,
-        ]);
+        return view('employer.jobs.index', compact('jobs', 'categories'));
     }
 
     /**
-     * Guard against accessing another employer's job posting.
+     * Show the form for creating a new resource.
      */
-    private function ensureEmployerOwnsJob(JobPost $job): void
+    public function create()
     {
-        abort_unless((int) $job->employer_id === Auth::id(), 403);
+        $categories = JobCategory::all();
+        return view('employer.jobs.create', compact('categories'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreJobPostRequest $request)
+    {
+        $data = $this->normalizeJobPayload($request->validated());
+        $data['employer_id'] = auth()->id();
+        JobPost::create($data);
+
+        return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(JobPost $job)
+    {
+        abort_if($job->employer_id !== auth()->id(), 403);
+
+        return view('employer.jobs.show', compact('job'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(JobPost $job)
+    {
+        abort_if($job->employer_id !== auth()->id(), 403);
+
+        $categories = JobCategory::all();
+
+        return view('employer.jobs.edit', compact('job', 'categories'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateJobPostRequest $request, JobPost $job)
+    {
+        abort_if($job->employer_id !== auth()->id(), 403);
+
+        $data = $this->normalizeJobPayload($request->validated());
+        $job->update($data);
+
+        return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(JobPost $job)
+    {
+        abort_if($job->employer_id !== auth()->id(), 403);
+
+        $job->delete();
+
+        return redirect()->route('employer.jobs.index')->with('success', 'Job deleted successfully.');
+    }
+
+    /**
+     * Ensure payload values are in a database-safe format.
+     */
+    private function normalizeJobPayload(array $data): array
+    {
+        if (!empty($data['application_deadline'])) {
+            try {
+                $data['application_deadline'] = Carbon::parse($data['application_deadline'])->format('Y-m-d');
+            } catch (\Throwable $exception) {
+                $data['application_deadline'] = null;
+            }
+        }
+
+        return $data;
     }
 }

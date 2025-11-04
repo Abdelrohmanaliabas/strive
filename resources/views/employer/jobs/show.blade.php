@@ -1,120 +1,138 @@
-{{-- <<<<<<< HEAD
 <x-employer-layout>
+    <div class="space-y-10 px-6 py-10 lg:px-12">
+        <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-300/80">Role spotlight</p>
+                <h1 class="mt-2 text-3xl font-bold text-white">{{ $job->title }}</h1>
+                <p class="mt-2 text-sm text-slate-400">
+                    {{ $job->location ?? 'Location flexible' }}
+                    <span class="mx-2 text-slate-500">•</span>
+                    {{ ucfirst($job->work_type ?? 'hybrid') }}
+                    <span class="mx-2 text-slate-500">•</span>
+                    <span class="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+                        {{ ucfirst($job->status ?? 'draft') }}
+                    </span>
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('employer.jobs.edit', $job) }}"
+                    class="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897Z" />
+                    </svg>
+                    Edit
+                </a>
+                <form
+                    action="{{ route('employer.jobs.destroy', $job) }}"
+                    method="POST"
+                    onsubmit="return confirm('Delete this job?')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-rose-200 transition hover:-translate-y-0.5 hover:border-rose-400/40 hover:text-rose-100">
+                        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M3 6h18M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6m1 0v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </header>
 
-</x-employer-layout>
-======= --}}
-@extends('layouts.employer')
-
-@section('title', $job->title)
-
-@section('content')
-<div class="container-fluid px-4 py-3">
-    <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-1">{{ $job->title }}</h2>
-            <p class="text-muted mb-0">
-                <i class="bi bi-geo-alt"></i> {{ $job->location ?? 'Not specified' }}
-                • <span class="badge bg-secondary text-capitalize">{{ $job->work_type }}</span>
-                • <span class="badge {{ $job->status == 'approved' ? 'bg-success' : ($job->status == 'pending' ? 'bg-warning text-dark' : 'bg-danger') }}">
-                    {{ ucfirst($job->status) }}
-                </span>
-            </p>
-        </div>
-
-        <div>
-            <a href="{{ route('employer.jobs.edit', $job) }}" class="btn btn-outline-primary btn-sm me-2">
-                <i class="bi bi-pencil"></i> Edit
-            </a>
-            <form action="{{ route('employer.jobs.destroy', $job) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this job?')">
-                    <i class="bi bi-trash"></i> Delete
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Job Overview Card -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <div class="row align-items-center">
-                @if($job->logo)
-                    <div class="col-md-3 text-center">
-                        <img src="{{ asset('storage/' . $job->logo) }}" alt="Company Logo" class="img-fluid rounded" style="max-height: 120px;">
+        <section class="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+            <div class="grid gap-6 lg:grid-cols-12 lg:items-center">
+                @if ($job->logo)
+                    <div class="lg:col-span-4">
+                        <div class="flex items-center justify-center rounded-3xl border border-white/10 bg-slate-950/60 p-6">
+                            <img
+                                src="{{ \Illuminate\Support\Str::startsWith($job->logo, ['http://', 'https://']) ? $job->logo : asset('storage/'.$job->logo) }}"
+                                alt="Company Logo"
+                                class="max-h-28 w-auto"
+                            >
+                        </div>
                     </div>
                 @endif
-
-                <div class="col-md-9">
-                    <p class="mb-2"><strong>Category:</strong> {{ $job->category->name ?? '—' }}</p>
-                    <p class="mb-2"><strong>Salary Range:</strong> {{ $job->salary_range ?? 'Not specified' }}</p>
-                    <p class="mb-0"><strong>Application Deadline:</strong>
-                        {{ $job->application_deadline ? \Carbon\Carbon::parse($job->application_deadline)->format('F j, Y') : '—' }}
-                    </p>
-                </div>
+                <dl class="{{ $job->logo ? 'lg:col-span-8' : 'lg:col-span-12' }} grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                        <dt class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Category</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white">{{ optional($job->category)->name ?? '—' }}</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                        <dt class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Salary range</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white">{{ $job->salary_range ?? 'Not specified' }}</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                        <dt class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Deadline</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white">
+                            {{ $job->application_deadline ? \Illuminate\Support\Carbon::parse($job->application_deadline)->format('F j, Y') : '—' }}
+                        </dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
+                        <dt class="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">Updated</dt>
+                        <dd class="mt-2 text-sm font-semibold text-white">
+                            {{ optional($job->updated_at)?->diffForHumans() ?? '—' }}
+                        </dd>
+                    </div>
+                </dl>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- Description -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Job Description</div>
-        <div class="card-body">
-            {!! nl2br(e($job->description)) !!}
-        </div>
-    </div>
+        <section class="grid gap-6 lg:grid-cols-2">
+            <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Job description</h2>
+                <p class="text-sm leading-relaxed text-slate-200">
+                    {!! nl2br(e($job->description ?? 'No description provided.')) !!}
+                </p>
+            </article>
+            <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Responsibilities</h2>
+                <p class="text-sm leading-relaxed text-slate-200">
+                    {!! nl2br(e($job->responsibilities ?? '—')) !!}
+                </p>
+            </article>
+            <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Requirements</h2>
+                <p class="text-sm leading-relaxed text-slate-200">
+                    {!! nl2br(e($job->requirements ?? '—')) !!}
+                </p>
+            </article>
+            <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Skills</h2>
+                <p class="text-sm leading-relaxed text-slate-200">
+                    {!! nl2br(e($job->skills ?? '—')) !!}
+                </p>
+            </article>
+        </section>
 
-    <!-- Responsibilities -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Responsibilities</div>
-        <div class="card-body">
-            {!! nl2br(e($job->responsibilities)) !!}
-        </div>
-    </div>
+        <section class="grid gap-6 lg:grid-cols-2">
+            @if ($job->technologies)
+                <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                    <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Technologies</h2>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        @foreach (array_filter(array_map('trim', explode(',', $job->technologies))) as $tech)
+                            <span class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-3 py-1 font-semibold text-cyan-200">
+                                {{ $tech }}
+                            </span>
+                        @endforeach
+                    </div>
+                </article>
+            @endif
 
-    <!-- Requirements -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Requirements</div>
-        <div class="card-body">
-            {!! nl2br(e($job->requirements)) !!}
-        </div>
-    </div>
+            @if ($job->benefits)
+                <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
+                    <h2 class="text-base font-semibold uppercase tracking-[0.3em] text-slate-300">Benefits</h2>
+                    <p class="text-sm leading-relaxed text-slate-200">
+                        {!! nl2br(e($job->benefits)) !!}
+                    </p>
+                </article>
+            @endif
+        </section>
 
-    <!-- Skills -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Skills</div>
-        <div class="card-body">
-            {!! nl2br(e($job->skills)) !!}
-        </div>
+        <footer class="rounded-3xl border border-white/10 bg-slate-950/60 px-6 py-4 text-xs text-slate-400">
+            <p>
+                Posted {{ optional($job->created_at)?->diffForHumans() ?? '—' }}
+                <span class="mx-2 text-slate-600">•</span>
+                ID #{{ $job->id }}
+            </p>
+        </footer>
     </div>
-
-    <!-- Technologies -->
-    @if($job->technologies)
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Technologies</div>
-        <div class="card-body">
-            @foreach(explode(',', $job->technologies) as $tech)
-                <span class="badge bg-primary me-1">{{ trim($tech) }}</span>
-            @endforeach
-        </div>
-    </div>
-    @endif
-
-    <!-- Benefits -->
-    @if($job->benefits)
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-semibold">Benefits</div>
-        <div class="card-body">
-            {!! nl2br(e($job->benefits)) !!}
-        </div>
-    </div>
-    @endif
-
-    <!-- Footer -->
-    <div class="text-center text-muted small mt-4">
-        <p>Posted on {{ $job->created_at->format('F j, Y') }}</p>
-    </div>
-</div>
-@endsection
-{{-- >>>>>>> 01e5ed9145f3111e10dd795d26c4f86a6e3e4a85 --}}
+</x-employer-layout>

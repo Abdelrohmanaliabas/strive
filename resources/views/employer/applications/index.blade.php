@@ -1,11 +1,11 @@
 <x-employer-layout>
-    <div class="space-y-10 px-6 py-8 lg:px-12">
-        <header class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+    <div class="space-y-10 px-6 py-10 lg:px-12">
+        <header class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-300/80">Strive pipeline</p>
                 <h1 class="mt-2 text-3xl font-bold text-white">Applications</h1>
                 <p class="mt-2 text-sm text-slate-400">
-                    Review every applicant, track their stage, and dive into detailed submissions.
+                    Track candidates, follow up instantly, and keep every decision transparent.
                 </p>
             </div>
             <a
@@ -16,58 +16,110 @@
             </a>
         </header>
 
-        <section class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
-            <div class="hidden grid-cols-[2fr,2fr,1fr,1fr,auto] items-center gap-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 md:grid">
-                <span>Candidate</span>
-                <span>Role</span>
-                <span>Status</span>
-                <span>Applied</span>
-                <span></span>
+        <section class="overflow-hidden rounded-3xl border border-white/5 bg-white/5 shadow-2xl">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-white/10 text-sm text-slate-200">
+                    <thead>
+                        <tr class="bg-white/5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                            <th class="px-6 py-4 text-left">Candidate</th>
+                            <th class="px-6 py-4 text-left">Role</th>
+                            <th class="px-6 py-4 text-left">Status</th>
+                            <th class="px-6 py-4 text-left">Applied</th>
+                            <th class="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        @forelse ($applications as $application)
+                            @php
+                                $statusKey = strtolower($application->status ?? 'pending');
+                                $statusPalette = match ($statusKey) {
+                                    'accepted' => ['dot' => 'bg-emerald-400', 'classes' => 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200', 'label' => 'Accepted'],
+                                    'rejected' => ['dot' => 'bg-rose-400', 'classes' => 'border-rose-400/40 bg-rose-400/10 text-rose-200', 'label' => 'Rejected'],
+                                    default => ['dot' => 'bg-amber-300', 'classes' => 'border-white/10 bg-white/5 text-amber-200', 'label' => 'Pending'],
+                                };
+                            @endphp
+                            <tr class="transition hover:bg-white/5">
+                                <td class="px-6 py-4 align-top">
+                                    <p class="font-semibold text-white">
+                                        {{ $application->name ?? optional($application->candidate)->name ?? 'New applicant' }}
+                                    </p>
+                                    <p class="text-xs text-slate-400">
+                                        {{ $application->email ?? optional($application->candidate)->email ?? '—' }}
+                                    </p>
+                                </td>
+                                <td class="px-6 py-4 align-top text-slate-300">
+                                    {{ optional($application->jobPost)->title ?? 'Role archived' }}
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold {{ $statusPalette['classes'] }}">
+                                        <span class="h-1.5 w-1.5 rounded-full {{ $statusPalette['dot'] }}"></span>
+                                        {{ $statusPalette['label'] }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 align-top text-xs text-slate-400">
+                                    {{ optional($application->created_at)?->diffForHumans() ?? 'just now' }}
+                                </td>
+                                <td class="px-6 py-4 align-top">
+                                    <div class="flex flex-wrap justify-end gap-2">
+                                        <a
+                                            href="{{ route('employer.applications.show', $application) }}"
+                                            class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200"
+                                        >
+                                            View
+                                        </a>
+                                        @if ($statusKey === 'pending')
+                                            <form
+                                                action="{{ route('employer.applications.update-status', $application) }}"
+                                                method="POST"
+                                                class="inline-flex"
+                                            >
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="accepted">
+                                                <button
+                                                    type="submit"
+                                                    class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-xs font-semibold text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/20"
+                                                >
+                                                    Accept
+                                                </button>
+                                            </form>
+                                            <form
+                                                action="{{ route('employer.applications.update-status', $application) }}"
+                                                method="POST"
+                                                class="inline-flex"
+                                            >
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="rejected">
+                                                <button
+                                                    type="submit"
+                                                    class="inline-flex items-center gap-2 rounded-full border border-rose-400/40 bg-rose-400/10 px-4 py-2 text-xs font-semibold text-rose-200 transition hover:-translate-y-0.5 hover:bg-rose-400/20"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-sm text-slate-400">
+                                    No applications yet. Once candidates apply, they will appear here.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-            <div class="space-y-4">
-                @forelse ($applications as $application)
-                    <article class="grid gap-3 rounded-2xl border border-white/10 bg-slate-950/60 p-4 md:grid-cols-[2fr,2fr,1fr,1fr,auto] md:items-center">
-                        <div>
-                            <p class="text-sm font-semibold text-white">
-                                {{ $application->name ?? optional($application->candidate)->name ?? 'New applicant' }}
-                            </p>
-                            <p class="text-xs text-slate-400">
-                                {{ $application->email ?? optional($application->candidate)->email ?? '—' }}
-                            </p>
-                        </div>
-                        <div class="text-sm text-slate-300">
-                            {{ optional($application->jobPost)->title ?? 'Role archived' }}
-                        </div>
-                        <div>
-                            <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-emerald-200">
-                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-                                {{ ucfirst($application->status ?? 'pending') }}
-                            </span>
-                        </div>
-                        <div class="text-xs text-slate-400">
-                            {{ optional($application->created_at)?->diffForHumans() ?? 'just now' }}
-                        </div>
-                        <div class="flex justify-end">
-                            <a
-                                href="{{ route('employer.applications.show', $application) }}"
-                                class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200"
-                            >
-                                View
-                            </a>
-                        </div>
-                    </article>
-                @empty
-                    <div class="rounded-2xl border border-dashed border-white/10 p-12 text-center text-sm text-slate-300">
-                        No applications yet. Once candidates apply to your postings, they will appear in this journey view.
-                    </div>
-                @endforelse
-            </div>
-        </section>
 
-        @if ($applications instanceof \Illuminate\Contracts\Pagination\Paginator)
-            <div class="pt-4">
-                {{ $applications->links() }}
-            </div>
-        @endif
+            @if ($applications instanceof \Illuminate\Contracts\Pagination\Paginator)
+                <div class="border-t border-white/10 bg-white/5 px-6 py-4">
+                    <div class="flex justify-center">
+                        {{ $applications->links() }}
+                    </div>
+                </div>
+            @endif
+        </section>
     </div>
 </x-employer-layout>

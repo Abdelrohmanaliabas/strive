@@ -54,9 +54,13 @@ Route::middleware(['auth', 'verified', 'role:employer'])
         Route::get('jobs/create', [JobController::class, 'create'])->name('jobs.create');
         Route::get('jobs/{job}/edit', [JobController::class, 'edit'])->name('jobs.edit');
         Route::get('jobs/{job}', [JobController::class, 'show'])->name('jobs.show');
+        Route::post('jobs', [JobController::class, 'store'])->name('jobs.store');
+        Route::put('jobs/{job}', [JobController::class, 'update'])->name('jobs.update');
+        Route::delete('jobs/{job}', [JobController::class, 'destroy'])->name('jobs.destroy');
 
         Route::get('applications', [ApplicationController::class, 'index'])->name('applications.index');
         Route::get('applications/{application}', [ApplicationController::class, 'show'])->name('applications.show');
+        Route::patch('applications/{application}/status', [ApplicationController::class, 'updateStatus'])->name('applications.update-status');
 
         Route::get('comments', [CommentController::class, 'index'])->name('comments.index');
         Route::get('comments/{comment}', [CommentController::class, 'show'])->name('comments.show');

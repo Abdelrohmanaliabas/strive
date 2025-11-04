@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -39,6 +41,23 @@ class ApplicationController extends Controller
         return view('employer.applications.show', [
             'application' => $application,
         ]);
+    }
+
+    public function updateStatus(Request $request, Application $application): RedirectResponse
+    {
+        $this->ensureEmployerOwnsApplication($application);
+
+        $validated = $request->validate([
+            'status' => ['required', 'in:pending,accepted,rejected'],
+        ]);
+
+        $newStatus = $validated['status'];
+
+        if ($application->status !== $newStatus) {
+            $application->forceFill(['status' => $newStatus])->save();
+        }
+
+        return back()->with('status', __('Application status updated to :status.', ['status' => ucfirst($newStatus)]));
     }
 
     private function ensureEmployerOwnsApplication(Application $application): void

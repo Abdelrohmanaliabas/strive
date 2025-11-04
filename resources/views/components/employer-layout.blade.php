@@ -376,9 +376,9 @@
                                 <div>
                                     <p class="text-uppercase text-secondary mb-1 small fw-semibold">Employer</p>
                                     <h2 class="h4 text-white mb-1">StriveHub</h2>
-                                    <p class="text-secondary small mb-0">
+                                    {{-- <p class="text-secondary small mb-0">
                                         Navigate hiring, analytics, and candidate touchpoints with confidence.
-                                    </p>
+                                    </p> --}}
                                 </div>
                                 <button
                                     type="button"
