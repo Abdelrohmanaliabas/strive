@@ -5,7 +5,7 @@
     <div>
         <div class="flex items-center justify-center h-16 border-b border-indigo-500">
             <i class="bi bi-speedometer2 text-2xl"></i>
-            <span class="ml-2 font-semibold text-lg sidebar-text">Admin Panel</span>
+            <span class="ml-2 font-semibold text-lg sidebar-text">strive</span>
         </div>
 
         {{-- ====== Navigation ====== --}}
