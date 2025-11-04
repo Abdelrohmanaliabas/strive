@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\AnalyticController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
@@ -32,5 +33,11 @@ Route::get('/admin/posts/{post}', [JobPostController::class, 'show'])->name('adm
 Route::get('/admin/posts/{post}/edit', [JobPostController::class, 'edit'])->name('admin.jobpost.edit');
 Route::put('/admin/posts/{post}', [JobPostController::class, 'update'])->name('admin.jobpost.update');
 Route::delete('/admin/posts/{post}', [JobPostController::class, 'destroy'])->name('admin.jobpost.destroy');
+
+Route::get('/admin/analytics', [AnalyticController::class, 'index'])->name('admin.analytics.index');
+Route::get('/admin/comments', [CommentController::class, 'index'])->name('admin.comments.index');
+Route::get('/admin/comments/{comment}', [CommentController::class, 'show'])->name('admin.comments.show');
+Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
+Route::view('/admin/settings', 'admin.settings.index')->name('admin.settings.index');
 
 require __DIR__ . '/auth.php';

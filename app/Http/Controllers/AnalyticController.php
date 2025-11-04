@@ -13,7 +13,7 @@ class AnalyticController extends Controller
      */
     public function index()
     {
-        $analytics = Analytic::all();
+        $analytics = Analytic::with('jobPost')->orderBy('last_viewed_at', 'desc')->paginate(10);
         return view('admin.analytics.index', compact('analytics'));
     }
 

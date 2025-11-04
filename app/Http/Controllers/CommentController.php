@@ -13,7 +13,26 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        $comments = Comment::with(['user', 'commentable'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('admin.comments.index', compact('comments'));
+    }
+
+    // 👁️ عرض تعليق واحد
+    public function show(Comment $comment)
+    {
+        $comment->load(['user', 'commentable']);
+        return view('admin.comments.show', compact('comment'));
+    }
+
+    // ❌ حذف تعليق
+    public function destroy(Comment $comment)
+    {
+        $comment->delete();
+        return redirect()->route('admin.comments.index')
+            ->with('success', 'Comment deleted successfully.');
     }
 
     /**
@@ -35,10 +54,7 @@ class CommentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Comment $comment)
-    {
-        //
-    }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -59,8 +75,4 @@ class CommentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
-    {
-        //
-    }
 }
