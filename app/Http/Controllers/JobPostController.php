@@ -3,25 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use App\Models\JobCategory;
 use App\Http\Requests\StoreJobPostRequest;
 use App\Http\Requests\UpdateJobPostRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class JobPostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $user = auth()->user();
+
+        $jobs = JobPost::where('employer_id', $user->id)
+            ->when($request->search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%");
+                });
+            })
+            ->when($request->category, function ($query, $category) {
+            $query->where('category_id', $category);
+            })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $categories = JobCategory::all();
+
+        return view('employer.jobs.index', compact('jobs', 'categories'));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        $categories = JobCategory::all();
+        return view('employer.jobs.create', compact('categories'));
     }
 
     /**
@@ -29,38 +56,50 @@ class JobPostController extends Controller
      */
     public function store(StoreJobPostRequest $request)
     {
-        //
+        $data = $request->validated();
+        $data['employer_id'] = auth()->id();
+        $job = JobPost::create($data);
+        return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(JobPost $jobPost)
+    public function show(JobPost $job)
     {
-        //
+        // dd($job);
+        abort_if($job->employer_id !== auth()->id(), 403);
+        return view('employer.jobs.show', compact('job'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobPost $jobPost)
+    public function edit(JobPost $job)
     {
-        //
+        abort_if($job->employer_id !== auth()->id(), 403);
+        $categories = JobCategory::all();
+        return view('employer.jobs.edit', compact('job', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateJobPostRequest $request, JobPost $jobPost)
+    public function update(UpdateJobPostRequest $request, JobPost $job)
     {
-        //
+        abort_if($job->employer_id !== auth()->id(), 403);
+        $data = $request->validated();
+        $job->update($data);
+        return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(JobPost $jobPost)
+    public function destroy(JobPost $job)
     {
-        //
+        abort_if($job->employer_id !== auth()->id(), 403);
+        $job->delete();
+        return redirect()->route('employer.jobs.index')->with('success', 'Job deleted successfully.');
     }
 }
