@@ -39,5 +39,5 @@ Route::get('/admin/comments', [CommentController::class, 'index'])->name('admin.
 Route::get('/admin/comments/{comment}', [CommentController::class, 'show'])->name('admin.comments.show');
 Route::delete('/admin/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
 Route::view('/admin/settings', 'admin.settings.index')->name('admin.settings.index');
-
+// sadsadsad
 require __DIR__ . '/auth.php';
