@@ -8,12 +8,13 @@ use App\Models\JobPost;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $employer = auth()->user();
+        $employer = Auth::user();
 
         $jobQuery = JobPost::query()
             ->where('employer_id', $employer->id);
