@@ -9,15 +9,16 @@ use App\Models\JobCategory;
 use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
-class JobController extends Controller
+class JobEmployerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $jobs = JobPost::where('employer_id', $user->id)
             ->when($request->search, function ($query, $search) {
@@ -56,7 +57,7 @@ class JobController extends Controller
     public function store(StoreJobPostRequest $request)
     {
         $data = $this->normalizeJobPayload($request->validated());
-        $data['employer_id'] = auth()->id();
+        $data['employer_id'] = Auth::id();
         JobPost::create($data);
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
@@ -67,7 +68,7 @@ class JobController extends Controller
      */
     public function show(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         return view('employer.jobs.show', compact('job'));
     }
@@ -77,7 +78,7 @@ class JobController extends Controller
      */
     public function edit(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         $categories = JobCategory::all();
 
@@ -89,7 +90,7 @@ class JobController extends Controller
      */
     public function update(UpdateJobPostRequest $request, JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         $data = $this->normalizeJobPayload($request->validated());
         $job->update($data);
@@ -102,7 +103,7 @@ class JobController extends Controller
      */
     public function destroy(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         $job->delete();
 

@@ -9,14 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class ApplicationController extends Controller
+class ApplicationEmployerController extends Controller
 {
     public function index(): View
     {
         $employerId = Auth::id();
 
         $applications = Application::query()
-            ->whereHas('jobPost', fn ($query) => $query->where('employer_id', $employerId))
+            ->whereHas('jobPost', fn($query) => $query->where('employer_id', $employerId))
             ->with([
                 'jobPost:id,title',
                 'candidate:id,name,email',
