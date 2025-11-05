@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class CommentController extends Controller
+class CommentEmployerController extends Controller
 {
     public function index(): View
     {

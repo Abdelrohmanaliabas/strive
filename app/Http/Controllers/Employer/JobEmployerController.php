@@ -10,7 +10,7 @@ use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-class JobController extends Controller
+class JobEmployerController extends Controller
 {
     /**
      * Display a listing of the resource.

@@ -23,17 +23,17 @@
             </a>
 
             <a href="{{ route('admin.analytics.index') }}"
-               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.analytics.index') ? 'bg-indigo-600' : '' }}">
+               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.analytics.index') || request()->routeIs('admin.analytics.show') ? 'bg-indigo-600' : '' }}">
                 <i class="bi bi-bar-chart-line text-xl"></i>
                 <span class="ml-3 sidebar-text">Analytics</span>
             </a>
 
             <a href="{{ route('admin.comments.index') }}"
-               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.comments.index') ? 'bg-indigo-600' : '' }}">
+               class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.comments.index') || request()->routeIs('admin.comments.show') ? 'bg-indigo-600' : '' }}">
                 <i class="bi bi-chat-dots text-xl"></i>
                 <span class="ml-3 sidebar-text">Comments</span>
             </a>
-            <a href="{{ route('admin.jobpost.index') }}" class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.jobpost.index') ? 'bg-indigo-600' : '' }}">
+            <a href="{{ route('admin.jobpost.index') }}" class="flex items-center px-5 py-3 hover:bg-indigo-600 rounded-md transition-all {{ request()->routeIs('admin.jobpost.index') || request()->routeIs('admin.jobpost.show') ? 'bg-indigo-600' : '' }}">
                 <i class="bi bi-briefcase text-xl"></i> <span class="ml-3 sidebar-text">Job Post</span>
                 </a>    
         </nav>
