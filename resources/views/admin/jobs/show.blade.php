@@ -5,9 +5,48 @@
 @section('content')
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 max-w-6xl mx-auto space-y-8">
 
+    {{-- ✅ Flash Messages --}}
+    @if (session('success'))
+        <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 dark:bg-green-900 dark:text-green-200">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100 dark:bg-red-900 dark:text-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- 🎯 Job Details --}}
     <div>
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">{{ $jobPost->title }}</h2>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $jobPost->title }}</h2>
+
+            <div class="flex items-center gap-3">
+                {{-- ✏️ Edit Status (only if pending) --}}
+                @if ($jobPost->status === 'pending')
+                    <a href="{{ route('admin.jobpost.edit', $jobPost->id) }}"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow hover:bg-indigo-500 transition">
+                        <i class="bi bi-pencil-square"></i>
+                        Edit Status
+                    </a>
+                @endif
+
+                {{-- 🗑️ Delete Job --}}
+                <form action="{{ route('admin.jobpost.destroy', $jobPost->id) }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to delete this job post?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg shadow hover:bg-red-500 transition">
+                        <i class="bi bi-trash3"></i>
+                        Delete Job
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <p class="text-gray-600 dark:text-gray-300 mb-4">{{ $jobPost->description }}</p>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-gray-700 dark:text-gray-300">

@@ -15,8 +15,6 @@ class JobPostController extends Controller
     public function index(Request $request)
     {
         $query = JobPost::with(['employer', 'category']);
-
-        // 🔍 البحث بالعنوان أو الوصف أو الموقع
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -25,20 +23,14 @@ class JobPostController extends Controller
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
-
-        // ⚙️ الفلترة حسب الحالة (pending / approved / rejected)
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         }
-
-        // ⏱ الترتيب حسب الأقدم أو الأحدث
         if ($request->filled('sort') && $request->sort === 'oldest') {
             $query->orderBy('created_at', 'asc');
         } else {
             $query->orderBy('created_at', 'desc');
         }
-
-        // 📄 التقسيم (Pagination)
         $jobPost = $query->paginate(8)->appends($request->all());
 
         return view('admin.jobs.index', compact('jobPost'));
@@ -77,24 +69,48 @@ class JobPostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobPost $jobPost)
+
+    public function edit(JobPost $post)
     {
-        //
+        $allowedStatuses = [];
+        if ($post->status === 'pending') {
+            $allowedStatuses = ['approved', 'rejected'];
+        }
+
+        return view('admin.jobs.edit', [
+            'jobPost' => $post,
+            'allowedStatuses' => $allowedStatuses,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateJobPostRequest $request, JobPost $jobPost)
+    public function update(Request $request, JobPost $post)
     {
-        //
+        // لو الحالة الحالية مش pending → ممنوع التعديل
+        if ($post->status !== 'pending') {
+            return redirect()->route('admin.jobpost.show', $post->id)
+                ->with('error', 'You cannot change the status after it has been approved or rejected.');
+        }
+
+        // السماح فقط بـ approved أو rejected
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        $post->update(['status' => $validated['status']]);
+
+        return redirect()->route('admin.jobpost.show', $post->id)
+            ->with('success', 'Job status updated successfully.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(JobPost $jobPost)
     {
-        //
+        //delete logic here
+        $jobPost->delete();
+        return redirect()->route('admin.jobpost.index')
+            ->with('success', 'Job post deleted successfully.');
     }
 }
