@@ -88,7 +88,7 @@
                         <div class="divide-y divide-white/5">
                             @forelse ($jobSnapshots as $job)
                                 <div class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-                                    <div class="w-25">
+                                    <div class="w-50 space-y-2">
                                         <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">{{ $job['category'] }}</p>
                                         <h3 class="mt-1 text-xl font-bold text-white">{{ $job['title'] }}</h3>
                                         <p class="mt-2 text-sm text-slate-400">{{ $job['location'] }} &middot; {{ $job['workplace'] }}</p>
@@ -119,14 +119,14 @@
                                             <dd class="mt-1 text-lg font-semibold text-white">{{ $job['status'] }}</dd>
                                         </a>
                                     </dl>
-                                    <div class="flex flex-col items-stretch gap-2 text-sm">
+                                    {{-- <div class="flex flex-col items-stretch gap-2 text-sm">
                                         <a href="{{ $job['url'] }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
                                             Manage posting
                                         </a>
                                         <a href="{{ route('employer.jobs.index') }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 text-slate-300 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200">
                                             Boost visibility
                                         </a>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             @empty
                                 <div class="px-6 py-12 text-center text-sm text-slate-400">
