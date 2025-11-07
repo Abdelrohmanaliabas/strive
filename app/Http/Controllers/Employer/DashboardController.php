@@ -23,7 +23,7 @@ class DashboardController extends Controller
 
         $jobs = (clone $jobQuery)
             ->with(['category:id,name', 'analytic'])
-            ->withCount('applications')
+            ->withCount(['applications', 'comments'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -96,14 +96,14 @@ class DashboardController extends Controller
                 'trend_class' => $this->trendClass($applicationsCurrent, $applicationsPrevious),
             ],
             [
-                'label' => 'Unique candidates',
+                'label' => 'Candidates',
                 'value' => $candidatesTotal,
                 'trend' => $this->formatTrend($candidatesCurrent, $candidatesPrevious),
                 'trend_copy' => 'New voices this week',
                 'trend_class' => $this->trendClass($candidatesCurrent, $candidatesPrevious),
             ],
             [
-                'label' => 'Avg. applications per job',
+                'label' => 'Avg. applications',
                 'value' => $jobsTotal > 0
                     ? number_format($applicationsTotal / max($jobsTotal, 1), 1)
                     : '0.0',
@@ -169,11 +169,18 @@ class DashboardController extends Controller
             'data' => $topJobs->pluck('applications_count'),
             'rows' => $topJobs->map(function (JobPost $job) {
                 $editUrl = null;
+                $detailUrl = null;
 
                 if (\Illuminate\Support\Facades\Route::has('employer.jobs.edit')) {
                     $editUrl = route('employer.jobs.edit', $job);
                 } elseif (\Illuminate\Support\Facades\Route::has('jobs.edit')) {
                     $editUrl = route('jobs.edit', $job);
+                }
+
+                if (\Illuminate\Support\Facades\Route::has('employer.jobs.show')) {
+                    $detailUrl = route('employer.jobs.show', $job);
+                } elseif (\Illuminate\Support\Facades\Route::has('jobs.show')) {
+                    $detailUrl = route('jobs.show', $job);
                 }
 
                 return [
@@ -183,8 +190,10 @@ class DashboardController extends Controller
                     'workplace' => ucfirst($job->work_type ?? 'Hybrid'),
                     'views' => optional($job->analytic)->views_count ?? 0,
                     'applications' => $job->applications_count,
+                    'comments' => $job->comments_count,
                     'status' => ucfirst($job->status ?? 'draft'),
                     'url' => $editUrl ?? '#',
+                    'detail_url' => $detailUrl ?? $editUrl ?? '#',
                 ];
             }),
         ];
@@ -229,20 +238,20 @@ class DashboardController extends Controller
                 'percentage' => $this->percentage($pending, $totalApplications),
             ],
             [
-                'name' => 'Advancing',
+                'name' => 'Accepted',
                 'description' => 'Candidates you moved forward.',
                 'count' => $accepted,
                 'percentage' => $this->percentage($accepted, $totalApplications),
             ],
             [
-                'name' => 'Declined',
+                'name' => 'Rejected',
                 'description' => 'Applications you turned down.',
                 'count' => $rejected,
                 'percentage' => $this->percentage($rejected, $totalApplications),
             ],
             [
-                'name' => 'Withdrawn',
-                'description' => 'Dropped or cancelled by Strive.',
+                'name' => 'Cancelled',
+                'description' => 'Cancelled by Strive or Candidate.',
                 'count' => $cancelled,
                 'percentage' => $this->percentage($cancelled, $totalApplications),
             ],
