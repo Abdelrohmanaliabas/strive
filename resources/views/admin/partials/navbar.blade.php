@@ -18,12 +18,14 @@
 
         {{-- Profile dropdown --}}
         <div class="relative group">
+            @auth
             <button class="flex items-center space-x-2 focus:outline-none">
                 <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
                      class="w-9 h-9 rounded-full object-cover border border-gray-300 dark:border-gray-600">
                 <span class="font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
                 <i class="bi bi-caret-down-fill text-sm"></i>
             </button>
+            @endauth
 
             <div class="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-md shadow-lg hidden group-hover:block">
                 <a href="{{ route('profile.edit') }}"
