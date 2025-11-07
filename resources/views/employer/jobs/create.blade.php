@@ -22,6 +22,7 @@
         <form
             action="{{ route('employer.jobs.store') }}"
             method="POST"
+            enctype="multipart/form-data"
             novalidate
             class="space-y-6 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl"
         >
@@ -106,19 +107,20 @@
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
                 </div>
-
                 <div>
-                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Application deadline</label>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Deadline</label>
                     <input
                         type="date"
                         name="application_deadline"
                         value="{{ old('application_deadline') }}"
-                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white focus:border-cyan-400/50 focus:outline-none"
+                        min="{{ now()->format('Y-m-d') }}"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
                     >
                     @error('application_deadline')
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
                 </div>
+
             </div>
 
             <div class="grid gap-6 lg:grid-cols-2">
@@ -207,17 +209,20 @@
                     @enderror
                 </div>
                 <div>
-                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Logo URL</label>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Company Logo</label>
                     <input
-                        type="text"
+                        type="file"
                         name="logo"
-                        value="{{ old('logo') }}"
-                        placeholder="Drop a hosted logo (optional)"
-                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                        accept="image/*"
+                        class="mt-2 w-full cursor-pointer rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-cyan-400/20 file:px-4 file:py-2 file:text-cyan-200 hover:file:bg-cyan-400/30 focus:border-cyan-400/50 focus:outline-none"
                     >
                     @error('logo')
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
+
+                    @if (old('logo'))
+                        <p class="mt-2 text-xs text-slate-400">Previously uploaded: {{ old('logo') }}</p>
+                    @endif
                 </div>
             </div>
 

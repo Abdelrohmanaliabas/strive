@@ -10,6 +10,7 @@ use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class JobEmployerController extends Controller
 {
@@ -58,6 +59,12 @@ class JobEmployerController extends Controller
     {
         $data = $this->normalizeJobPayload($request->validated());
         $data['employer_id'] = Auth::id();
+
+        //Handle logo upload
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $this->uploadImage($request->file('logo'));
+        }
+
         JobPost::create($data);
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
@@ -111,6 +118,17 @@ class JobEmployerController extends Controller
         abort_if($job->employer_id !== Auth::id(), 403);
 
         $data = $this->normalizeJobPayload($request->validated());
+
+        // Replace logo if a new one is uploaded
+        if ($request->hasFile('logo')) {
+            // Delete old logo file if exists
+            if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+                Storage::disk('public')->delete($job->logo);
+            }
+
+            $data['logo'] = $this->uploadImage($request->file('logo'));
+        }
+
         $job->update($data);
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
@@ -122,6 +140,11 @@ class JobEmployerController extends Controller
     public function destroy(JobPost $job)
     {
         abort_if($job->employer_id !== Auth::id(), 403);
+
+        // Delete logo file if exists
+        if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+            Storage::disk('public')->delete($job->logo);
+        }
 
         $job->delete();
 
@@ -142,5 +165,12 @@ class JobEmployerController extends Controller
         }
 
         return $data;
+    }
+
+    private function uploadImage($imageObject)
+    {
+        $image_name = now()->format('Ymd_His') . '.' . $imageObject->getClientOriginalExtension();
+        $imageObject->storeAs('logos', $image_name, 'public');
+        return "logos/{$image_name}";
     }
 }
