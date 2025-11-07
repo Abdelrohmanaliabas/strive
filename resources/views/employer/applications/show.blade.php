@@ -89,15 +89,50 @@
                 </div>
 
                 <div class="space-y-3">
-                    <h2 class="text-lg font-semibold text-white">Resume</h2>
-                    <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-sm text-slate-200">
-                        @if ($application->resume)
-                            {!! nl2br(e($application->resume)) !!}
-                        @else
-                            The candidate has not attached a resume or summary content yet.
-                        @endif
+            <h2 class="text-lg font-semibold text-white">Resume</h2>
+
+            <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-sm text-slate-200">
+                @if ($application->resume)
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <p class="truncate text-slate-300">
+                            {{ basename($application->resume) }}
+                        </p>
+
+                        <div class="flex items-center gap-2">
+                            <!-- Download Button -->
+                            <button
+                                id="downloadResumeBtn"
+                                data-url="{{ route('employer.applications.download', $application->id) }}"
+                                class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
+                            </button>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Download Progress -->
+                    <div id="downloadProgress" class="hidden mt-4">
+                        <div class="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                            <div id="progressBar" class="h-2 w-0 bg-cyan-400 transition-all duration-300"></div>
+                        </div>
+                        <p id="progressText" class="mt-2 text-xs text-cyan-300"></p>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="downloadSuccess" class="hidden mt-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
+                        Resume downloaded successfully!
+                    </div>
+                @else
+                    <p class="text-slate-400">The candidate has not attached a resume yet.</p>
+                @endif
+            </div>
+        </div>
+
             </article>
 
             <aside class="space-y-6 lg:col-span-4">
@@ -126,4 +161,38 @@
             </aside>
         </section>
     </div>
+
+    
 </x-employer-layout>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const downloadBtn = document.getElementById('downloadResumeBtn');
+    const progressContainer = document.getElementById('downloadProgress');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const successMsg = document.getElementById('downloadSuccess');
+    if (!downloadBtn) return;
+
+    downloadBtn.addEventListener('click', () => {
+        const fileUrl = downloadBtn.dataset.url;
+
+        // Reset UI
+        progressContainer.classList.remove('hidden');
+        successMsg.classList.add('hidden');
+        progressBar.style.width = '0%';
+        progressText.textContent = 'Starting download...';
+
+        // Use window.location for direct download
+        window.location.href = fileUrl;
+
+        // Show success after a short delay
+        setTimeout(() => {
+            progressBar.style.width = '100%';
+            progressText.textContent = 'Download started!';
+            successMsg.classList.remove('hidden');
+        }, 1000);
+    });
+});
+</script>
+
