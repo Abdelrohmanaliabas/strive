@@ -95,9 +95,9 @@
                 $postedAgo = optional($job->created_at)?->diffForHumans();
             @endphp
             <article class="group rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl transition duration-200 hover:-translate-y-1 hover:border-cyan-400/40">
-                <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                    <div class="space-y-3">
-                        <p class="text-xs font-semibold uppercase tracking-[0.35em] text-cyan-200/80">
+                <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between w-full">
+                    <div class="space-y-3 w-50">
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200/80">
                             {{ optional($job->category)->name ?? 'Uncategorized' }}
                         </p>
                         <h2 class="text-2xl font-bold text-white">{{ $job->title }}</h2>

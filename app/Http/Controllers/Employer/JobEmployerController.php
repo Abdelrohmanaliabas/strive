@@ -70,7 +70,25 @@ class JobEmployerController extends Controller
     {
         abort_if($job->employer_id !== Auth::id(), 403);
 
-        return view('employer.jobs.show', compact('job'));
+        $job->load([
+            'applications' => function ($query) {
+                $query
+                    ->with('candidate:id,name,email')
+                    ->latest('created_at');
+            },
+            'comments' => function ($query) {
+                $query
+                    ->with('user:id,name,email')
+                    ->latest('created_at');
+            },
+            'analytic',
+        ]);
+
+        return view('employer.jobs.show', [
+            'job' => $job,
+            'applications' => $job->applications,
+            'comments' => $job->comments,
+        ]);
     }
 
     /**
