@@ -52,6 +52,14 @@
             <i class="bi bi-person text-xl"></i>
             <span class="ml-3 sidebar-text">Profile</span>
         </a>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                    class="w-full text-left flex items-center px-5 py-3 hover:bg-red-600 rounded-md transition-all text-red-200 hover:text-white">
+                <i class="bi bi-box-arrow-right text-xl"></i>
+                <span class="ml-3 sidebar-text">Logout</span>
+            </button>
+        </form>
     </div>
 
     {{-- ====== Collapse Style ====== --}}
