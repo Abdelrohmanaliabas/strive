@@ -29,7 +29,7 @@ class UpdateJobPostRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:255'],
             'salary_range' => ['nullable', 'string', 'max:255'],
             'work_type' => ['required', 'in:remote,onsite,hybrid'],
-            'application_deadline' => ['nullable', 'date'],
+            'application_deadline' => ['required', 'date', 'after_or_equal:today'],
             'responsibilities' => ['required', 'string'],
             'skills' => ['required', 'string'],
             'requirements' => ['required', 'string'],
