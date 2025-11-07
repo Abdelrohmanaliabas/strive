@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 
 use App\Models\User;
@@ -41,15 +42,9 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'role' => 'required|string',
-            'phone' => 'nullable|string|max:20',
-            'linkedin_url' => 'nullable|url|max:255',
-        ]);
+        $validated = $request->validated();
 
         $user->update($validated);
 

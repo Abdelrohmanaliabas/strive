@@ -8,12 +8,13 @@ use App\Models\JobPost;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $employer = auth()->user();
+        $employer = Auth::user();
 
         $jobQuery = JobPost::query()
             ->where('employer_id', $employer->id);
@@ -22,7 +23,7 @@ class DashboardController extends Controller
 
         $jobs = (clone $jobQuery)
             ->with(['category:id,name', 'analytic'])
-            ->withCount('applications')
+            ->withCount(['applications', 'comments'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -95,14 +96,14 @@ class DashboardController extends Controller
                 'trend_class' => $this->trendClass($applicationsCurrent, $applicationsPrevious),
             ],
             [
-                'label' => 'Unique candidates',
+                'label' => 'Candidates',
                 'value' => $candidatesTotal,
                 'trend' => $this->formatTrend($candidatesCurrent, $candidatesPrevious),
                 'trend_copy' => 'New voices this week',
                 'trend_class' => $this->trendClass($candidatesCurrent, $candidatesPrevious),
             ],
             [
-                'label' => 'Avg. applications per job',
+                'label' => 'Avg. applications',
                 'value' => $jobsTotal > 0
                     ? number_format($applicationsTotal / max($jobsTotal, 1), 1)
                     : '0.0',
@@ -132,7 +133,7 @@ class DashboardController extends Controller
             ->pluck('total', 'day');
 
         $period = collect(range(0, $days - 1))->map(
-            fn (int $offset) => $start->copy()->addDays($offset)
+            fn(int $offset) => $start->copy()->addDays($offset)
         );
 
         return [
@@ -150,10 +151,10 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->orderByDesc('total')
             ->get()
-            ->mapWithKeys(fn ($row) => [$row->status => (int) $row->total]);
+            ->mapWithKeys(fn($row) => [$row->status => (int) $row->total]);
 
         return [
-            'labels' => $statusCounts->keys()->map(fn (string $status) => ucfirst($status)),
+            'labels' => $statusCounts->keys()->map(fn(string $status) => ucfirst($status)),
             'data' => $statusCounts->values(),
             'series' => $statusCounts,
         ];
@@ -168,11 +169,18 @@ class DashboardController extends Controller
             'data' => $topJobs->pluck('applications_count'),
             'rows' => $topJobs->map(function (JobPost $job) {
                 $editUrl = null;
+                $detailUrl = null;
 
                 if (\Illuminate\Support\Facades\Route::has('employer.jobs.edit')) {
                     $editUrl = route('employer.jobs.edit', $job);
                 } elseif (\Illuminate\Support\Facades\Route::has('jobs.edit')) {
                     $editUrl = route('jobs.edit', $job);
+                }
+
+                if (\Illuminate\Support\Facades\Route::has('employer.jobs.show')) {
+                    $detailUrl = route('employer.jobs.show', $job);
+                } elseif (\Illuminate\Support\Facades\Route::has('jobs.show')) {
+                    $detailUrl = route('jobs.show', $job);
                 }
 
                 return [
@@ -182,8 +190,10 @@ class DashboardController extends Controller
                     'workplace' => ucfirst($job->work_type ?? 'Hybrid'),
                     'views' => optional($job->analytic)->views_count ?? 0,
                     'applications' => $job->applications_count,
+                    'comments' => $job->comments_count,
                     'status' => ucfirst($job->status ?? 'draft'),
                     'url' => $editUrl ?? '#',
+                    'detail_url' => $detailUrl ?? $editUrl ?? '#',
                 ];
             }),
         ];
@@ -212,7 +222,7 @@ class DashboardController extends Controller
     private function pipelineFromStatuses(Collection $statusCounts, int $totalApplications): array
     {
         $normalized = $statusCounts->mapWithKeys(
-            fn ($count, $status) => [strtolower((string) $status) => (int) $count]
+            fn($count, $status) => [strtolower((string) $status) => (int) $count]
         );
 
         $pending = $normalized->get('pending', 0);
@@ -228,20 +238,20 @@ class DashboardController extends Controller
                 'percentage' => $this->percentage($pending, $totalApplications),
             ],
             [
-                'name' => 'Advancing',
+                'name' => 'Accepted',
                 'description' => 'Candidates you moved forward.',
                 'count' => $accepted,
                 'percentage' => $this->percentage($accepted, $totalApplications),
             ],
             [
-                'name' => 'Declined',
+                'name' => 'Rejected',
                 'description' => 'Applications you turned down.',
                 'count' => $rejected,
                 'percentage' => $this->percentage($rejected, $totalApplications),
             ],
             [
-                'name' => 'Withdrawn',
-                'description' => 'Dropped or cancelled by Strive.',
+                'name' => 'Cancelled',
+                'description' => 'Cancelled by Strive or Candidate.',
                 'count' => $cancelled,
                 'percentage' => $this->percentage($cancelled, $totalApplications),
             ],
@@ -251,13 +261,13 @@ class DashboardController extends Controller
     private function StriveSignals(Collection $jobs, Collection $applicationsSample, Collection $statusCounts): array
     {
         $topCategory = $jobs
-            ->filter(fn (JobPost $job) => $job->category !== null)
-            ->groupBy(fn (JobPost $job) => $job->category->name)
+            ->filter(fn(JobPost $job) => $job->category !== null)
+            ->groupBy(fn(JobPost $job) => $job->category->name)
             ->map->count()
             ->sortDesc();
 
         $topLocation = $jobs
-            ->filter(fn (JobPost $job) => $job->location)
+            ->filter(fn(JobPost $job) => $job->location)
             ->groupBy('location')
             ->map->count()
             ->sortDesc();
@@ -268,7 +278,7 @@ class DashboardController extends Controller
         );
 
         $signalTags = $applicationsSample
-            ->map(fn (Application $application) => optional($application->jobPost)->category?->name)
+            ->map(fn(Application $application) => optional($application->jobPost)->category?->name)
             ->filter()
             ->countBy()
             ->sortDesc()
@@ -279,8 +289,8 @@ class DashboardController extends Controller
             [
                 'label' => $topCategory->isEmpty()
                     ? 'Diversify categories'
-                    : $topCategory->keys()->first().' Strive surge',
-                'trend' => $topCategory->isEmpty() ? '+0%' : '+'.$topCategory->first().' roles',
+                    : $topCategory->keys()->first() . ' Strive surge',
+                'trend' => $topCategory->isEmpty() ? '+0%' : '+' . $topCategory->first() . ' roles',
                 'description' => $topCategory->isEmpty()
                     ? 'Publish in more categories to attract fresh profiles.'
                     : 'Most engagement is happening within this category recently.',
@@ -289,8 +299,8 @@ class DashboardController extends Controller
             [
                 'label' => $topLocation->isEmpty()
                     ? 'Remote-first interest'
-                    : 'Candidates eyeing '.$topLocation->keys()->first(),
-                'trend' => $topLocation->isEmpty() ? '+0%' : '+'.$topLocation->first(),
+                    : 'Candidates eyeing ' . $topLocation->keys()->first(),
+                'trend' => $topLocation->isEmpty() ? '+0%' : '+' . $topLocation->first(),
                 'description' => $topLocation->isEmpty()
                     ? 'Remote listings continue to be the most explored option.'
                     : 'This location is capturing the majority of role views.',
@@ -298,7 +308,7 @@ class DashboardController extends Controller
             ],
             [
                 'label' => 'Offer conversion pulse',
-                'trend' => $acceptedRatio.'%',
+                'trend' => $acceptedRatio . '%',
                 'description' => 'Share timely follow-ups to lift interview-to-offer momentum.',
                 'tags' => $signalTags,
             ],
@@ -326,7 +336,7 @@ class DashboardController extends Controller
         $delta = $this->trendDelta($current, $previous);
         $sign = $delta > 0 ? '+' : '';
 
-        return $sign.number_format($delta, 0).'%';
+        return $sign . number_format($delta, 0) . '%';
     }
 
     private function trendClass(int $current, int $previous): string
@@ -353,5 +363,4 @@ class DashboardController extends Controller
 
         return (int) round(($count / $total) * 100);
     }
-
 }

@@ -25,14 +25,6 @@
             'active' => request()->routeIs('employer.applications.*') || request()->routeIs('applications.*'),
         ],
         [
-            'label' => 'Post New Job',
-            'icon' => 'plus',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.jobs.create')
-                ? route('employer.jobs.create')
-                : (\Illuminate\Support\Facades\Route::has('jobs.create') ? route('jobs.create') : '#'),
-            'active' => request()->routeIs('employer.jobs.create') || request()->routeIs('jobs.create'),
-        ],
-        [
             'label' => 'Comments',
             'icon' => 'chat',
             'href' => \Illuminate\Support\Facades\Route::has('employer.comments.index')
@@ -376,9 +368,6 @@
                                 <div>
                                     <p class="text-uppercase text-secondary mb-1 small fw-semibold">Employer</p>
                                     <h2 class="h4 text-white mb-1">StriveHub</h2>
-                                    {{-- <p class="text-secondary small mb-0">
-                                        Navigate hiring, analytics, and candidate touchpoints with confidence.
-                                    </p> --}}
                                 </div>
                                 <button
                                     type="button"
@@ -396,7 +385,6 @@
                                             <path d="M21 12.79A9 9 0 0 1 11.21 3 7 7 0 1 0 21 12.79Z" />
                                         </svg>
                                     </span>
-                                    {{-- <span data-theme-label>Light mode</span> --}}
                                 </button>
                             </div>
                         </div>

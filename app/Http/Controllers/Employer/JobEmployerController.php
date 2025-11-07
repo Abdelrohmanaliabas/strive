@@ -9,15 +9,17 @@ use App\Models\JobCategory;
 use App\Models\JobPost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
-class JobController extends Controller
+class JobEmployerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         $jobs = JobPost::where('employer_id', $user->id)
             ->when($request->search, function ($query, $search) {
@@ -56,7 +58,13 @@ class JobController extends Controller
     public function store(StoreJobPostRequest $request)
     {
         $data = $this->normalizeJobPayload($request->validated());
-        $data['employer_id'] = auth()->id();
+        $data['employer_id'] = Auth::id();
+
+        //Handle logo upload
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $this->uploadImage($request->file('logo'));
+        }
+
         JobPost::create($data);
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
@@ -67,9 +75,27 @@ class JobController extends Controller
      */
     public function show(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
-        return view('employer.jobs.show', compact('job'));
+        $job->load([
+            'applications' => function ($query) {
+                $query
+                    ->with('candidate:id,name,email')
+                    ->latest('created_at');
+            },
+            'comments' => function ($query) {
+                $query
+                    ->with('user:id,name,email')
+                    ->latest('created_at');
+            },
+            'analytic',
+        ]);
+
+        return view('employer.jobs.show', [
+            'job' => $job,
+            'applications' => $job->applications,
+            'comments' => $job->comments,
+        ]);
     }
 
     /**
@@ -77,7 +103,7 @@ class JobController extends Controller
      */
     public function edit(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         $categories = JobCategory::all();
 
@@ -89,9 +115,20 @@ class JobController extends Controller
      */
     public function update(UpdateJobPostRequest $request, JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
 
         $data = $this->normalizeJobPayload($request->validated());
+
+        // Replace logo if a new one is uploaded
+        if ($request->hasFile('logo')) {
+            // Delete old logo file if exists
+            if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+                Storage::disk('public')->delete($job->logo);
+            }
+
+            $data['logo'] = $this->uploadImage($request->file('logo'));
+        }
+
         $job->update($data);
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job updated successfully.');
@@ -102,7 +139,12 @@ class JobController extends Controller
      */
     public function destroy(JobPost $job)
     {
-        abort_if($job->employer_id !== auth()->id(), 403);
+        abort_if($job->employer_id !== Auth::id(), 403);
+
+        // Delete logo file if exists
+        if ($job->logo && Storage::disk('public')->exists($job->logo)) {
+            Storage::disk('public')->delete($job->logo);
+        }
 
         $job->delete();
 
@@ -123,5 +165,12 @@ class JobController extends Controller
         }
 
         return $data;
+    }
+
+    private function uploadImage($imageObject)
+    {
+        $image_name = now()->format('Ymd_His') . '.' . $imageObject->getClientOriginalExtension();
+        $imageObject->storeAs('logos', $image_name, 'public');
+        return "logos/{$image_name}";
     }
 }

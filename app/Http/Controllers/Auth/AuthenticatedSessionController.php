@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -28,7 +29,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin/dashboard', absolute: false));
+        $userRole = strtolower((string) optional($request->user())->role);
+
+        $targetRoute = match ($userRole) {
+            'admin' => 'admin.dashboard',
+            'employer' => 'employer.dashboard',
+            'candidate' => 'dashboard',
+            default => 'dashboard',
+        };
+
+        $targetUrl = Route::has($targetRoute)
+            ? route($targetRoute, absolute: false)
+            : '/';
+
+        return redirect()->intended($targetUrl);
     }
 
     /**
