@@ -31,6 +31,7 @@
         <form
             action="{{ route('employer.jobs.update', $job) }}"
             method="POST"
+            enctype="multipart/form-data"
             novalidate
             class="space-y-6 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl"
         >
@@ -204,17 +205,30 @@
                     @enderror
                 </div>
                 <div>
-                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Logo URL</label>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Company Logo</label>
+                    
+                    <!-- File input -->
                     <input
-                        type="text"
+                        type="file"
                         name="logo"
-                        value="{{ old('logo', $job->logo) }}"
-                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                        accept="image/*"
+                        class="mt-2 block w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-slate-200 file:mr-4 file:rounded-full file:border-0 file:bg-cyan-400/20 file:px-4 file:py-1.5 file:text-cyan-200 file:transition hover:file:bg-cyan-400/30 focus:border-cyan-400/50 focus:outline-none"
                     >
                     @error('logo')
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
-                </div>
+
+                    <!-- Show current logo if available -->
+                    @if ($job->logo)
+                        <div class="mt-4">
+                            <p class="text-xs text-slate-400 mb-2">Current Logo:</p>
+                            <img
+                                src="{{ asset('storage/' . $job->logo) }}"
+                                alt="Company Logo"
+                                class="h-20 w-20 rounded-xl object-cover border border-white/10"
+                            >
+                        </div>
+                    @endif
             </div>
 
             <div class="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
