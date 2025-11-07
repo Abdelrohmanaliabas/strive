@@ -41,10 +41,17 @@ class JobPost extends Model
     }
     public function comments()
     {
-        return $this->morphMany(Comment::class, 'commentable');
+        return $this->morphMany(Comment::class, 'commentable', 'commentable_type', 'commentable_id');
     }
     public function analytic()
     {
         return $this->hasOne(Analytic::class);
+    }
+
+    public function getTechnologiesArrayAttribute()
+    {
+        if (! $this->technologies) return [];
+        // Trim and split by comma, strip whitespace
+        return array_filter(array_map('trim', explode(',', $this->technologies)));
     }
 }

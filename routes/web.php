@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\JobCommentController;
+use App\Http\Controllers\JobListingController;
 use App\Http\Controllers\Employer\ApplicationController;
 use App\Http\Controllers\Employer\ApplicationEmployerController;
 use App\Http\Controllers\Employer\CommentEmployerController;
@@ -14,9 +17,23 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [JobListingController::class, 'index'])->name('jobs.index');
+Route::get('/jobs/{jobPost}', [JobListingController::class, 'show'])->name('jobs.show');
+// Route::post('/comments', [JobCommentController::class, 'store'])->name('comments.store');
+Route::post('/comments', [JobCommentController::class, 'store'])
+    ->middleware('auth')
+    ->name('comments.store');
+// Route::post('/applications', [JobApplicationController::class, 'store'])->name('applications.store');
+Route::post('/applications', [JobApplicationController::class, 'store'])
+    ->middleware('auth')
+    ->name('applications.store');
+
+// Optional: route for employers to create job posts (protected)
+// Route::middleware(['auth'])->group(function () {
+//     Route::resource('jobs', JobPostController::class)->except(['index','show']);
+// });
+
+
 
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::view('/admin/analytics', 'admin.analytics.index')->name('admin.analytics.index');
@@ -33,6 +50,12 @@ Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('a
 Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
+// ================= Public Employer Profile ===================
+use App\Http\Controllers\EmployerProfileController;
+
+Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
+    ->name('companies.show');
+require __DIR__.'/auth.php';
 require __DIR__ . '/auth.php';
 
 Route::get('/admin/posts', [JobPostController::class, 'index'])->name('admin.jobpost.index');
