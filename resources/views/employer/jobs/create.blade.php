@@ -107,19 +107,20 @@
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
                 </div>
-
                 <div>
-                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Application deadline</label>
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Deadline</label>
                     <input
                         type="date"
                         name="application_deadline"
                         value="{{ old('application_deadline') }}"
-                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white focus:border-cyan-400/50 focus:outline-none"
+                        min="{{ now()->format('Y-m-d') }}"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
                     >
                     @error('application_deadline')
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
                 </div>
+
             </div>
 
             <div class="grid gap-6 lg:grid-cols-2">
