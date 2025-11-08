@@ -93,4 +93,7 @@ Route::middleware(['auth', 'verified', 'role:employer'])
         Route::get('notifications', function () {
             return view('employer.notifications');
         })->name('notifications');
+
+        Route::get('/applications/{application}/download', [ApplicationEmployerController::class, 'download'])
+            ->name('applications.download');
     });

@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ApplicationEmployerController extends Controller
 {
@@ -67,4 +68,31 @@ class ApplicationEmployerController extends Controller
 
         abort_unless($jobEmployerId !== null && (int) $jobEmployerId === $employerId, 403);
     }
+
+    public function download($id)
+    {
+        $application = Application::findOrFail($id);
+        $this->ensureEmployerOwnsApplication($application);
+
+        $resume = $application->resume;
+
+        // If resume is an external URL, redirect the browser there
+        if (preg_match('#^https?://#i', $resume)) {
+            return redirect()->away($resume);
+        }
+
+        // Otherwise assume it's stored in public disk
+        $path = 'resumes/' . basename($resume);
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404, 'Resume file not found.');
+        }
+
+        $filename = basename($resume);
+        return response()->streamDownload(function () use ($path) {
+            echo Storage::disk('public')->get($path);
+        }, $filename, [
+            'Content-Type' => Storage::disk('public')->mimeType($path),
+        ]);
+    }
+
 }
