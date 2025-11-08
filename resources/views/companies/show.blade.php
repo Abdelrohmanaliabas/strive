@@ -5,7 +5,7 @@
 @section('content')
 <section class="container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
     <div class="p-8 rounded-2xl border border-white/10 shadow-xl bg-white/60 dark:bg-white/5 backdrop-blur-xl mb-10 text-center">
-        <img src="{{ $employer->avatar ?? asset('images/avatar.jpg') }}" 
+        <img src="{{ $employer->avatar_url }}" 
              class="w-24 h-24 mx-auto rounded-full object-cover border border-white/20 shadow mb-4" 
              alt="{{ $employer->name }}">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">{{ $employer->name }}</h1>

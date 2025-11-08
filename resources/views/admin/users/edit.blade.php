@@ -6,12 +6,12 @@
 <div class="max-w-6xl mx-auto mt-10">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all">
         <div class="grid grid-cols-1 md:grid-cols-3">
-            
+
             {{-- Left: Profile Info --}}
             <div class="bg-indigo-600 dark:bg-indigo-700 text-white flex flex-col items-center justify-center p-8">
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4f46e5&color=fff&size=150"
                      alt="{{ $user->name }}"
-                     class="rounded-full border-4 border-white shadow-lg mb-4 size-36 object-cover">
+                     class="rounded-full border-4 border-white shadow-lg mb-4 size-96 object-cover">
 
                 <h2 class="text-2xl font-semibold">{{ $user->name }}</h2>
                 <p class="text-indigo-200">{{ $user->email }}</p>

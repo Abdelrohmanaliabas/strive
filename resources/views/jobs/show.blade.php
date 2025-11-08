@@ -24,7 +24,7 @@
     
     <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
       <a href="{{ route('companies.show', $jobPost->employer) }}">
-      <img src="{{ asset('images/avatar.jpg') }}"
+      <img src="{{ optional($jobPost->employer)->avatar_url ?? asset('images/avatar.jpg') }}"
            alt="Company Logo"
            class="w-20 h-20 rounded-xl border border-white/30 object-cover shadow-md">
       </a>
@@ -110,7 +110,7 @@
         @forelse($comments as $comment)
           <div class="border-t border-white/10 pt-4 mt-4">
             <div class="flex items-start gap-3">
-              <img src="{{ $comment->user->avatar ?? asset('images/avatar.jpg') }}" 
+              <img src="{{ optional($comment->user)->avatar_url ?? asset('images/avatar.jpg') }}" 
                    class="w-10 h-10 rounded-full object-cover">
               <div>
                 <p class="font-semibold">{{ $comment->user->name }}
@@ -122,7 +122,7 @@
                   <div class="ml-5 mt-2 border-l border-white/10 pl-3 space-y-2">
                     @foreach($comment->replies as $reply)
                       <div class="flex items-start gap-2">
-                        <img src="{{ $reply->user->avatar ?? asset('images/avatar.jpg') }}" 
+                        <img src="{{ optional($reply->user)->avatar_url ?? asset('images/avatar.jpg') }}" 
                              class="w-8 h-8 rounded-full object-cover">
                         <div>
                           <p class="text-sm font-semibold">{{ $reply->user->name }}

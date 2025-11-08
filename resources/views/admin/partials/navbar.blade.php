@@ -20,7 +20,7 @@
         <div class="relative group">
             @auth
             <button class="flex items-center space-x-2 focus:outline-none">
-                <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
+                <img src="{{ Auth::user()->avatar_url }}"
                      class="w-9 h-9 rounded-full object-cover border border-gray-300 dark:border-gray-600">
                 <span class="font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
                 <i class="bi bi-caret-down-fill text-sm"></i>

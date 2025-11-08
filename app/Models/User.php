@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password', 'role', 'phone', 'linkedin_url'];
+    protected $fillable = ['name', 'email', 'password', 'role', 'phone', 'linkedin_url', 'avatar_path'];
     protected $hidden = ['password', 'remember_token'];
+    protected $appends = ['avatar_url'];
 
     // Helpers
     public function isAdmin(): bool
@@ -44,5 +45,14 @@ class User extends Authenticatable
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar_path && Storage::disk('public')->exists($this->avatar_path)) {
+            return Storage::disk('public')->url($this->avatar_path);
+        }
+
+        return asset('images/avatar.jpg');
     }
 }

@@ -50,7 +50,7 @@
                         <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
                         Review applicants
                     </a>
-                    <form method="POST" action="{{ route('logout') }}" class="inline-flex">
+                    {{-- <form method="POST" action="{{ route('logout') }}" class="inline-flex">
                         @csrf
                         <button
                             type="submit"
@@ -59,7 +59,7 @@
                             <span class="inline-flex h-2.5 w-2.5 rounded-full bg-rose-300"></span>
                             Log out
                         </button>
-                    </form>
+                    </form> --}}
                 </div>
             </header>
 
