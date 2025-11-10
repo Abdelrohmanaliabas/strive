@@ -55,7 +55,7 @@ use App\Http\Controllers\EmployerProfileController;
 
 Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
     ->name('companies.show');
-require __DIR__.'/auth.php';
+
 require __DIR__ . '/auth.php';
 
 Route::get('/admin/posts', [JobPostController::class, 'index'])->name('admin.jobpost.index');
