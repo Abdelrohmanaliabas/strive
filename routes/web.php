@@ -96,4 +96,7 @@ Route::middleware(['auth', 'verified', 'role:employer'])
 
         Route::get('/applications/{application}/download', [ApplicationEmployerController::class, 'download'])
             ->name('applications.download');
+        Route::get('applications/{application}/preview', [ApplicationEmployerController::class, 'preview'])
+            ->name('applications.preview');
+
     });

@@ -71,27 +71,48 @@ class ApplicationEmployerController extends Controller
 
     public function download($id)
     {
+        $application = Application::findOrFail($id);    
+        $resumePath = $application->resume;
+
+        if (preg_match('#^https?://#i', $resumePath)) {
+            return redirect()->away($resumePath);
+        }
+
+        $fullPath = storage_path('app/public/' . ltrim($resumePath, '/'));
+        if (!file_exists($fullPath)) {
+            abort(404, 'Resume file not found.');
+        }
+
+        return response()->download($fullPath, basename($resumePath));
+    }
+
+
+
+    public function preview($id)
+    {
         $application = Application::findOrFail($id);
         $this->ensureEmployerOwnsApplication($application);
 
         $resume = $application->resume;
 
-        // If resume is an external URL, redirect the browser there
+        // External link
         if (preg_match('#^https?://#i', $resume)) {
             return redirect()->away($resume);
         }
 
-        // Otherwise assume it's stored in public disk
+        // Local file in public storage
         $path = 'resumes/' . basename($resume);
         if (!Storage::disk('public')->exists($path)) {
             abort(404, 'Resume file not found.');
         }
 
-        $filename = basename($resume);
-        return response()->streamDownload(function () use ($path) {
-            echo Storage::disk('public')->get($path);
-        }, $filename, [
-            'Content-Type' => Storage::disk('public')->mimeType($path),
+        $filePath = Storage::disk('public')->path($path);
+        $mimeType = Storage::disk('public')->mimeType($path);
+
+        // Show file inline (inside iframe)
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . basename($resume) . '"',
         ]);
     }
 

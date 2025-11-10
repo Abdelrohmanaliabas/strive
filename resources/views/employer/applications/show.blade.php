@@ -99,42 +99,59 @@
                         </p>
 
                         <div class="flex items-center gap-2">
-                            <!-- Download Button -->
+                            <!-- Preview Button -->
                             <button
-                                id="downloadResumeBtn"
-                                data-url="{{ route('employer.applications.download', $application->id) }}"
-                                class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20"
+                                id="previewResumeBtn"
+                                data-url="{{ route('employer.applications.preview', $application->id) }}"
+                                class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/20"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        d="M15 10l4.553 2.276a1 1 0 010 1.448L15 16m-6 0l-4.553-2.276a1 1 0 010-1.448L9 10m3 0v6" />
                                 </svg>
-                                Download
+                                Preview
                             </button>
-                        </div>
+
+                        <!-- Download Button -->
+                        <button
+                            id="downloadResumeBtn"
+                            data-url="{{ route('employer.applications.download', $application->id) }}"
+                            class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download
+                        </button>
                     </div>
 
-                    <!-- Download Progress -->
-                    <div id="downloadProgress" class="hidden mt-4">
-                        <div class="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div id="progressBar" class="h-2 w-0 bg-cyan-400 transition-all duration-300"></div>
-                        </div>
-                        <p id="progressText" class="mt-2 text-xs text-cyan-300"></p>
-                    </div>
-
-                    <!-- Success Message -->
-                    <div id="downloadSuccess" class="hidden mt-4 rounded-xl border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-200">
-                        Resume downloaded successfully!
-                    </div>
                 @else
                     <p class="text-slate-400">The candidate has not attached a resume yet.</p>
                 @endif
             </div>
         </div>
 
-            </article>
+        <!-- Resume Preview Modal -->
+        <div id="resumeModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-slate-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col overflow-hidden">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center border-b border-white/10 px-4 py-3">
+                    <h3 class="text-white font-semibold text-lg">Resume Preview</h3>
+                    <button id="closeModalBtn" class="text-slate-400 hover:text-white transition">
+                        ✕
+                    </button>
+                </div>
 
+                <!-- Modal Body -->
+                <div class="flex-1 bg-black">
+                    <iframe id="resumeFrame" src="" class="w-full h-full" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+        </article>
             <aside class="space-y-6 lg:col-span-4">
                 <div class="rounded-3xl border border-white/5 bg-gradient-to-br from-emerald-500/15 via-cyan-500/10 to-transparent p-6 shadow-2xl">
                     <h2 class="text-base font-semibold text-white">Role details</h2>
@@ -160,38 +177,51 @@
 
             </aside>
         </section>
-    </div>
-
-    
+    </div>  
 </x-employer-layout>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const downloadBtn = document.getElementById('downloadResumeBtn');
-    const progressContainer = document.getElementById('downloadProgress');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const successMsg = document.getElementById('downloadSuccess');
-    if (!downloadBtn) return;
+document.addEventListener("DOMContentLoaded", () => {
+    const previewBtn = document.querySelector("#previewResumeBtn");
+    const downloadBtn = document.querySelector("#downloadResumeBtn");
+    const modal = document.querySelector("#resumeModal");
+    const iframe = document.querySelector("#resumeFrame");
+    const closeBtn = document.querySelector("#closeModalBtn");
 
-    downloadBtn.addEventListener('click', () => {
+    if (!previewBtn || !downloadBtn || !modal || !iframe) return;
+
+    // Preview button: open modal 
+    previewBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // stop event bubbling to parent
+        const fileUrl = previewBtn.dataset.url;
+        iframe.src = fileUrl;
+        modal.classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    });
+
+    // Download button: trigger real file download
+    downloadBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // prevent double triggers
         const fileUrl = downloadBtn.dataset.url;
+        window.open(fileUrl, "_blank"); 
+    });
 
-        // Reset UI
-        progressContainer.classList.remove('hidden');
-        successMsg.classList.add('hidden');
-        progressBar.style.width = '0%';
-        progressText.textContent = 'Starting download...';
+    // Close modal button
+    closeBtn.addEventListener("click", () => {
+        iframe.src = "";
+        modal.classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    });
 
-        // Use window.location for direct download
-        window.location.href = fileUrl;
-
-        // Show success after a short delay
-        setTimeout(() => {
-            progressBar.style.width = '100%';
-            progressText.textContent = 'Download started!';
-            successMsg.classList.remove('hidden');
-        }, 1000);
+    // Close modal when clicking outside iframe
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            iframe.src = "";
+            modal.classList.add("hidden");
+            document.body.classList.remove("overflow-hidden");
+        }
     });
 });
 </script>
