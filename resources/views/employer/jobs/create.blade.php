@@ -192,6 +192,18 @@
                     @error('technologies')
                         <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
                     @enderror
+
+                    <label class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Max Applications Number</label>
+                    <input
+                        type="text"
+                        name="max_applications"
+                        value="{{ old('max_applications') }}"
+                        placeholder="20"
+                        class="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:border-cyan-400/50 focus:outline-none"
+                    >
+                    @error('max_applications')
+                        <p class="mt-2 text-xs text-rose-300">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 

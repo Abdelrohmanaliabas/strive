@@ -87,6 +87,7 @@ Route::middleware(['auth', 'verified', 'role:employer'])
         Route::patch('applications/{application}/status', [ApplicationEmployerController::class, 'updateStatus'])->name('applications.update-status');
         Route::get('comments', [CommentEmployerController::class, 'index'])->name('comments.index');
         Route::get('comments/{comment}', [CommentEmployerController::class, 'show'])->name('comments.show');
+        Route::get('/jobs/{job}/comments', [CommentEmployerController::class, 'forJob'])->name('jobs.comments');
         Route::get('analytics', function () {
             return view('employer.analytics');
         })->name('analytics');

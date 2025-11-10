@@ -12,23 +12,27 @@ use Illuminate\Support\Facades\Storage;
 
 class ApplicationEmployerController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $employerId = Auth::id();
+        $jobId = $request->query('job_id'); 
 
-        $applications = Application::query()
+        $applicationsQuery = Application::query()
             ->whereHas('jobPost', fn($query) => $query->where('employer_id', $employerId))
-            ->with([
-                'jobPost:id,title',
-                'candidate:id,name,email',
-            ])
-            ->latest('created_at')
-            ->paginate(12);
+            ->with(['jobPost:id,title', 'candidate:id,name,email'])
+            ->latest('created_at');
+
+        if ($jobId) {
+            $applicationsQuery->where('job_post_id', $jobId);
+        }
+
+        $applications = $applicationsQuery->paginate(12);
 
         return view('employer.applications.index', [
             'applications' => $applications,
         ]);
     }
+
 
     public function show(Application $application): View
     {

@@ -8,6 +8,7 @@ use App\Models\JobPost;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class CommentEmployerController extends Controller
 {
@@ -44,6 +45,26 @@ class CommentEmployerController extends Controller
             'job' => $job,
         ]);
     }
+
+    public function forJob(JobPost $job): View
+{
+    // Make sure the employer owns this job
+    abort_unless($job->employer_id === Auth::id(), 403, 'Unauthorized');
+
+    // Fetch only comments linked to this job
+    $comments = Comment::query()
+        ->where('commentable_type', JobPost::class)
+        ->where('commentable_id', $job->id)
+        ->with('user:id,name,email')
+        ->latest('created_at')
+        ->paginate(10);
+
+    return view('employer.comments.for-job', [
+        'job' => $job,
+        'comments' => $comments,
+    ]);
+}
+
 
     /**
      * Build a lookup of job titles for the provided comments.
