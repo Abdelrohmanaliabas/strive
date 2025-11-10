@@ -3,7 +3,7 @@
         [
             'label' => 'Dashboard Overview',
             'icon' => 'dashboard',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.dashboard')
+            'href' =>Route::has('employer.dashboard')
                 ? route('employer.dashboard')
                 : '#',
             'active' => request()->routeIs('employer.dashboard'),
@@ -11,34 +11,34 @@
         [
             'label' => 'My Jobs',
             'icon' => 'briefcase',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.jobs.index')
+            'href' =>Route::has('employer.jobs.index')
                 ? route('employer.jobs.index')
-                : (\Illuminate\Support\Facades\Route::has('jobs.index') ? route('jobs.index') : '#'),
+                : (Route::has('jobs.index') ? route('jobs.index') : '#'),
             'active' => request()->routeIs('employer.jobs.*') || request()->routeIs('jobs.*'),
         ],
         [
             'label' => 'Applications',
             'icon' => 'users',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.applications.index')
+            'href' =>Route::has('employer.applications.index')
                 ? route('employer.applications.index')
-                : (\Illuminate\Support\Facades\Route::has('applications.index') ? route('applications.index') : '#'),
+                : (Route::has('applications.index') ? route('applications.index') : '#'),
             'active' => request()->routeIs('employer.applications.*') || request()->routeIs('applications.*'),
         ],
         [
             'label' => 'Comments',
             'icon' => 'chat',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.comments.index')
+            'href' =>Route::has('employer.comments.index')
                 ? route('employer.comments.index')
-                : (\Illuminate\Support\Facades\Route::has('comments.index') ? route('comments.index') : '#'),
+                : (Route::has('comments.index') ? route('comments.index') : '#'),
             'active' => request()->routeIs('employer.comments.*') || request()->routeIs('comments.*'),
         ],
         [
             'label' => 'Profile Settings',
             'icon' => 'settings',
-            'href' => \Illuminate\Support\Facades\Route::has('profile.edit')
-                ? route('profile.edit')
-                : '#',
-            'active' => request()->routeIs('profile.*'),
+            'href' => Route::has('employer.profile.edit')
+                ? route('employer.profile.edit')
+                : (Route::has('profile.edit') ? route('profile.edit') : '#'),
+            'active' => request()->routeIs('employer.profile.*') || request()->routeIs('profile.*'),
         ],
     ];
 
@@ -169,67 +169,72 @@
         }
 
         .theme-light .theme-toggle {
-            color: #0f172a;
+            color: #aeb7ff;
         }
 
         .theme-light .employer-shell {
-            background: radial-gradient(circle at top, rgba(14, 165, 233, 0.12), transparent 55%), radial-gradient(circle at right, rgba(16, 185, 129, 0.12), transparent 62%), #f8fafc;
-            color: #0f172a;
+            background: radial-gradient(circle at 15% 20%, rgba(69, 80, 196, 0.25), transparent 55%),
+                radial-gradient(circle at 80% 0%, rgba(255, 92, 155, 0.24), transparent 60%),
+                #050816;
+            color: #d6e1ff;
         }
 
         .theme-light .employer-shell::before {
-            background: radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.12), transparent 55%), radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.1), transparent 60%);
-            opacity: 0.45;
+            background: radial-gradient(circle at 5% 5%, rgba(90, 102, 255, 0.4), transparent 55%),
+                radial-gradient(circle at 75% 0%, rgba(255, 122, 200, 0.3), transparent 65%);
+            opacity: 0.55;
         }
 
         .theme-light .employer-shell__sidebar {
-            background: linear-gradient(160deg, rgba(248, 250, 252, 0.96), rgba(226, 232, 240, 0.85));
-            border-right: 1px solid rgba(148, 163, 184, 0.35);
-            box-shadow: 10px 0 35px rgba(148, 163, 184, 0.25);
+            background: rgba(7, 11, 30, 0.95);
+            border-right: 1px solid rgba(134, 151, 255, 0.25);
+            box-shadow: 14px 0 55px rgba(4, 6, 20, 0.9);
         }
 
         .theme-light .employer-shell__sidebar .nav-link {
-            color: #1e293b;
+            color: #8f9eff;
             border-color: transparent;
+            background: transparent;
         }
 
         .theme-light .employer-shell__sidebar .nav-link.active {
-            background: linear-gradient(140deg, rgba(14, 165, 233, 0.2), rgba(34, 197, 94, 0.16));
-            color: #0f172a;
-            border-color: rgba(14, 165, 233, 0.3);
-            box-shadow: 0 22px 36px -26px rgba(14, 165, 233, 0.45);
+            background: linear-gradient(130deg, rgba(129, 143, 255, 0.25), rgba(255, 113, 197, 0.18));
+            color: #ffffff;
+            border-color: rgba(140, 154, 255, 0.45);
+            box-shadow: 0 18px 35px rgba(82, 96, 214, 0.55);
         }
 
         .theme-light .employer-shell__sidebar .nav-link:hover:not(.active) {
-            color: #0369a1;
-            border-color: rgba(56, 189, 248, 0.25);
-            background: rgba(226, 232, 240, 0.65);
+            color: #e8ecff;
+            border-color: rgba(138, 148, 255, 0.35);
+            background: rgba(18, 22, 52, 0.9);
         }
 
         .theme-light .employer-shell__sidebar .nav-link svg {
-            color: #0f172a;
+            color: inherit;
         }
 
         .theme-light .offcanvas-employer {
             backdrop-filter: blur(12px);
-            background: linear-gradient(150deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.9));
-            color: #0f172a;
+            background: rgba(7, 12, 30, 0.98);
+            color: #d6e1ff;
+            border-right: 1px solid rgba(134, 151, 255, 0.25);
         }
 
         .theme-light .offcanvas-employer .nav-link {
-            color: #334155;
+            color: #8f9eff;
         }
 
         .theme-light .offcanvas-employer .nav-link.active {
-            background: rgba(14, 165, 233, 0.18);
-            color: #0f172a;
-            border-color: rgba(14, 165, 233, 0.32);
+            background: linear-gradient(130deg, rgba(129, 143, 255, 0.25), rgba(255, 113, 197, 0.18));
+            color: #ffffff;
+            border-color: rgba(140, 154, 255, 0.45);
         }
 
         .theme-light .offcanvas-employer .nav-link:hover:not(.active) {
-            color: #0369a1;
-            border-color: rgba(56, 189, 248, 0.25);
-            background: rgba(226, 232, 240, 0.6);
+            color: #e8ecff;
+            border-color: rgba(138, 148, 255, 0.35);
+            background: rgba(18, 22, 52, 0.9);
         }
 
         .theme-light .offcanvas-employer .btn-close {
@@ -239,86 +244,85 @@
         .theme-light .employer-shell .text-white,
         .theme-light .employer-shell .text-slate-100,
         .theme-light .employer-shell .text-slate-200 {
-            color: #0f172a !important;
+            color: #ecf0ff !important;
         }
 
         .theme-light .employer-shell .text-secondary,
         .theme-light .employer-shell .text-slate-300,
         .theme-light .employer-shell .text-slate-400 {
-            color: #475569 !important;
+            color: #97a0d8 !important;
         }
 
         .theme-light .employer-shell .text-slate-500,
         .theme-light .employer-shell .text-slate-600 {
-            color: #64748b !important;
+            color: #7d86c2 !important;
         }
 
         .theme-light .employer-shell .border-secondary-subtle {
-            border-color: rgba(148, 163, 184, 0.45) !important;
+            border-color: rgba(70, 81, 134, 0.8) !important;
         }
 
-        .theme-light .employer-shell [class*="border-white\\/"] {
-            border-color: rgba(148, 163, 184, 0.32) !important;
+        .theme-light .employer-shell [class*="border-white\/"] {
+            border-color: rgba(73, 85, 144, 0.55) !important;
         }
 
-        .theme-light .employer-shell [class*="bg-white\\/"] {
-            background-color: rgba(255, 255, 255, 0.72) !important;
+        .theme-light .employer-shell [class*="bg-white\/"] {
+            background-color: rgba(255, 255, 255, 0.08) !important;
         }
 
         .theme-light .employer-shell [class*="bg-slate-950"] {
-            background-color: rgba(248, 250, 252, 0.96) !important;
+            background-color: rgba(6, 9, 24, 0.9) !important;
         }
 
         .theme-light .employer-shell [class*="bg-slate-900"] {
-            background-color: rgba(241, 245, 249, 0.92) !important;
+            background-color: rgba(13, 16, 35, 0.85) !important;
         }
 
         .theme-light .employer-shell .shadow-2xl,
-        .theme-light .employer-shell .shadow-\[0_20px_45px_-30px_rgba\(45,212,191,0\.8\)\] {
-            box-shadow: 0 40px 80px -60px rgba(15, 23, 42, 0.28) !important;
+        .theme-light .employer-shell .shadow-[0_20px_45px_-30px_rgba(45,212,191,0.8)] {
+            box-shadow: 0 45px 95px -45px rgba(4, 5, 18, 0.9) !important;
         }
 
         .theme-light .employer-shell [class*="text-white/"] {
-            color: #1e293b !important;
+            color: rgba(228, 234, 255, 0.9) !important;
         }
 
         .theme-light .employer-shell .text-cyan-200,
         .theme-light .employer-shell .text-cyan-300,
         .theme-light .employer-shell .text-cyan-400 {
-            color: #0284c7 !important;
+            color: #7ce8ff !important;
         }
 
         .theme-light .employer-shell .text-cyan-200\/80 {
-            color: rgba(2, 132, 199, 0.75) !important;
+            color: rgba(124, 232, 255, 0.85) !important;
         }
 
         .theme-light .employer-shell .text-emerald-200,
         .theme-light .employer-shell .text-emerald-300,
         .theme-light .employer-shell .text-emerald-400 {
-            color: #047857 !important;
+            color: #8cf5ff !important;
         }
 
         .theme-light .employer-shell [class*="from-slate-900/90"] {
-            --tw-gradient-from: rgba(248, 250, 252, 0.96) !important;
-            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(248, 250, 252, 0));
+            --tw-gradient-from: rgba(12, 16, 36, 0.95) !important;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(12, 16, 36, 0));
         }
 
         .theme-light .employer-shell [class*="via-slate-900/70"] {
-            --tw-gradient-stops: var(--tw-gradient-from), rgba(241, 245, 249, 0.92), var(--tw-gradient-to, rgba(241, 245, 249, 0));
+            --tw-gradient-stops: var(--tw-gradient-from), rgba(5, 8, 25, 0.9), var(--tw-gradient-to, rgba(5, 8, 25, 0));
         }
 
         .theme-light .employer-shell [class*="to-slate-900/50"] {
-            --tw-gradient-to: rgba(226, 232, 240, 0.9) !important;
+            --tw-gradient-to: rgba(4, 6, 22, 0.9) !important;
         }
 
         .theme-light .employer-shell .text-cyan-300\/80 {
-            color: rgba(22, 101, 216, 0.75) !important;
+            color: rgba(124, 232, 255, 0.8) !important;
         }
 
         .theme-light .employer-shell .text-slate-300\/80 {
-            color: rgba(30, 41, 59, 0.75) !important;
-        }
-    </style>
+            color: rgba(151, 160, 216, 0.8) !important;
+        }    </style>
 @endonce
 
 <x-app-layout hide-navigation="true">

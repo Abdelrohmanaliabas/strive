@@ -75,6 +75,9 @@ Route::view('/admin/settings', 'admin.settings.index')->name('admin.settings.ind
 Route::middleware(['auth', 'verified', 'role:employer'])
     ->prefix('employer')->name('employer.')->group(function () {
         Route::get('dashboard', DashboardController::class)->name('dashboard');
+        Route::get('profile', [App\Http\Controllers\Employer\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [App\Http\Controllers\Employer\ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('profile', [App\Http\Controllers\Employer\ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('jobs', [JobEmployerController::class, 'index'])->name('jobs.index');
         Route::get('jobs/create', [JobEmployerController::class, 'create'])->name('jobs.create');
         Route::get('jobs/{job}/edit', [JobEmployerController::class, 'edit'])->name('jobs.edit');
