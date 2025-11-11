@@ -17,6 +17,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Employer\JobEmployerController;
 use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SocialLiteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +36,9 @@ Route::post('/applications', [JobApplicationController::class, 'store'])
 // Route::middleware(['auth'])->group(function () {
 //     Route::resource('jobs', JobPostController::class)->except(['index','show']);
 // });
-
+//add liked in auth
+Route::get('/auth/linkedin/redirect', [SocialLiteController::class, 'redirect'])->name('auth.linkedin.redirect');
+Route::get('/auth/linkedin/callback', [SocialLiteController::class, 'callback'])->name('auth.linkedin.callback');
 
 
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
