@@ -1,10 +1,10 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('title', 'Find Jobs — JobNest')
+@section('title', 'Find Jobs — Strive')
 
 @section('content')
 
-<!-- ===== HERO SECTION ===== -->
+<!-- ===== hero ===== -->
 <section class="relative min-h-[100vh] flex items-center text-white overflow-hidden">
   <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/hero.jpg') }}');"></div>
   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
@@ -54,12 +54,12 @@
   </div>
 </section>
 
-<!-- ===== CATEGORY MINI-CARDS ===== -->
+<!-- ===== category mini cards ===== -->
 <section class="py-10 border-b border-white/10">
   <div class="container mx-auto px-6 lg:px-20">
     <div class="flex justify-between items-center mb-6">
       <h5 class="text-lg font-semibold text-gray-700 dark:text-white/70">Explore Categories</h5>
-      <a href="#" class="text-sm text-blue-400 hover:underline">View all →</a>
+      <a href="{{ route('public_categories.index') }}" class="text-sm text-blue-400 hover:underline">View all →</a>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -74,7 +74,7 @@
   </div>
 </section>
 
-<!-- ===== JOB LISTINGS ===== -->
+<!-- ===== job listings ===== -->
 <section class="py-12">
   <div class="container mx-auto px-6 lg:px-20">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -83,7 +83,7 @@
         <span class="text-gray-400">— Page {{ $jobs->currentPage() }} of {{ $jobs->lastPage() }}</span>
       </div>
 
-      <!-- Filter form -->
+      <!-- filter form -->
       <form action="{{ route('jobs.index') }}" method="get" class="flex flex-wrap items-center gap-2 text-sm">
         <input type="hidden" name="q" value="{{ request('q') }}">
         <input type="hidden" name="location" value="{{ request('location') }}">
@@ -109,7 +109,7 @@
       </form>
     </div>
 
-    <!-- Job cards grid -->
+    <!-- cards grid -->
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       @forelse($jobs as $job)
         @include('jobs._card', ['job' => $job])

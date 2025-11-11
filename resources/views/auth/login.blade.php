@@ -2,8 +2,15 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    {{-- login by linked in --}}
+    <button onclick="window.location='{{ route('auth.linkedin.redirect') }}'" class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 mb-4">
+       <i class="fab fa-linkedin mr-2"></i>
+        Login with LinkedIn
+    </button>
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
+
 
         <!-- Email Address -->
         <div>

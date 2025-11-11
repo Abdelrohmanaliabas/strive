@@ -1,9 +1,9 @@
 @php
     $navLinks = [
         [
-            'label' => 'Dashboard Overview',
+            'label' => 'Dashboard',
             'icon' => 'dashboard',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.dashboard')
+            'href' =>Route::has('employer.dashboard')
                 ? route('employer.dashboard')
                 : '#',
             'active' => request()->routeIs('employer.dashboard'),
@@ -11,34 +11,34 @@
         [
             'label' => 'My Jobs',
             'icon' => 'briefcase',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.jobs.index')
+            'href' =>Route::has('employer.jobs.index')
                 ? route('employer.jobs.index')
-                : (\Illuminate\Support\Facades\Route::has('jobs.index') ? route('jobs.index') : '#'),
+                : (Route::has('jobs.index') ? route('jobs.index') : '#'),
             'active' => request()->routeIs('employer.jobs.*') || request()->routeIs('jobs.*'),
         ],
         [
             'label' => 'Applications',
             'icon' => 'users',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.applications.index')
+            'href' =>Route::has('employer.applications.index')
                 ? route('employer.applications.index')
-                : (\Illuminate\Support\Facades\Route::has('applications.index') ? route('applications.index') : '#'),
+                : (Route::has('applications.index') ? route('applications.index') : '#'),
             'active' => request()->routeIs('employer.applications.*') || request()->routeIs('applications.*'),
         ],
         [
             'label' => 'Comments',
             'icon' => 'chat',
-            'href' => \Illuminate\Support\Facades\Route::has('employer.comments.index')
+            'href' =>Route::has('employer.comments.index')
                 ? route('employer.comments.index')
-                : (\Illuminate\Support\Facades\Route::has('comments.index') ? route('comments.index') : '#'),
+                : (Route::has('comments.index') ? route('comments.index') : '#'),
             'active' => request()->routeIs('employer.comments.*') || request()->routeIs('comments.*'),
         ],
         [
             'label' => 'Profile Settings',
             'icon' => 'settings',
-            'href' => \Illuminate\Support\Facades\Route::has('profile.edit')
-                ? route('profile.edit')
-                : '#',
-            'active' => request()->routeIs('profile.*'),
+            'href' => Route::has('employer.profile.edit')
+                ? route('employer.profile.edit')
+                : (Route::has('profile.edit') ? route('profile.edit') : '#'),
+            'active' => request()->routeIs('employer.profile.*') || request()->routeIs('profile.*'),
         ],
     ];
 
@@ -68,9 +68,12 @@
 
 @once
     <style>
+       
         .employer-shell {
             background: radial-gradient(circle at top, rgba(13, 202, 240, 0.18), transparent 55%), radial-gradient(circle at right, rgba(32, 201, 151, 0.22), transparent 62%), #0f172a;
-            min-height: 100vh;
+
+            position:fixed;
+
         }
 
         .employer-shell::before {
@@ -84,10 +87,14 @@
         }
 
         .employer-shell__sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
             backdrop-filter: blur(20px);
             background: linear-gradient(160deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.75));
             border-right: 1px solid rgba(148, 163, 184, 0.12);
             box-shadow: 10px 0 35px rgba(15, 23, 42, 0.55);
+        ;
         }
 
         .employer-shell__sidebar .nav-link {
@@ -97,6 +104,7 @@
             border: 1px solid transparent;
             transition: all 0.25s ease;
             color: rgba(226, 232, 240, 0.68);
+            margin-bottom: 0.5rem;
         }
 
         .employer-shell__sidebar .nav-link.active {
@@ -129,7 +137,7 @@
         .offcanvas-employer .nav-link {
             border-radius: 0.9rem;
             font-weight: 600;
-            /* padding: 0.9rem 1rem; */
+            padding: 0.9rem 1rem;
             color: rgba(226, 232, 240, 0.7);
             border: 1px solid transparent;
         }
@@ -173,67 +181,72 @@
         }
 
         .theme-light .employer-shell {
-            background: radial-gradient(circle at top, rgba(14, 165, 233, 0.12), transparent 55%), radial-gradient(circle at right, rgba(16, 185, 129, 0.12), transparent 62%), #f8fafc;
+            background: radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.12), transparent 55%),
+                radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.12), transparent 60%),
+                linear-gradient(180deg, #f8fafc, #eef2ff);
             color: #0f172a;
         }
 
         .theme-light .employer-shell::before {
-            background: radial-gradient(circle at 15% 20%, rgba(14, 165, 233, 0.12), transparent 55%), radial-gradient(circle at 80% 0%, rgba(16, 185, 129, 0.1), transparent 60%);
-            opacity: 0.45;
+            background: radial-gradient(circle at 5% 5%, rgba(125, 211, 252, 0.35), transparent 55%),
+                radial-gradient(circle at 75% 0%, rgba(187, 247, 208, 0.25), transparent 65%);
+            opacity: 0.35;
         }
 
         .theme-light .employer-shell__sidebar {
-            background: linear-gradient(160deg, rgba(248, 250, 252, 0.96), rgba(226, 232, 240, 0.85));
-            border-right: 1px solid rgba(148, 163, 184, 0.35);
-            box-shadow: 10px 0 35px rgba(148, 163, 184, 0.25);
+            background: rgba(255, 255, 255, 0.95);
+            border-right: 1px solid rgba(148, 163, 184, 0.4);
+            box-shadow: 12px 0 35px rgba(15, 23, 42, 0.08);
         }
 
         .theme-light .employer-shell__sidebar .nav-link {
-            color: #1e293b;
+            color: #475569;
             border-color: transparent;
+            background: transparent;
         }
 
         .theme-light .employer-shell__sidebar .nav-link.active {
-            background: linear-gradient(140deg, rgba(14, 165, 233, 0.2), rgba(34, 197, 94, 0.16));
+            background: linear-gradient(140deg, rgba(14, 165, 233, 0.18), rgba(16, 185, 129, 0.22));
             color: #0f172a;
-            border-color: rgba(14, 165, 233, 0.3);
-            box-shadow: 0 22px 36px -26px rgba(14, 165, 233, 0.45);
+            border-color: rgba(14, 165, 233, 0.45);
+            box-shadow: 0 18px 30px rgba(14, 165, 233, 0.25);
         }
 
         .theme-light .employer-shell__sidebar .nav-link:hover:not(.active) {
-            color: #0369a1;
-            border-color: rgba(56, 189, 248, 0.25);
-            background: rgba(226, 232, 240, 0.65);
+            color: #0f172a;
+            border-color: rgba(14, 165, 233, 0.3);
+            background: rgba(14, 165, 233, 0.08);
         }
 
         .theme-light .employer-shell__sidebar .nav-link svg {
-            color: #0f172a;
+            color: inherit;
         }
 
         .theme-light .offcanvas-employer {
             backdrop-filter: blur(12px);
-            background: linear-gradient(150deg, rgba(248, 250, 252, 0.98), rgba(226, 232, 240, 0.9));
+            background: rgba(255, 255, 255, 0.98);
             color: #0f172a;
+            border-right: 1px solid rgba(148, 163, 184, 0.4);
         }
 
         .theme-light .offcanvas-employer .nav-link {
-            color: #334155;
+            color: #475569;
         }
 
         .theme-light .offcanvas-employer .nav-link.active {
-            background: rgba(14, 165, 233, 0.18);
+            background: linear-gradient(140deg, rgba(14, 165, 233, 0.18), rgba(16, 185, 129, 0.22));
             color: #0f172a;
-            border-color: rgba(14, 165, 233, 0.32);
+            border-color: rgba(14, 165, 233, 0.45);
         }
 
         .theme-light .offcanvas-employer .nav-link:hover:not(.active) {
-            color: #0369a1;
-            border-color: rgba(56, 189, 248, 0.25);
-            background: rgba(226, 232, 240, 0.6);
+            color: #0f172a;
+            border-color: rgba(14, 165, 233, 0.3);
+            background: rgba(14, 165, 233, 0.08);
         }
 
         .theme-light .offcanvas-employer .btn-close {
-            filter: invert(1);
+            filter: none;
         }
 
         .theme-light .employer-shell .text-white,
@@ -254,71 +267,70 @@
         }
 
         .theme-light .employer-shell .border-secondary-subtle {
-            border-color: rgba(148, 163, 184, 0.45) !important;
+            border-color: rgba(148, 163, 184, 0.6) !important;
         }
 
-        .theme-light .employer-shell [class*="border-white\\/"] {
-            border-color: rgba(148, 163, 184, 0.32) !important;
+        .theme-light .employer-shell [class*="border-white\/"] {
+            border-color: rgba(203, 213, 225, 0.8) !important;
         }
 
-        .theme-light .employer-shell [class*="bg-white\\/"] {
-            background-color: rgba(255, 255, 255, 0.72) !important;
+        .theme-light .employer-shell [class*="bg-white\/"] {
+            background-color: rgba(255, 255, 255, 0.95) !important;
         }
 
         .theme-light .employer-shell [class*="bg-slate-950"] {
-            background-color: rgba(248, 250, 252, 0.96) !important;
+            background-color: #ffffff !important;
         }
 
         .theme-light .employer-shell [class*="bg-slate-900"] {
-            background-color: rgba(241, 245, 249, 0.92) !important;
+            background-color: #f1f5f9 !important;
         }
 
         .theme-light .employer-shell .shadow-2xl,
-        .theme-light .employer-shell .shadow-\[0_20px_45px_-30px_rgba\(45,212,191,0\.8\)\] {
-            box-shadow: 0 40px 80px -60px rgba(15, 23, 42, 0.28) !important;
+        .theme-light .employer-shell .shadow-[0_20px_45px_-30px_rgba(45,212,191,0.8)] {
+            box-shadow: 0 25px 65px -30px rgba(15, 23, 42, 0.25) !important;
         }
 
         .theme-light .employer-shell [class*="text-white/"] {
-            color: #1e293b !important;
+            color: rgba(15, 23, 42, 0.9) !important;
         }
 
         .theme-light .employer-shell .text-cyan-200,
         .theme-light .employer-shell .text-cyan-300,
         .theme-light .employer-shell .text-cyan-400 {
-            color: #0284c7 !important;
+            color: #0891b2 !important;
         }
 
         .theme-light .employer-shell .text-cyan-200\/80 {
-            color: rgba(2, 132, 199, 0.75) !important;
+            color: rgba(8, 145, 178, 0.8) !important;
         }
 
         .theme-light .employer-shell .text-emerald-200,
         .theme-light .employer-shell .text-emerald-300,
         .theme-light .employer-shell .text-emerald-400 {
-            color: #047857 !important;
+            color: #059669 !important;
         }
 
         .theme-light .employer-shell [class*="from-slate-900/90"] {
-            --tw-gradient-from: rgba(248, 250, 252, 0.96) !important;
-            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(248, 250, 252, 0));
+            --tw-gradient-from: rgba(15, 23, 42, 0.05) !important;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(15, 23, 42, 0));
         }
 
         .theme-light .employer-shell [class*="via-slate-900/70"] {
-            --tw-gradient-stops: var(--tw-gradient-from), rgba(241, 245, 249, 0.92), var(--tw-gradient-to, rgba(241, 245, 249, 0));
+            --tw-gradient-stops: var(--tw-gradient-from), rgba(14, 165, 233, 0.15), var(--tw-gradient-to, rgba(14, 165, 233, 0));
         }
 
         .theme-light .employer-shell [class*="to-slate-900/50"] {
-            --tw-gradient-to: rgba(226, 232, 240, 0.9) !important;
+            --tw-gradient-to: rgba(255, 255, 255, 0.9) !important;
         }
 
         .theme-light .employer-shell .text-cyan-300\/80 {
-            color: rgba(22, 101, 216, 0.75) !important;
+            color: rgba(8, 145, 178, 0.8) !important;
         }
 
         .theme-light .employer-shell .text-slate-300\/80 {
-            color: rgba(30, 41, 59, 0.75) !important;
-        }
-    </style>
+            color: rgba(148, 163, 184, 0.8) !important;
+        }    </style>
 @endonce
 
 <x-app-layout hide-navigation="true">
@@ -388,7 +400,8 @@
                                 </button>
                             </div>
                         </div>
-                        <nav class="nav nav-pills flex-column gap-2 px-3 py-4">
+                        <nav class="nav nav-pills flex-column gap-2 px-3 py-4 flex-grow-1 d-flex justify-content-between">
+                            <div>
                             @foreach ($navLinks as $link)
                                 @php
                                     $isActive = $link['active'];
@@ -413,10 +426,21 @@
                                     <span>{{ $link['label'] }}</span>
                                 </a>
                             @endforeach
+                            </div>
+                        <form method="POST" action="{{ route('logout') }}" class="mt-4">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="group flex w-full items-center justify-center gap-3 rounded-2xl  py-3 text-sm font-semibold uppercase tracking-[0.3em] text-white transition hover:translate-x-0.5  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-200/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+                            >
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-lg text-white transition group-hover:bg-white/20">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                </span>
+                                <span class="tracking-[0.45em] text-xs">Logout</span>
+                            </button>
+                        </form>
                         </nav>
-                        <div class="mt-auto px-4 pb-4 small text-secondary">
-                            Refresh your company story, keep response times under 24 hours, and maintain candidate excitement.
-                        </div>
+
                     </aside>
 
                     <div class="col px-0">
@@ -456,9 +480,7 @@
                                         </a>
                                     @endforeach
                                 </nav>
-                                <div class="mt-auto small text-secondary">
-                                    Stay ahead of Strivetrends, broadcast your culture, and keep touchpoints personal.
-                                </div>
+
                             </div>
                         </div>
 

@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('title', $jobPost->title . ' — JobNest')
+@section('title', $jobPost->title . ' — Strive')
 {{-- success & error messages --}}
 @section('content')
 <section class="container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
@@ -18,13 +18,13 @@
     </div>
 @endif
 
-  <!-- ===== Job Header ===== -->
+  <!-- ===== header ===== -->
   <div class="relative p-8 rounded-2xl border border-white/10 shadow-xl 
               bg-white/60 dark:bg-white/5 backdrop-blur-xl mb-10">
     
     <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
       <a href="{{ route('companies.show', $jobPost->employer) }}">
-      <img src="{{ asset('images/avatar.jpg') }}"
+      <img src="{{ optional($jobPost->employer)->avatar_url ?? asset('images/avatar.jpg') }}"
            alt="Company Logo"
            class="w-20 h-20 rounded-xl border border-white/30 object-cover shadow-md">
       </a>
@@ -54,10 +54,10 @@
     </div>
   </div>
 
-  <!-- ===== Job Details & Sidebar ===== -->
+  <!-- ===== job Details and the  sidebar ===== -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <!-- ===== Main Content ===== -->
+    <!-- ===== main content ===== -->
     <div class="lg:col-span-2 space-y-8">
 
       <div class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl">
@@ -110,7 +110,7 @@
         @forelse($comments as $comment)
           <div class="border-t border-white/10 pt-4 mt-4">
             <div class="flex items-start gap-3">
-              <img src="{{ $comment->user->avatar ?? asset('images/avatar.jpg') }}" 
+              <img src="{{ optional($comment->user)->avatar_url ?? asset('images/avatar.jpg') }}" 
                    class="w-10 h-10 rounded-full object-cover">
               <div>
                 <p class="font-semibold">{{ $comment->user->name }}
@@ -122,7 +122,7 @@
                   <div class="ml-5 mt-2 border-l border-white/10 pl-3 space-y-2">
                     @foreach($comment->replies as $reply)
                       <div class="flex items-start gap-2">
-                        <img src="{{ $reply->user->avatar ?? asset('images/avatar.jpg') }}" 
+                        <img src="{{ optional($reply->user)->avatar_url ?? asset('images/avatar.jpg') }}" 
                              class="w-8 h-8 rounded-full object-cover">
                         <div>
                           <p class="text-sm font-semibold">{{ $reply->user->name }}
@@ -143,7 +143,7 @@
       </div>
     </div>
 
-    <!-- ===== Sidebar ===== -->
+    <!-- ===== sidebar ===== -->
     <aside class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl h-fit">
       <h4 class="text-xl font-semibold mb-4">Company Info</h4>
       <ul class="space-y-2 text-sm">
@@ -159,7 +159,7 @@
   </div>
 </section>
 
-<!-- ===== Apply Modal ===== -->
+<!-- ===== apply modal ===== -->
 <div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded-2xl">
@@ -206,12 +206,7 @@
 </style>
 @endsection
 
-<!-- <script>
-    setTimeout(() => {
-        const alert = document.querySelector('.alert');
-        if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }
-    }, 4000);
-</script> -->
+
+
+
+

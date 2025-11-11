@@ -3,7 +3,7 @@
     <div class="flex items-center gap-3">
         {{-- Sidebar toggle button --}}
         <button id="toggleSidebar"
-                class="p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
+                class="p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
             <i class="bi bi-list text-lg"></i>
         </button>
         <h2 class="text-lg font-semibold">@yield('title', 'Dashboard')</h2>
@@ -20,7 +20,7 @@
         <div class="relative group">
             @auth
             <button class="flex items-center space-x-2 focus:outline-none">
-                <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) }}"
+                <img src="{{ Auth::user()->avatar_url }}"
                      class="w-9 h-9 rounded-full object-cover border border-gray-300 dark:border-gray-600">
                 <span class="font-medium hidden sm:inline">{{ Auth::user()->name }}</span>
                 <i class="bi bi-caret-down-fill text-sm"></i>
