@@ -3,7 +3,7 @@
     <div class="flex items-center gap-3">
         {{-- Sidebar toggle button --}}
         <button id="toggleSidebar"
-                class="p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition">
+                class="p-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
             <i class="bi bi-list text-lg"></i>
         </button>
         <h2 class="text-lg font-semibold">@yield('title', 'Dashboard')</h2>

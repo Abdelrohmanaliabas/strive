@@ -12,7 +12,7 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -22,7 +22,7 @@
           {{-- @include('layouts.navigation') --}}
 
 <!-- ===================================== Navbar Start ======================================= -->
-<nav class="backdrop-blur-md bg-white/50 dark:bg-gray-900/50 border-b border-white/10 dark:border-gray-800/50 sticky top-0 z-50 shadow-sm">
+{{-- <nav class="backdrop-blur-md bg-white/50 dark:bg-gray-900/50 border-b border-white/10 dark:border-gray-800/50 sticky top-0 z-50 shadow-sm">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
 
@@ -110,7 +110,7 @@
   </div>
 
 
-</nav>
+</nav> --}}
 
 
 <!-- ===================================== Navbar End ======================================= -->

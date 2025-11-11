@@ -1,22 +1,25 @@
 <x-employer-layout>
     @php
-        $metricCards = $metrics['cards'] ?? [];
+        $metricCards = collect($metricCards ?? []);
         $jobSnapshots = collect($jobSnapshots ?? []);
         $recentApplicants = collect($recentApplicants ?? []);
         $pipeline = collect($pipeline ?? []);
 
-        $trendLabels = collect($applicationsTrend['labels'] ?? [])->values();
-        $trendSeries = collect($applicationsTrend['data'] ?? [])->values();
+        $trendLabels = collect($trendLabels ?? [])->values();
+        $trendSeries = collect($trendData ?? [])->values();
 
-        $statusLabels = collect($applicationsByStatus['labels'] ?? [])->values();
-        $statusSeries = collect($applicationsByStatus['data'] ?? [])->values();
-        $statusPairs = collect($applicationsByStatus['series'] ?? [])->map(function ($count, $status) {
-            return ['status' => ucfirst($status), 'count' => $count];
+        $statusLabels = collect($statusLabels ?? [])->values();
+        $statusSeries = collect($statusSeries ?? [])->values();
+        $statusPairs = $statusLabels->map(function ($label, $index) use ($statusSeries) {
+            return [
+                'status' => ucfirst($label),
+                'count' => (int) ($statusSeries[$index] ?? 0),
+            ];
         });
 
-        $topJobLabels = collect($applicationsByJob['labels'] ?? [])->values();
-        $topJobSeries = collect($applicationsByJob['data'] ?? [])->values();
-        $topJobRows = collect($applicationsByJob['rows'] ?? []);
+        $topJobLabels = collect($topJobLabels ?? [])->values();
+        $topJobSeries = collect($topJobSeries ?? [])->values();
+        $topJobRows = collect($topJobs ?? []);
 
         $jobCreateLink = Route::has('employer.jobs.create')
             ? route('employer.jobs.create')
@@ -50,16 +53,7 @@
                         <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
                         Review applicants
                     </a>
-                    {{-- <form method="POST" action="{{ route('logout') }}" class="inline-flex">
-                        @csrf
-                        <button
-                            type="submit"
-                            class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold tracking-wide text-slate-200 transition hover:-translate-y-0.5 hover:border-rose-400/40 hover:text-rose-100"
-                        >
-                            <span class="inline-flex h-2.5 w-2.5 rounded-full bg-rose-300"></span>
-                            Log out
-                        </button>
-                    </form> --}}
+
                 </div>
             </header>
 
@@ -71,71 +65,14 @@
                         <div class="mt-4 flex items-end justify-between gap-4">
                             <p class="text-4xl font-extrabold text-white">{{ $card['value'] }}</p>
                         </div>
-                        <p class="mt-3 text-xs text-slate-400">{{ $card['trend_copy'] ?? '' }}</p>
+                        <p class="mt-3 text-xs text-slate-400">{{ $card['trend'] ?? '' }}</p>
                     </article>
                 @endforeach
             </section>
 
             <section class="grid gap-6 lg:grid-cols-12">
-                <div class="space-y-6 lg:col-span-8">
-                    <article class="overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-900/50 shadow-2xl">
-                        <header class="flex items-center justify-between border-b border-white/5 px-6 py-5">
-                            <div>
-                                <h2 class="text-base font-semibold uppercase tracking-[0.2em] text-slate-300">Active job performance</h2>
-                                <p class="mt-1 text-sm text-slate-400">Watch how Strive is engaging with your open roles.</p>
-                            </div>
-                        </header>
-                        <div class="divide-y divide-white/5">
-                            @forelse ($jobSnapshots as $job)
-                                <div class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-                                    <div class="w-50 space-y-2">
-                                        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">{{ $job['category'] }}</p>
-                                        <h3 class="mt-1 text-xl font-bold text-white">{{ $job['title'] }}</h3>
-                                        <p class="mt-2 text-sm text-slate-400">{{ $job['location'] }} &middot; {{ $job['workplace'] }}</p>
-                                    </div>
-                                    <dl class="grid flex-1 grid-cols-3 gap-4 text-center">
-                                        <a
-                                            href="{{ $job['detail_url'] ?? $job['url'] ?? '#' }}"
-                                            class="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-cyan-400/40"
-                                            title="Read comments for {{ $job['title'] }}"
-                                        >
-                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Comments</dt>
-                                            <dd class="mt-1 text-lg font-semibold text-white">{{ number_format($job['comments']) }}</dd>
-                                        </a>
-                                        <a
-                                            href="{{ $job['detail_url'] ?? $job['url'] ?? '#' }}"
-                                            class="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-emerald-400/40"
-                                            title="Review applicants for {{ $job['title'] }}"
-                                        >
-                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Applicants</dt>
-                                            <dd class="mt-1 text-lg font-semibold text-white">{{ number_format($job['applications']) }}</dd>
-                                        </a>
-                                        <a
-                                            href="{{ $job['detail_url'] ?? $job['url'] ?? '#' }}"
-                                            class="rounded-2xl border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-amber-400/40"
-                                            title="Manage {{ $job['title'] }} status"
-                                        >
-                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Status</dt>
-                                            <dd class="mt-1 text-lg font-semibold text-white">{{ $job['status'] }}</dd>
-                                        </a>
-                                    </dl>
-                                    {{-- <div class="flex flex-col items-stretch gap-2 text-sm">
-                                        <a href="{{ $job['url'] }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 font-semibold text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
-                                            Manage posting
-                                        </a>
-                                        <a href="{{ route('employer.jobs.index') }}" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 text-slate-300 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200">
-                                            Boost visibility
-                                        </a>
-                                    </div> --}}
-                                </div>
-                            @empty
-                                <div class="px-6 py-12 text-center text-sm text-slate-400">
-                                    Publish your first role to see live engagement here.
-                                </div>
-                            @endforelse
-                        </div>
-                    </article>
 
+                <div class="space-y-6 lg:col-span-8">
                     <article class="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
                         <header class="flex items-center justify-between">
                             <div>
@@ -144,10 +81,63 @@
                             </div>
                             <span class="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-200">Last 14 days</span>
                         </header>
-                        <div class="mt-6 h-64 w-full">
+                        <div class="mt-6 w-full">
                             <canvas id="applicationsTrendChart"></canvas>
                         </div>
                     </article>
+
+                    <article class="overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-900/50 shadow-2xl">
+                        <header class="flex items-center justify-between border-b border-white/5 px-6 py-5">
+                            <div>
+                                <h2 class="text-base font-semibold uppercase tracking-[0.2em] text-slate-300">Active job performance</h2>
+                                <p class="mt-1 text-sm text-slate-400">Watch how Strive is engaging with your open roles.</p>
+                            </div>
+                        </header>
+
+                        <div class="divide-y divide-white/5">
+                            @forelse ($jobSnapshots as $job)
+                                <a class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between hover:-translate-y-0.5 transition"
+                                            href="{{ $job['detail_url'] ?? $job['url'] ?? '#' }}"
+                                >
+                                    <div class="w-50 space-y-2">
+                                        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-200/80">{{ $job['category'] }}</p>
+                                        <h3 class="mt-1 text-xl font-bold text-white">{{ $job['title'] }}</h3>
+                                        <p class="mt-2 text-sm text-slate-400">{{ $job['location'] }} &middot; {{ $job['workplace'] }}</p>
+                                    </div>
+                                    <dl class="grid flex-1 grid-cols-3 gap-4 text-center">
+                                        <div
+                                            class="rounded-2xl min-w-fit border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-cyan-400/40"
+                                            title="Read comments for {{ $job['title'] }}"
+                                        >
+                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Comments</dt>
+                                            <dd class="mt-1 text-lg font-semibold text-white">{{ number_format($job['comments']) }}</dd>
+                                        </div>
+                                        <div
+                                            class="rounded-2xl min-w-fit border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-emerald-400/40"
+                                            title="Review applicants for {{ $job['title'] }}"
+                                        >
+                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Applicants</dt>
+                                            <dd class="mt-1 text-lg font-semibold text-white">{{ number_format($job['applications']) }}</dd>
+                                        </div>
+                                        <div
+                                            class="rounded-2xl min-w-fit border border-white/5 bg-white/5 px-3 py-2 transition hover:-translate-y-0.5 hover:border-amber-400/40"
+                                            title="Manage {{ $job['title'] }} status"
+                                        >
+                                            <dt class="text-xs font-semibold uppercase  text-slate-400">Status</dt>
+                                            <dd class="mt-1 text-lg font-semibold text-center text-white">{{ $job['status'] }}</dd>
+                                        </div>
+                                    </dl>
+
+                                </a>
+                            @empty
+                                <div class="px-6 py-12 text-center text-sm text-slate-400">
+                                    Publish your first role to see live engagement here.
+                                </div>
+                            @endforelse
+                        </div>
+                    </article>
+
+
 
                     <article class="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
                         <header class="flex items-center justify-between">
@@ -165,18 +155,18 @@
                                             {{ $loop->iteration }}
                                         </div>
                                         <div>
-                                            <h3 class="text-base font-semibold text-white">{{ $stage['name'] }}</h3>
-                                            <p class="text-xs text-slate-400">{{ $stage['description'] }}</p>
+                                            <h3 class="text-base font-semibold text-white">{{ data_get($stage, 'name', 'Stage') }}</h3>
+                                            <p class="text-xs text-slate-400">{{ data_get($stage, 'description', 'No description provided.') }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <div class="flex-1">
                                             <div class="h-2 overflow-hidden rounded-full bg-white/10">
-                                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-300" style="width: {{ $stage['percentage'] }}%;"></div>
+                                                <div class="h-full rounded-full bg-gradient-to-r from-cyan-400 to-emerald-300" style="width: {{ data_get($stage, 'percentage', 0) }}%;"></div>
                                             </div>
                                         </div>
-                                        <span class="text-sm font-semibold text-emerald-200">{{ $stage['percentage'] }}%</span>
-                                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">{{ number_format($stage['count']) }} candidates</span>
+                                        <span class="text-sm font-semibold text-emerald-200">{{ data_get($stage, 'percentage', 0) }}%</span>
+                                        <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">{{ number_format(data_get($stage, 'count', 0)) }} candidates</span>
                                     </div>
                                 </li>
                             @endforeach

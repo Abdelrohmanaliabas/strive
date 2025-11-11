@@ -3,15 +3,17 @@
 @section('title', 'Edit ' . $user->name)
 
 @section('content')
-<div class="max-w-6xl mx-auto mt-10">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all">
-        <div class="grid grid-cols-1 md:grid-cols-3">
-
+<x-admin.module-frame
+    title="Edit {{ $user->name }}"
+    eyebrow="Users"
+    description="Update account metadata, contact information, and access levels.">
+    <div class="max-w-6xl mx-auto">
+        <div class="rounded-2xl shadow-lg overflow-hidden transition-all grid grid-cols-1 md:grid-cols-3 bg-white dark:bg-gray-800">
             {{-- Left: Profile Info --}}
             <div class="bg-indigo-600 dark:bg-indigo-700 text-white flex flex-col items-center justify-center p-8">
                 <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=4f46e5&color=fff&size=150"
                      alt="{{ $user->name }}"
-                     class="rounded-full border-4 border-white shadow-lg mb-4 size-96 object-cover">
+                     class="rounded-full border-4 border-white shadow-lg mb-4 size-32 object-cover">
 
                 <h2 class="text-2xl font-semibold">{{ $user->name }}</h2>
                 <p class="text-indigo-200">{{ $user->email }}</p>
@@ -21,7 +23,7 @@
             </div>
 
             {{-- Middle & Right: Form --}}
-            <div class="col-span-2 p-8">
+            <div class="col-span-2 p-8 bg-white dark:bg-gray-900/40">
                 <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6 border-b pb-2">
                     Edit Profile
                 </h3>
@@ -70,18 +72,18 @@
                                 <option value="candidate" {{ $user->role == 'candidate' ? 'selected' : '' }}>Candidate</option>
                             </select>
                         </div>
+                    </div>
 
-                        {{-- Submit --}}
-                        <div class="sm:col-span-2 flex justify-end pt-4 border-t dark:border-gray-700">
-                            <button type="submit"
-                                class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-md transition">
-                                Save Changes
-                            </button>
-                        </div>
+                    {{-- Submit --}}
+                    <div class="flex justify-end pt-4 border-t dark:border-gray-700">
+                        <button type="submit"
+                            class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-md transition">
+                            Save Changes
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</x-admin.module-frame>
 @endsection
