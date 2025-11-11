@@ -100,4 +100,6 @@ Route::middleware(['auth', 'verified', 'role:employer'])
         Route::get('applications/{application}/preview', [ApplicationEmployerController::class, 'preview'])
             ->name('applications.preview');
 
-    });
+        Route::get('candidates/{user}', [CommentEmployerController::class, 'showUser'])
+            ->name('candidates.show');
+});
