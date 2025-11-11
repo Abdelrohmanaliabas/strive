@@ -13,6 +13,6 @@ class EmployerLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.employer-layout');
+        return view('layouts.employer-layout');
     }
 }

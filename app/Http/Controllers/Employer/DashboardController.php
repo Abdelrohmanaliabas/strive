@@ -3,364 +3,220 @@
 namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
-use App\Models\Application;
+use Illuminate\Http\Request;
 use App\Models\JobPost;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Application;
+use App\Models\Comment;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
-    public function __invoke()
+    /**
+     * Employer dashboard - totals and analysis
+     */
+    public function index(Request $request)
     {
-        $employer = Auth::user();
+        $employerId = $request->user()->id;
 
-        $jobQuery = JobPost::query()
-            ->where('employer_id', $employer->id);
+        // Totals
+        $totalJobs = JobPost::where('employer_id', $employerId)->count();
+        $openJobs = JobPost::where('employer_id', $employerId)->where('status', 'approved')->count();
+        $totalApplications = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))->count();
 
-        $jobIds = (clone $jobQuery)->pluck('id');
+        // get job ids for comment lookup
+        $jobIds = JobPost::where('employer_id', $employerId)->pluck('id')->toArray();
 
-        $jobs = (clone $jobQuery)
-            ->with(['category:id,name', 'analytic'])
-            ->withCount(['applications', 'comments'])
-            ->orderByDesc('created_at')
-            ->get();
+        // Robust comments count: support different schema layouts
+        $comments = 0;
+        if (!empty($jobIds)) {
+            if (Schema::hasColumn('comments', 'job_post_id')) {
+                $comments = Comment::whereIn('job_post_id', $jobIds)->count();
+            } elseif (Schema::hasColumn('comments', 'job_id')) {
+                $comments = Comment::whereIn('job_id', $jobIds)->count();
+            } elseif (Schema::hasColumn('comments', 'commentable_id') && Schema::hasColumn('comments', 'commentable_type')) {
+                // polymorphic comments
+                $comments = Comment::whereIn('commentable_id', $jobIds)
+                    ->where('commentable_type', JobPost::class)
+                    ->count();
+            } else {
+                $comments = 0;
+            }
+        }
 
-        $applicationsQuery = Application::query()
-            ->whereIn('job_post_id', $jobIds);
+        // New applications last 7 days
+        $newApplicationsWeek = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->count();
+        $candidateCount = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
+            ->distinct('candidate_id')
+            ->count('candidate_id');
 
-        $metrics = $this->buildMetricSummary($jobQuery, $applicationsQuery);
-        $applicationsTrend = $this->applicationsTrend($applicationsQuery, 14);
-        $applicationsByStatus = $this->applicationsByStatus($applicationsQuery);
-        $applicationsByJob = $this->applicationsByJob($jobs);
-        $recentApplicants = $this->recentApplicants(
-            (clone $applicationsQuery)->with(['candidate:id,name,email', 'jobPost:id,title'])
-        );
 
-        $applicationsSample = (clone $applicationsQuery)
-            ->with(['jobPost:id,title,category_id', 'jobPost.category:id,name'])
-            ->latest('created_at')
-            ->limit(200)
-            ->get();
+        // Calculate trend percentage for metric cards
+        $lastWeekApplications = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
+            ->where('created_at', '>=', Carbon::now()->subDays(14))
+            ->where('created_at', '<', Carbon::now()->subDays(7))
+            ->count();
+        $trendPercent = $lastWeekApplications > 0 ? round((($newApplicationsWeek - $lastWeekApplications) / $lastWeekApplications) * 100, 2) : 0;
 
-        return view('employer.dashboard', [
-            'metrics' => $metrics,
-            'jobSnapshots' => $applicationsByJob['rows']->take(3),
-            'applicationsTrend' => $applicationsTrend,
-            'applicationsByStatus' => $applicationsByStatus,
-            'applicationsByJob' => $applicationsByJob,
-            'recentApplicants' => $recentApplicants,
-            'pipeline' => $this->pipelineFromStatuses($applicationsByStatus['series'], $metrics['applications_total']),
-            'StriveSignals' => $this->StriveSignals($jobs, $applicationsSample, $applicationsByStatus['series']),
-        ]);
-    }
-
-    private function buildMetricSummary(Builder $jobQuery, Builder $applicationsQuery): array
-    {
-        $jobsTotal = (clone $jobQuery)->count();
-        $applicationsTotal = (clone $applicationsQuery)->count();
-        $candidatesTotal = $this->countUniqueCandidates($applicationsQuery);
-
-        $trendWindow = 7;
-        $currentWindowStart = Carbon::today()->subDays($trendWindow - 1)->startOfDay();
-        $previousWindowStart = Carbon::today()->subDays(($trendWindow * 2) - 1)->startOfDay();
-        $previousWindowEnd = $currentWindowStart->copy()->subSecond();
-
-        $jobsCurrent = (clone $jobQuery)->whereBetween('created_at', [$currentWindowStart, now()])->count();
-        $jobsPrevious = (clone $jobQuery)->whereBetween('created_at', [$previousWindowStart, $previousWindowEnd])->count();
-
-        $applicationsCurrent = (clone $applicationsQuery)->whereBetween('created_at', [$currentWindowStart, now()])->count();
-        $applicationsPrevious = (clone $applicationsQuery)->whereBetween('created_at', [$previousWindowStart, $previousWindowEnd])->count();
-
-        $candidatesCurrent = $this->countUniqueCandidates(
-            (clone $applicationsQuery)->whereBetween('created_at', [$currentWindowStart, now()])
-        );
-        $candidatesPrevious = $this->countUniqueCandidates(
-            (clone $applicationsQuery)->whereBetween('created_at', [$previousWindowStart, $previousWindowEnd])
-        );
-
-        $cards = [
+        // KPI Cards for metrics display
+        $metricCards = [
             [
-                'label' => 'Total job posts',
-                'value' => $jobsTotal,
-                'trend' => $this->formatTrend($jobsCurrent, $jobsPrevious),
-                'trend_copy' => 'New this week',
-                'trend_class' => $this->trendClass($jobsCurrent, $jobsPrevious),
+                'label' => 'Total Posts',
+                'value' => $totalJobs,
+                'trend' => $openJobs > 0 ? "{$openJobs} currently open" : 'No open roles',
             ],
             [
-                'label' => 'Applications received',
-                'value' => $applicationsTotal,
-                'trend' => $this->formatTrend($applicationsCurrent, $applicationsPrevious),
-                'trend_copy' => 'Past 7 days',
-                'trend_class' => $this->trendClass($applicationsCurrent, $applicationsPrevious),
+                'label' => 'Applications Received',
+                'value' => $totalApplications,
+                'trend' => $newApplicationsWeek > 0 ? " this week" : 'No new applicants this week',
             ],
             [
                 'label' => 'Candidates',
-                'value' => $candidatesTotal,
-                'trend' => $this->formatTrend($candidatesCurrent, $candidatesPrevious),
-                'trend_copy' => 'New voices this week',
-                'trend_class' => $this->trendClass($candidatesCurrent, $candidatesPrevious),
+                'value' => $candidateCount,
+                'trend' => $candidateCount > 0 ? " engaged" : 'Awaiting applicants',
             ],
             [
-                'label' => 'Avg. applications',
-                'value' => $jobsTotal > 0
-                    ? number_format($applicationsTotal / max($jobsTotal, 1), 1)
-                    : '0.0',
-                'trend' => null,
-                'trend_copy' => 'Across all live postings',
-                'trend_class' => 'text-secondary',
+                'label' => 'Total Comments',
+                'value' => $comments,
+                'trend' => $comments > 0 ? 'Feedbacks' : 'No comments yet',
             ],
         ];
 
-        return [
-            'jobs_total' => $jobsTotal,
-            'applications_total' => $applicationsTotal,
-            'candidates_total' => $candidatesTotal,
-            'cards' => $cards,
-        ];
-    }
 
-    private function applicationsTrend(Builder $applications, int $days): array
-    {
-        $start = Carbon::today()->subDays($days - 1)->startOfDay();
-
-        $dailyCounts = (clone $applications)
-            ->selectRaw('DATE(created_at) as day, COUNT(*) as total')
+        // Applications trend (last 14 days)
+        $start = Carbon::today()->subDays(13);
+        $rawTrend = Application::select(DB::raw('DATE(created_at) as date'), DB::raw('count(*) as cnt'))
+            ->whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
             ->where('created_at', '>=', $start)
-            ->groupBy('day')
-            ->orderBy('day')
-            ->pluck('total', 'day');
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('cnt', 'date')
+            ->toArray();
 
-        $period = collect(range(0, $days - 1))->map(
-            fn(int $offset) => $start->copy()->addDays($offset)
-        );
+        $trendLabels = [];
+        $trendData = [];
+        for ($i = 0; $i < 14; $i++) {
+            $d = $start->copy()->addDays($i)->toDateString();
+            $trendLabels[] = $d;
+            $trendData[] = intval($rawTrend[$d] ?? 0);
+        }
 
-        return [
-            'labels' => $period->map->format('M j'),
-            'data' => $period->map(function (Carbon $day) use ($dailyCounts) {
-                return (int) ($dailyCounts[$day->format('Y-m-d')] ?? 0);
-            }),
-        ];
-    }
-
-    private function applicationsByStatus(Builder $applications): array
-    {
-        $statusCounts = (clone $applications)
-            ->selectRaw("LOWER(COALESCE(NULLIF(status, ''), 'pending')) as status, COUNT(*) as total")
+        // Applications by status
+        $byStatus = Application::select('status', DB::raw('count(*) as cnt'))
+            ->whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
             ->groupBy('status')
-            ->orderByDesc('total')
+            ->orderByDesc('cnt')
+            ->pluck('cnt', 'status')
+            ->toArray();
+
+        $statusLabels = array_keys($byStatus);
+        $statusSeries = array_values($byStatus);
+
+        $totalPipeline = array_sum($byStatus);
+        $pipeline = $totalPipeline > 0
+            ? collect($byStatus)->map(function ($count, $status) use ($totalPipeline) {
+                $statusKey = strtolower($status);
+                $percentage = round(($count / $totalPipeline) * 100);
+
+                return [
+                    'name' => ucfirst($status),
+                    'description' => "Applications marked as {$statusKey}",
+                    'percentage' => $percentage,
+                    'count' => $count,
+                ];
+            })->values()->toArray()
+            : [
+                ['name' => 'Applied', 'description' => 'Initial submissions', 'percentage' => 0, 'count' => 0],
+                ['name' => 'Reviewed', 'description' => 'Screened by employer', 'percentage' => 0, 'count' => 0],
+                ['name' => 'Shortlisted', 'description' => 'Ready for interview', 'percentage' => 0, 'count' => 0],
+                ['name' => 'Offered', 'description' => 'Offers sent', 'percentage' => 0, 'count' => 0],
+            ];
+
+        // Top job posts by applications
+        $topJobsRaw = Application::select('job_post_id', DB::raw('count(*) as cnt'))
+            ->whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
+            ->groupBy('job_post_id')
+            ->orderByDesc('cnt')
+            ->limit(6)
+            ->get();
+
+        $topJobs = $topJobsRaw->map(function ($r) {
+            $job = JobPost::with('category')->find($r->job_post_id);
+            return [
+                'title' => $job->title ?? 'Untitled role',
+                'category' => optional($job->category)->name ?? 'General',
+                'location' => $job->location ?? 'Remote',
+                'applications' => intval($r->cnt),
+                'views' => $job->views ?? 0,
+            ];
+        })->toArray();
+        $topJobLabels = collect($topJobs)->pluck('title')->values()->toArray();
+        $topJobSeries = collect($topJobs)->pluck('applications')->values()->toArray();
+
+        // Recent applicants (latest 6)
+        $recentApplicants = Application::with(['candidate', 'jobPost'])
+            ->whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        // Job snapshots (active jobs with stats)
+        $jobSnapshots = JobPost::with('category')
+            ->withCount('applications')
+            ->where('employer_id', $employerId)
+            ->where('status', 'approved')
+            ->where('application_deadline', '<=', Carbon::now())
+            ->orderByDesc('created_at')
+            ->limit(5)
             ->get()
-            ->mapWithKeys(fn($row) => [$row->status => (int) $row->total]);
-
-        return [
-            'labels' => $statusCounts->keys()->map(fn(string $status) => ucfirst($status)),
-            'data' => $statusCounts->values(),
-            'series' => $statusCounts,
-        ];
-    }
-
-    private function applicationsByJob(Collection $jobs): array
-    {
-        $topJobs = $jobs->sortByDesc('applications_count')->take(6)->values();
-
-        return [
-            'labels' => $topJobs->pluck('title'),
-            'data' => $topJobs->pluck('applications_count'),
-            'rows' => $topJobs->map(function (JobPost $job) {
-                $editUrl = null;
-                $detailUrl = null;
-
-                if (\Illuminate\Support\Facades\Route::has('employer.jobs.edit')) {
-                    $editUrl = route('employer.jobs.edit', $job);
-                } elseif (\Illuminate\Support\Facades\Route::has('jobs.edit')) {
-                    $editUrl = route('jobs.edit', $job);
-                }
-
-                if (\Illuminate\Support\Facades\Route::has('employer.jobs.show')) {
-                    $detailUrl = route('employer.jobs.show', $job);
-                } elseif (\Illuminate\Support\Facades\Route::has('jobs.show')) {
-                    $detailUrl = route('jobs.show', $job);
-                }
+            ->map(function ($job) {
+                $jobShowRoute = Route::has('employer.jobs.show')
+                    ? route('employer.jobs.show', $job)
+                    : (Route::has('jobs.show') ? route('jobs.show', $job) : '#');
 
                 return [
                     'title' => $job->title,
-                    'category' => optional($job->category)->name ?? 'Uncategorized',
-                    'location' => $job->location ?? '-',
-                    'workplace' => ucfirst($job->work_type ?? 'Hybrid'),
-                    'views' => optional($job->analytic)->views_count ?? 0,
-                    'applications' => $job->applications_count,
-                    'comments' => $job->comments_count,
-                    'status' => ucfirst($job->status ?? 'draft'),
-                    'url' => $editUrl ?? '#',
-                    'detail_url' => $detailUrl ?? $editUrl ?? '#',
+                    'category' => optional($job->category)->name ?? 'General',
+                    'location' => $job->location ?? 'Remote',
+                    'workplace' => $job->work_type ?? 'Remote',
+                    'applications' => $job->applications_count ?? $job->applications()->count(),
+                    'comments' => Comment::where('commentable_id', $job->id)
+                        ->where('commentable_type', JobPost::class)
+                        ->count() ?? 0,
+                    'status' => ucfirst($job->status ?? 'open'),
+                    'url' => $jobShowRoute,
+                    'detail_url' => $jobShowRoute,
                 ];
-            }),
-        ];
-    }
+            })
+            ->toArray();
 
-    private function recentApplicants(Builder $applications): Collection
-    {
-        return $applications
-            ->latest('created_at')
-            ->take(6)
-            ->get()
-            ->map(function (Application $application) {
-                $candidateName = $application->name
-                    ?? optional($application->candidate)->name
-                    ?? 'New applicant';
+        // Route links (safe fallback if route doesn't exist)
+        $jobCreateLink = Route::has('employer.jobs.create')
+            ? route('employer.jobs.create')
+            : (Route::has('jobs.create') ? route('jobs.create') : '#');
 
-                return [
-                    'name' => $candidateName,
-                    'role' => optional($application->jobPost)->title ?? '-',
-                    'applied_at' => optional($application->created_at)->diffForHumans() ?? 'just now',
-                    'status' => ucfirst($application->status ?? 'pending'),
-                ];
-            });
-    }
+        $applicationsLink = Route::has('employer.applications.index')
+            ? route('employer.applications.index')
+            : (Route::has('applications.index') ? route('applications.index') : '#');
 
-    private function pipelineFromStatuses(Collection $statusCounts, int $totalApplications): array
-    {
-        $normalized = $statusCounts->mapWithKeys(
-            fn($count, $status) => [strtolower((string) $status) => (int) $count]
-        );
-
-        $pending = $normalized->get('pending', 0);
-        $accepted = $normalized->get('accepted', 0);
-        $rejected = $normalized->get('rejected', 0);
-        $cancelled = $normalized->get('cancelled', 0);
-
-        return [
-            [
-                'name' => 'New submissions',
-                'description' => 'Awaiting your first review.',
-                'count' => $pending,
-                'percentage' => $this->percentage($pending, $totalApplications),
-            ],
-            [
-                'name' => 'Accepted',
-                'description' => 'Candidates you moved forward.',
-                'count' => $accepted,
-                'percentage' => $this->percentage($accepted, $totalApplications),
-            ],
-            [
-                'name' => 'Rejected',
-                'description' => 'Applications you turned down.',
-                'count' => $rejected,
-                'percentage' => $this->percentage($rejected, $totalApplications),
-            ],
-            [
-                'name' => 'Cancelled',
-                'description' => 'Cancelled by Strive or Candidate.',
-                'count' => $cancelled,
-                'percentage' => $this->percentage($cancelled, $totalApplications),
-            ],
-        ];
-    }
-
-    private function StriveSignals(Collection $jobs, Collection $applicationsSample, Collection $statusCounts): array
-    {
-        $topCategory = $jobs
-            ->filter(fn(JobPost $job) => $job->category !== null)
-            ->groupBy(fn(JobPost $job) => $job->category->name)
-            ->map->count()
-            ->sortDesc();
-
-        $topLocation = $jobs
-            ->filter(fn(JobPost $job) => $job->location)
-            ->groupBy('location')
-            ->map->count()
-            ->sortDesc();
-
-        $acceptedRatio = $this->percentage(
-            $statusCounts->get('accepted', 0),
-            max($statusCounts->sum(), 1)
-        );
-
-        $signalTags = $applicationsSample
-            ->map(fn(Application $application) => optional($application->jobPost)->category?->name)
-            ->filter()
-            ->countBy()
-            ->sortDesc()
-            ->keys()
-            ->take(3);
-
-        return [
-            [
-                'label' => $topCategory->isEmpty()
-                    ? 'Diversify categories'
-                    : $topCategory->keys()->first() . ' Strive surge',
-                'trend' => $topCategory->isEmpty() ? '+0%' : '+' . $topCategory->first() . ' roles',
-                'description' => $topCategory->isEmpty()
-                    ? 'Publish in more categories to attract fresh profiles.'
-                    : 'Most engagement is happening within this category recently.',
-                'tags' => $topCategory->keys()->take(3),
-            ],
-            [
-                'label' => $topLocation->isEmpty()
-                    ? 'Remote-first interest'
-                    : 'Candidates eyeing ' . $topLocation->keys()->first(),
-                'trend' => $topLocation->isEmpty() ? '+0%' : '+' . $topLocation->first(),
-                'description' => $topLocation->isEmpty()
-                    ? 'Remote listings continue to be the most explored option.'
-                    : 'This location is capturing the majority of role views.',
-                'tags' => $topLocation->keys()->take(3),
-            ],
-            [
-                'label' => 'Offer conversion pulse',
-                'trend' => $acceptedRatio . '%',
-                'description' => 'Share timely follow-ups to lift interview-to-offer momentum.',
-                'tags' => $signalTags,
-            ],
-        ];
-    }
-
-    private function countUniqueCandidates(Builder $applications): int
-    {
-        $ids = (clone $applications)
-            ->whereNotNull('candidate_id')
-            ->distinct()
-            ->count('candidate_id');
-
-        $emails = (clone $applications)
-            ->whereNull('candidate_id')
-            ->whereNotNull('email')
-            ->distinct()
-            ->count('email');
-
-        return $ids + $emails;
-    }
-
-    private function formatTrend(int $current, int $previous): string
-    {
-        $delta = $this->trendDelta($current, $previous);
-        $sign = $delta > 0 ? '+' : '';
-
-        return $sign . number_format($delta, 0) . '%';
-    }
-
-    private function trendClass(int $current, int $previous): string
-    {
-        $delta = $this->trendDelta($current, $previous);
-
-        return $delta >= 0 ? 'text-success' : 'text-danger';
-    }
-
-    private function trendDelta(int $current, int $previous): float
-    {
-        if ($previous === 0) {
-            return $current > 0 ? 100 : 0;
-        }
-
-        return (($current - $previous) / $previous) * 100;
-    }
-
-    private function percentage(int $count, int $total): int
-    {
-        if ($total === 0) {
-            return 0;
-        }
-
-        return (int) round(($count / $total) * 100);
+        return view('employer.dashboard', compact(
+            'metricCards',
+            'trendLabels',
+            'trendData',
+            'statusLabels',
+            'statusSeries',
+            'topJobLabels',
+            'topJobSeries',
+            'topJobs',
+            'jobSnapshots',
+            'pipeline',
+            'recentApplicants',
+            'jobCreateLink',
+            'applicationsLink'
+        ));
     }
 }

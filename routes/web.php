@@ -85,9 +85,9 @@ Route::view('/admin/settings', 'admin.settings.index')->name('admin.settings.ind
 
 
 
-Route::middleware(['auth', 'verified', 'role:employer'])
+Route::middleware(['auth', 'role:employer'])
     ->prefix('employer')->name('employer.')->group(function () {
-        Route::get('dashboard', DashboardController::class)->name('dashboard');
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('profile', [App\Http\Controllers\Employer\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [App\Http\Controllers\Employer\ProfileController::class, 'update'])->name('profile.update');
         Route::delete('profile', [App\Http\Controllers\Employer\ProfileController::class, 'destroy'])->name('profile.destroy');

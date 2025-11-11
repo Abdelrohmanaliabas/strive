@@ -3,15 +3,17 @@
 @section('title', 'Settings')
 
 @section('content')
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 max-w-4xl mx-auto">
-    <h1 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">System Settings</h1>
-
+<x-admin.module-frame
+    class="max-w-4xl mx-auto"
+    title="System Settings"
+    eyebrow="Settings"
+    description="Tune the visual experience for admins without touching code.">
     <div class="space-y-8">
-        {{-- 🌗 Theme Mode --}}
+        {{-- dYO- Theme Mode --}}
         <div class="border-b border-gray-200 dark:border-gray-700 pb-5">
             <h2 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Appearance</h2>
 
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <div>
                     <p class="text-gray-700 dark:text-gray-300">Theme Mode</p>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Switch between Light and Dark themes.</p>
@@ -23,7 +25,7 @@
             </div>
         </div>
 
-        {{-- 🅰️ Font Selection --}}
+        {{-- dY.��,? Font Selection --}}
         <div class="border-b border-gray-200 dark:border-gray-700 pb-5">
             <h2 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Font Style</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Choose your preferred font for the dashboard.</p>
@@ -44,12 +46,12 @@
             </div>
         </div>
 
-        {{-- 🎨 Primary Color --}}
+        {{-- dYZ" Primary Color --}}
         <div class="border-b border-gray-200 dark:border-gray-700 pb-5">
             <h2 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Primary Color</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Choose a highlight color for buttons and links.</p>
 
-            <div class="flex gap-4">
+            <div class="flex gap-4 flex-wrap">
                 <div class="color-choice w-8 h-8 rounded-full bg-indigo-600 cursor-pointer border-2 border-transparent hover:scale-110 transition" data-color="indigo"></div>
                 <div class="color-choice w-8 h-8 rounded-full bg-green-600 cursor-pointer border-2 border-transparent hover:scale-110 transition" data-color="green"></div>
                 <div class="color-choice w-8 h-8 rounded-full bg-rose-600 cursor-pointer border-2 border-transparent hover:scale-110 transition" data-color="rose"></div>
@@ -57,12 +59,12 @@
             </div>
         </div>
 
-        {{-- 🔔 Notifications (optional future feature) --}}
+        {{-- dY"" Notifications --}}
         <div>
             <h2 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-3">Notifications</h2>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <p class="text-gray-700 dark:text-gray-300">Enable system alerts and job updates.</p>
-                <label class="inline-flex items-center cursor-pointer">
+                <label class="inline-flex items-center cursor-pointer relative">
                     <input type="checkbox" id="notificationsToggle" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 
                                 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
@@ -72,14 +74,14 @@
             </div>
         </div>
     </div>
-</div>
+</x-admin.module-frame>
 
-{{-- ⚙️ Scripts --}}
+{{-- �sT�,? Scripts --}}
 <script>
     const html = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
 
-    // 🌗 Dark / Light toggle
+    // dYO- Dark / Light toggle
     themeToggle.addEventListener('click', () => {
         const isDark = html.classList.toggle('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
@@ -88,7 +90,7 @@
             : '<i class="bi bi-moon"></i> Dark Mode';
     });
 
-    // 🕐 Load saved theme
+    // dY? Load saved theme
     window.addEventListener('DOMContentLoaded', () => {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
@@ -106,7 +108,7 @@
         if (savedColor) document.documentElement.style.setProperty('--primary-color', savedColor);
     });
 
-    // 🅰️ Font switcher
+    // dY.��,? Font switcher
     document.querySelectorAll('.font-option').forEach(btn => {
         btn.addEventListener('click', () => {
             const font = btn.dataset.font;
@@ -118,7 +120,7 @@
         });
     });
 
-    // 🎨 Color switcher
+    // dYZ" Color switcher
     document.querySelectorAll('.color-choice').forEach(colorEl => {
         colorEl.addEventListener('click', () => {
             const color = colorEl.dataset.color;
