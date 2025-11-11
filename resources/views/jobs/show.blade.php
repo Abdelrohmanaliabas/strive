@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('title', $jobPost->title . ' — JobNest')
+@section('title', $jobPost->title . ' — Strive')
 {{-- success & error messages --}}
 @section('content')
 <section class="container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
@@ -18,7 +18,7 @@
     </div>
 @endif
 
-  <!-- ===== Job Header ===== -->
+  <!-- ===== header ===== -->
   <div class="relative p-8 rounded-2xl border border-white/10 shadow-xl 
               bg-white/60 dark:bg-white/5 backdrop-blur-xl mb-10">
     
@@ -54,10 +54,10 @@
     </div>
   </div>
 
-  <!-- ===== Job Details & Sidebar ===== -->
+  <!-- ===== job Details and the  sidebar ===== -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <!-- ===== Main Content ===== -->
+    <!-- ===== main content ===== -->
     <div class="lg:col-span-2 space-y-8">
 
       <div class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl">
@@ -143,7 +143,7 @@
       </div>
     </div>
 
-    <!-- ===== Sidebar ===== -->
+    <!-- ===== sidebar ===== -->
     <aside class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl h-fit">
       <h4 class="text-xl font-semibold mb-4">Company Info</h4>
       <ul class="space-y-2 text-sm">
@@ -159,7 +159,7 @@
   </div>
 </section>
 
-<!-- ===== Apply Modal ===== -->
+<!-- ===== apply modal ===== -->
 <div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg rounded-2xl">
@@ -206,12 +206,7 @@
 </style>
 @endsection
 
-<!-- <script>
-    setTimeout(() => {
-        const alert = document.querySelector('.alert');
-        if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }
-    }, 4000);
-</script> -->
+
+
+
+
