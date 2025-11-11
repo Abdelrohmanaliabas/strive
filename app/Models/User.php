@@ -50,9 +50,10 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar_path && Storage::disk('public')->exists($this->avatar_path)) {
-            return Storage::disk('public')->url($this->avatar_path);
+            return asset('storage/' . $this->avatar_path);
         }
-
+    
         return asset('images/avatar.jpg');
     }
+    
 }

@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\CategoryListingController;
+use App\Http\Controllers\EmployerListingController;
 use App\Http\Controllers\JobApplicationController;
 use App\Http\Controllers\JobCommentController;
 use App\Http\Controllers\JobListingController;
@@ -50,12 +53,19 @@ Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])->name('a
 Route::put('/admin/users/{user}', [UserController::class, 'update'])->name('admin.users.update');
 Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
-// ================= Public Employer Profile ===================
+// ================= Public pages ===================
 use App\Http\Controllers\EmployerProfileController;
 
 Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
-    ->name('companies.show');
+->name('companies.show');
 
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+
+Route::get('/categories', [CategoryListingController::class, 'index'])->name('public_categories.index');
+Route::get('/employers', [EmployerListingController::class, 'index'])->name('public_employers.index');
+
+// =================================================================
 require __DIR__ . '/auth.php';
 
 Route::get('/admin/posts', [JobPostController::class, 'index'])->name('admin.jobpost.index');
