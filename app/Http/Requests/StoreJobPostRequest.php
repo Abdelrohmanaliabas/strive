@@ -29,6 +29,7 @@ class StoreJobPostRequest extends FormRequest
             'salary_range' => ['nullable','string','max:255'],
             'work_type' => ['required','in:remote,onsite,hybrid'],
             'application_deadline' => ['required', 'date', 'after_or_equal:today'],
+            'max_applications' => ['nullable','integer','min:1'],
             'responsibilities' => ['required','string'],
             'skills' => ['required','string'],
             'requirements' => ['required','string'],

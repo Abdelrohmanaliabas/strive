@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Employer;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\JobPost;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class CommentEmployerController extends Controller
 {
@@ -45,6 +47,43 @@ class CommentEmployerController extends Controller
         ]);
     }
 
+    public function showUser(User $user)
+    {
+        // Make sure it's a candidate
+        if ($user->role !== 'candidate') {
+            return response()->json(['message' => 'Not a candidate'], 403);
+        }
+
+        // Return only useful info
+        return response()->json($user->only([
+            'id',
+            'name',
+            'email',
+            'phone',
+            'linkedin_url',
+            'created_at',
+        ]));
+    }
+
+    public function forJob(JobPost $job): View
+    {
+        // Make sure the employer owns this job
+        abort_unless($job->employer_id === Auth::id(), 403, 'Unauthorized');
+
+        // Fetch only comments linked to this job
+        $comments = Comment::query()
+            ->where('commentable_type', JobPost::class)
+            ->where('commentable_id', $job->id)
+            ->with('user:id,name,email')
+            ->latest('created_at')
+            ->paginate(10);
+
+        return view('employer.comments.for-job', [
+            'job' => $job,
+            'comments' => $comments,
+        ]);
+    }
+    
     /**
      * Build a lookup of job titles for the provided comments.
      */

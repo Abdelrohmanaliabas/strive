@@ -1,24 +1,48 @@
-*.log
+# OS and Editor junk
 .DS_Store
+Thumbs.db
+
+# Environment and config
 .env
 .env.backup
 .env.production
+
+# IDE and development tools
+/.idea
+/.vscode
+/.fleet
+/.zed
+/.nova
+/auth.json
 .phpactor.json
 .phpunit.result.cache
-/.fleet
-/.idea
-/.nova
 /.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+
+# Dependencies
 /node_modules
+/vendor
+
+# Laravel build and hot reload
 /public/build
 /public/hot
+
+# Ignore storage link and uploaded files
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+
+# Ignore everything in storage except required framework dirs
+/storage/*
+!/storage/app/public
+!/storage/framework
+!/storage/framework/cache
+!/storage/framework/sessions
+!/storage/framework/views
+!/storage/logs
+
+# Homestead
 Homestead.json
 Homestead.yaml
-Thumbs.db
+
+# Logs
+*.log
