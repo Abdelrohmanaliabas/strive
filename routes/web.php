@@ -103,6 +103,7 @@ Route::middleware(['auth', 'role:employer'])
         Route::patch('applications/{application}/status', [ApplicationEmployerController::class, 'updateStatus'])->name('applications.update-status');
         Route::get('comments', [CommentEmployerController::class, 'index'])->name('comments.index');
         Route::get('comments/{comment}', [CommentEmployerController::class, 'show'])->name('comments.show');
+        Route::get('/jobs/{job}/comments', [CommentEmployerController::class, 'forJob'])->name('jobs.comments');
         Route::get('analytics', function () {
             return view('employer.analytics');
         })->name('analytics');
@@ -112,4 +113,9 @@ Route::middleware(['auth', 'role:employer'])
 
         Route::get('/applications/{application}/download', [ApplicationEmployerController::class, 'download'])
             ->name('applications.download');
-    });
+        Route::get('applications/{application}/preview', [ApplicationEmployerController::class, 'preview'])
+            ->name('applications.preview');
+
+        Route::get('candidates/{user}', [CommentEmployerController::class, 'showUser'])
+            ->name('candidates.show');
+});

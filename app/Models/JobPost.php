@@ -22,6 +22,7 @@ class JobPost extends Model
         'work_type',
         'technologies',
         'application_deadline',
+        'max_applications',
         'logo',
         'status'
     ];

@@ -76,8 +76,6 @@
 
         </header>
 
-
-
         <section class="rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
 
             <div class="grid gap-6 lg:grid-cols-12 lg:items-center">
@@ -152,8 +150,6 @@
 
         </section>
 
-
-
         <section class="grid gap-6 lg:grid-cols-2">
 
             <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
@@ -206,8 +202,6 @@
 
         </section>
 
-
-
         <section class="grid gap-6 lg:grid-cols-2">
 
             @if ($job->technologies)
@@ -233,9 +227,6 @@
                 </article>
 
             @endif
-
-
-
             @if ($job->benefits)
 
                 <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
@@ -249,228 +240,40 @@
                     </p>
 
                 </article>
-
             @endif
-
         </section>
-
-
 
         <section class="grid gap-6 lg:grid-cols-2">
-
-            <article class="space-y-5 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
-
+            <article class="space-y-4 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
                     <div>
-
                         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-200/80">Pipeline</p>
-
                         <h2 class="text-base font-semibold text-white">Applications</h2>
-
+                        <p class="text-sm text-slate-300 mt-1">{{ $applications->count() }} applications for this job</p>
                     </div>
 
-                    <a
-
-                        href="{{ route('employer.applications.index') }}"
-
-                        class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-cyan-400/40 hover:text-cyan-200"
-
-                    >
-
-                        View all
-
+                    <a href="{{ route('employer.applications.index', ['job_id' => $job->id]) }}"
+                    class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-cyan-400/40 hover:text-cyan-200">
+                    View All
                     </a>
-
                 </div>
-
-                <div class="space-y-4">
-
-                    @forelse ($applications as $application)
-
-                        @php
-
-                            $statusKey = strtolower($application->status ?? 'pending');
-
-                            $statusPalette = match ($statusKey) {
-
-                                'accepted' => ['dot' => 'bg-emerald-400', 'classes' => 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200', 'label' => 'Accepted'],
-
-                                'rejected' => ['dot' => 'bg-rose-400', 'classes' => 'border-rose-400/40 bg-rose-400/10 text-rose-200', 'label' => 'Rejected'],
-
-                                default => ['dot' => 'bg-amber-300', 'classes' => 'border-white/10 bg-white/5 text-amber-200', 'label' => 'Pending'],
-
-                            };
-
-                        @endphp
-
-                        <div class="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-
-                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
-                                <div>
-
-                                    <p class="text-sm font-semibold text-white">
-
-                                        {{ $application->name ?? optional($application->candidate)->name ?? 'New applicant' }}
-
-                                    </p>
-
-                                    <p class="text-xs text-slate-400">
-
-                                        {{ $application->email ?? optional($application->candidate)->email ?? 'N/A' }}
-
-                                    </p>
-
-                                </div>
-
-                                <div class="flex flex-wrap justify-end gap-2">
-
-                                    <span class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold {{ $statusPalette['classes'] }}">
-
-                                        <span class="h-1.5 w-1.5 rounded-full {{ $statusPalette['dot'] }}"></span>
-
-                                        {{ $statusPalette['label'] }}
-
-                                    </span>
-
-                                    <a
-
-                                        href="{{ route('employer.applications.show', $application) }}"
-
-                                        class="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200"
-
-                                    >
-
-                                        Open
-
-                                    </a>
-
-                                </div>
-
-                            </div>
-
-                            <div class="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-
-                                <span>{{ optional($application->created_at)?->diffForHumans() ?? 'just now' }}</span>
-
-                                @if ($application->phone)
-
-                                    <span class="text-slate-600">&middot;</span>
-
-                                    <span>{{ $application->phone }}</span>
-
-                                @endif
-
-                            </div>
-
-                        </div>
-
-                    @empty
-
-                        <div class="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-300">
-
-                            No applications yet. Invite candidates to apply to see them here.
-
-                        </div>
-
-                    @endforelse
-
-                </div>
-
             </article>
 
-            <article class="space-y-5 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">
-
+            <article class="space-y-5 rounded-3xl border border-white/5 bg-white/5 p-6 shadow-2xl">  
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
                     <div>
-
-                        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200/80">Team thread</p>
-
                         <h2 class="text-base font-semibold text-white">Comments</h2>
-
+                        <p class="text-sm text-slate-300 mt-1">{{ $comments->count() }} comments for this job</p>
                     </div>
 
-                    <a
-
-                        href="{{ route('employer.comments.index') }}"
-
-                        class="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-emerald-400/40 hover:text-emerald-200"
-
-                    >
-
-                        View all
-
+                    <a href="{{ route('employer.jobs.comments', $job->id) }}"
+                    class="text-cyan-400 text-sm font-semibold hover:underline">
+                    View Comments
                     </a>
 
                 </div>
 
-                <div class="space-y-4">
-
-                    @forelse ($comments as $comment)
-
-                        <div class="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-
-                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
-                                <div>
-
-                                    <p class="text-sm font-semibold text-white">
-
-                                        {{ optional($comment->user)->name ?? 'Anonymous' }}
-
-                                    </p>
-
-                                    <p class="text-xs text-slate-400">
-
-                                        {{ optional($comment->created_at)?->diffForHumans() ?? 'just now' }}
-
-                                    </p>
-
-                                </div>
-
-                                <a
-
-                                    href="{{ route('employer.comments.show', $comment) }}"
-
-                                    class="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-slate-200 transition hover:-translate-y-0.5 hover:border-cyan-400/40 hover:text-cyan-200"
-
-                                >
-
-                                    View
-
-                                </a>
-
-                            </div>
-
-                            <p class="mt-3 text-sm leading-relaxed text-slate-200">
-
-                                {!! nl2br(e($comment->content)) !!}
-
-                            </p>
-
-                        </div>
-
-                    @empty
-
-                        <div class="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-slate-300">
-
-                            No internal comments for this job yet. Leave the first note to kick off the discussion.
-
-                        </div>
-
-                    @endforelse
-
-                </div>
-
             </article>
-
-        </section>
-
-
-
-
 
         <footer class="rounded-3xl border border-white/10 bg-slate-950/60 px-6 py-4 text-xs text-slate-400">
 
