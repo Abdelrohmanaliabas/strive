@@ -8,7 +8,7 @@
     eyebrow="Users"
     description="Search, filter, and manage every registered account from a single surface.">
     <div class="space-y-8">
-        {{-- dY"? Search & Filter --}}
+        {{-- Search & Filter --}}
         <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex-1">
                 <input type="text" name="search" placeholder="Search by name or email..."
@@ -33,10 +33,10 @@
             </div>
         </form>
 
-        {{-- dY? Users Grid --}}
+        {{-- Users Grid --}}
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($users as $user)
-                <div class="block rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-sm hover:shadow-md transition bg-gray-50 dark:bg-gray-700">
+                <div class="card block rounded-lg border border-gray-200 dark:border-gray-700 p-5 shadow-sm hover:shadow-md transition bg-gray-50 dark:bg-gray-700">
                     <div class="flex justify-between items-center mb-4">
                         {{-- Avatar --}}
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=6366f1&color=fff&size=96"
@@ -75,7 +75,7 @@
                         </a>
 
                         <a href="{{ route('admin.users.edit', $user->id) }}" class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-500 rounded-md transition">
-                            <i class="bi bi-pencil-square"></i> Edit    
+                            <i class="bi bi-pencil-square"></i> Edit
                         </a>
 
                         <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}">

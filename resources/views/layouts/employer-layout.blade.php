@@ -1,4 +1,5 @@
 @php
+
     $navLinks = [
         [
             'label' => 'Dashboard',
@@ -68,7 +69,7 @@
 
 @once
     <style>
-       
+
         .employer-shell {
             background: radial-gradient(circle at top, rgba(13, 202, 240, 0.18), transparent 55%), radial-gradient(circle at right, rgba(32, 201, 151, 0.22), transparent 62%), #0f172a;
 
