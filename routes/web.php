@@ -57,7 +57,7 @@ Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('
 use App\Http\Controllers\EmployerProfileController;
 
 Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
-->name('companies.show');
+    ->name('companies.show');
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
