@@ -14,9 +14,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
@@ -28,17 +25,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // Validate image first
-        if ($request->hasFile('avatar_path')) {
-            $request->validate([
-                'avatar_path' => ['image', 'max:2048'],
-            ]);
-
-            // upload image
-            $avatarPath = $request->file('avatar_path')->store('avatars', 'public');
-            $request->merge(['avatar_path' => $avatarPath]);
-        }
-
-        // Validate all fields
+        // Validate
         $request->validate([
             'name'          => ['required', 'string', 'max:255'],
             'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
@@ -46,18 +33,25 @@ class RegisteredUserController extends Controller
             'linkedin_url'  => ['nullable', 'url', 'max:255'],
             'role'          => ['required', 'string', 'in:candidate,employer'],
             'password'      => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar_path'   => ['nullable', 'image', 'max:2048'], // هنا فقط
         ]);
 
-        // dd($request->all());
-        // store in DB
+        // Handle image upload
+        $avatarPath = null;
+
+        if ($request->hasFile('avatar_path')) {
+            $avatarPath = $request->file('avatar_path')->store('avatars', 'public');
+        }
+
+        // Create user
         $user = User::create([
             'name'          => $request->name,
             'email'         => $request->email,
             'password'      => Hash::make($request->password),
             'phone'         => $request->phone,
             'linkedin_url'  => $request->linkedin_url,
-            'avatar_path'   => $request->avatar_path,
             'role'          => $request->role,
+            'avatar_path'   => $avatarPath, // ← هنا بيتخزن المسار
         ]);
 
         event(new Registered($user));
