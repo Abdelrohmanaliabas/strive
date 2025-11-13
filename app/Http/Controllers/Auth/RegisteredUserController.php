@@ -24,27 +24,46 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validate image first
+        if ($request->hasFile('avatar_path')) {
+            $request->validate([
+                'avatar_path' => ['image', 'max:2048'],
+            ]);
+
+            // upload image
+            $avatarPath = $request->file('avatar_path')->store('avatars', 'public');
+            $request->merge(['avatar_path' => $avatarPath]);
+        }
+
+        // Validate all fields
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone'         => ['nullable', 'string', 'max:30'],
+            'linkedin_url'  => ['nullable', 'url', 'max:255'],
+            'role'          => ['required', 'string', 'in:candidate,employer'],
+            'password'      => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // dd($request->all());
+        // store in DB
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'phone'         => $request->phone,
+            'linkedin_url'  => $request->linkedin_url,
+            'avatar_path'   => $request->avatar_path,
+            'role'          => $request->role,
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('jobs.index', absolute: false));
+        return redirect()->route('jobs.index');
     }
 }
