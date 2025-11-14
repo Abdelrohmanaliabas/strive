@@ -381,12 +381,13 @@
                                     <p class="text-uppercase text-secondary mb-1 small fw-semibold">Employer</p>
                                     <h2 class="h4 text-white mb-1">StriveHub</h2>
                                 </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-light btn-sm theme-toggle"
-                                    data-theme-toggle
-                                    aria-label="Activate light mode"
-                                >
+                                <div class="d-flex align-items-center gap-2">
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-light btn-sm theme-toggle"
+                                        data-theme-toggle
+                                        aria-label="Activate light mode"
+                                    >
                                     <span data-theme-icon="sun">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm0 4a1 1 0 0 1-1-1v-1a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm0-18a1 1 0 0 1-1-1V2a1 1 0 1 1 2 0v1a1 1 0 0 1-1 1Zm8 7h-1a1 1 0 1 1 0-2h1a1 1 0 1 1 0 2ZM5 12a1 1 0 0 1-1 1H3a1 1 0 1 1 0-2h1a1 1 0 0 1 1 1Zm12.36 6.36a1 1 0 0 1-1.41 0l-.71-.7a1 1 0 0 1 1.41-1.42l.71.71a1 1 0 0 1 0 1.41Zm-9.9-9.9a1 1 0 0 1-1.41 0l-.71-.7A1 1 0 0 1 5.76 6.34l.71.7a1 1 0 0 1 0 1.42Zm9.9-4.24a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0Zm-9.9 9.9a1 1 0 0 1 0 1.41l-.71.71a1 1 0 0 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0Z" />
@@ -556,4 +557,5 @@
             }
         });
     </script>
+    <script src="//unpkg.com/alpinejs" defer></script>
 @endonce

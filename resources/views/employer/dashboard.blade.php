@@ -44,7 +44,12 @@
                         Track hiring momentum and stay ahead of every application in one cinematic overview.
                     </p>
                 </div>
-                <div class="flex flex-wrap gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    {{-- Notifications Bell Icon - Prominent Placement in Header --}}
+                    @auth
+                        <x-notification-dropdown />
+                    @endauth
+                    
                     <a href="{{ $jobCreateLink }}" class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
                         New job post
@@ -53,7 +58,6 @@
                         <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
                         Review applicants
                     </a>
-
                 </div>
             </header>
 

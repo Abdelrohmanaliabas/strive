@@ -2,65 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Notification;
-use App\Http\Requests\StoreNotificationRequest;
-use App\Http\Requests\UpdateNotificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Get all notifications for the authenticated user.
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $user = Auth::user();
+        
+        $notifications = $user->notifications()
+            ->when($request->has('unread_only'), function ($query) {
+                $query->whereNull('read_at');
+            })
+            ->latest()
+            ->take($request->get('limit', 20))
+            ->get();
+
+        return response()->json([
+            'notifications' => $notifications->map(function ($notification) {
+                $data = $notification->data ?? [];
+                return [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'data' => $data,
+                    'read_at' => $notification->read_at,
+                    'created_at' => $notification->created_at->diffForHumans(),
+                    'created_at_raw' => $notification->created_at->toDateTimeString(),
+                    'route_url' => $data['route_url'] ?? '#',
+                ];
+            }),
+            'unread_count' => $user->unreadNotifications()->count(),
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Get unread notification count.
      */
-    public function create()
+    public function count(): JsonResponse
     {
-        //
+        $count = Auth::user()->unreadNotifications()->count();
+        
+        return response()->json(['count' => $count]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Mark notification as read.
      */
-    public function store(StoreNotificationRequest $request)
+    public function markAsRead(string $id): JsonResponse
     {
-        //
+        $notification = Auth::user()->notifications()->find($id);
+        
+        if ($notification) {
+            $notification->markAsRead();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
     }
 
     /**
-     * Display the specified resource.
+     * Mark all notifications as read.
      */
-    public function show(Notification $notification)
+    public function markAllAsRead(): JsonResponse
     {
-        //
+        Auth::user()->unreadNotifications->markAsRead();
+        
+        return response()->json(['success' => true]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Delete a notification.
      */
-    public function edit(Notification $notification)
+    public function destroy(string $id): JsonResponse
     {
-        //
-    }
+        $notification = Auth::user()->notifications()->find($id);
+        
+        if ($notification) {
+            $notification->delete();
+            return response()->json(['success' => true]);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateNotificationRequest $request, Notification $notification)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Notification $notification)
-    {
-        //
+        return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
     }
 }

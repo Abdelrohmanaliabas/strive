@@ -47,6 +47,9 @@
           </button>
 
           @auth
+          <!-- Notifications -->
+          <x-notification-dropdown />
+
           <!-- If user is logged in -->
           <div class="relative group">
             <a href="{{ route('profile.edit') }}" class="flex items-center space-x-2">
@@ -169,7 +172,7 @@
               }
           }, 4000);
         </script>
-
+        <script src="//unpkg.com/alpinejs" defer></script>
 
                 {{-- @stack('scripts') --}}
     </body>

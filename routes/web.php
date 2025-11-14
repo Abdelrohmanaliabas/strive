@@ -19,6 +19,7 @@ use App\Http\Controllers\JobPostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialLiteController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [JobListingController::class, 'index'])->name('jobs.index');
@@ -41,13 +42,28 @@ Route::get('/auth/linkedin/redirect', [SocialLiteController::class, 'redirect'])
 Route::get('/auth/linkedin/callback', [SocialLiteController::class, 'callback'])->name('auth.linkedin.callback');
 
 
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('admin.notifications');
+});
 Route::view('/admin/analytics', 'admin.analytics.index')->name('admin.analytics.index');
 Route::view('/admin/comments', 'admin.comments.index')->name('admin.comments.index');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Notification routes
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/page', function () {
+            return view('notifications.index');
+        })->name('page');
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/count', [NotificationController::class, 'count'])->name('count');
+        Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+    });
 });
 // Route::view('/admin/users', 'admin.users.index')->name('admin.users.index');
 Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
@@ -64,6 +80,7 @@ Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 
 Route::get('/categories', [CategoryListingController::class, 'index'])->name('public_categories.index');
 Route::get('/employers', [EmployerListingController::class, 'index'])->name('public_employers.index');

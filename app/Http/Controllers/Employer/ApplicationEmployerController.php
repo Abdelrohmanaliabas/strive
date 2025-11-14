@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Notifications\ApplicationStatusNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,6 +61,15 @@ class ApplicationEmployerController extends Controller
 
         if ($application->status !== $newStatus) {
             $application->forceFill(['status' => $newStatus])->save();
+            
+            // Notify candidate about status change (only for accepted/rejected, not pending)
+            if (in_array($newStatus, ['accepted', 'rejected'])) {
+                // Ensure jobPost relationship is loaded for the notification
+                $application->load('jobPost');
+                if ($application->candidate) {
+                    $application->candidate->notify(new ApplicationStatusNotification($application, $newStatus));
+                }
+            }
         }
 
         return back()->with('status', __('Application status updated to :status.', ['status' => ucfirst($newStatus)]));

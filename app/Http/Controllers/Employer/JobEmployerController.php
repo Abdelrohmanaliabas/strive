@@ -7,9 +7,12 @@ use App\Http\Requests\StoreJobPostRequest;
 use App\Http\Requests\UpdateJobPostRequest;
 use App\Models\JobCategory;
 use App\Models\JobPost;
+use App\Models\User;
+use App\Notifications\JobPostedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 class JobEmployerController extends Controller
@@ -65,7 +68,14 @@ class JobEmployerController extends Controller
             $data['logo'] = $this->uploadImage($request->file('logo'));
         }
 
-        JobPost::create($data);
+        $jobPost = JobPost::create($data);
+        $jobPost->load('employer');
+
+        // Notify all admins about the new job posting
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new JobPostedNotification($jobPost));
+        }
 
         return redirect()->route('employer.jobs.index')->with('success', 'Job posted successfully.');
     }
