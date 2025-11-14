@@ -9,7 +9,7 @@
     description="Detailed overview of the account, associated posts, and recent activity.">
     <div class="max-w-6xl mx-auto space-y-10">
 
-        {{-- dY`�??dY'� Basic Info --}}
+        {{-- Basic Info --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
             <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=6366f1&color=fff&size=128"
                  alt="{{ $user->name }}"
@@ -48,7 +48,7 @@
             </div>
         </div>
 
-        {{-- dY'� Job Posts --}}
+        {{-- Job Posts --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Job Posts ({{ $user->jobPosts->count() }})
@@ -88,7 +88,7 @@
             @endif
         </div>
 
-        {{-- dY"? Applications --}}
+        {{-- Applications --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Applications ({{ $user->applications->count() }})
@@ -112,7 +112,7 @@
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
                                     <td class="px-4 py-3">{{ $app->id }}</td>
                                     <td class="px-4 py-3">
-                                        <a href="{{ route('admin.jobpost.show', $app->jobPost->id) }}" 
+                                        <a href="{{ route('admin.jobpost.show', $app->jobPost->id) }}"
                                            class="text-indigo-600 hover:text-indigo-400">
                                            {{ $app->jobPost->title ?? '�?"' }}
                                         </a>
@@ -127,7 +127,7 @@
             @endif
         </div>
 
-        {{-- dY'� Comments --}}
+        {{--  Comments --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Comments ({{ $user->comments->count() }})

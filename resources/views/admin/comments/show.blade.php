@@ -9,7 +9,7 @@
     eyebrow="Comments"
     description="Inspect the full message, author, and context before taking action.">
     <div class="space-y-6">
-        {{-- dY? User Info --}}
+        {{-- User Info --}}
         <div class="flex items-center gap-4">
             <img src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}&background=6366f1&color=fff&size=96"
                  class="w-16 h-16 rounded-full border-2 border-indigo-500 object-cover">
@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        {{-- dY'� Comment Info --}}
+        {{-- Comment Info --}}
         <div class="space-y-4">
             <div>
                 <h3 class="text-sm font-medium text-gray-500 uppercase">Comment Content</h3>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        {{-- �?O Delete --}}
+        {{--  Delete --}}
         <form action="{{ route('admin.comments.destroy', $comment->id) }}" method="POST"
               onsubmit="return confirm('Are you sure you want to delete this comment?')">
             @csrf

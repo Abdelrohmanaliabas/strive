@@ -224,7 +224,7 @@
             position: absolute;
             inset: -2px;
             border-radius: 1rem;
-            border: 1px solid var(--admin-icon-ring-outline);
+            /* border: 1px solid var(--admin-icon-ring-outline); */
             opacity: 0.65;
             pointer-events: none;
         }

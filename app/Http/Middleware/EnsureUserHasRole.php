@@ -27,9 +27,7 @@ class EnsureUserHasRole
             ->map(fn (string $role) => strtolower(trim($role)))
             ->values();
 
-        if ($expectedRoles->isEmpty()) {
-            $expectedRoles = collect(['employer']);
-        }
+    
 
         $userRole = strtolower((string) $user->role);
 

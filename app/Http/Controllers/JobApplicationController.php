@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class JobApplicationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:candidate'])->only(['store']);
+    }
+
 
     public function store(Request $request)
     {
