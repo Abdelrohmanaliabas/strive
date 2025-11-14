@@ -12,8 +12,8 @@
         <div class="text-gray-600 dark:text-gray-300">
             <p><strong>Job Title:</strong> {{ $jobPost->title }}</p>
             <p><strong>Current Status:</strong>
-                <span class="@if($jobPost->status === 'approved') text-green-600 
-                              @elseif($jobPost->status === 'pending') text-yellow-600 
+                <span class="@if($jobPost->status === 'approved') text-green-600
+                              @elseif($jobPost->status === 'pending') text-yellow-600
                               @else text-red-600 @endif font-medium">
                     {{ ucfirst($jobPost->status) }}
                 </span>
@@ -21,7 +21,7 @@
         </div>
 
         @if ($jobPost->status === 'pending')
-            {{-- �o. Form --}}
+            {{--  Form --}}
             <form method="POST" action="{{ route('admin.jobpost.update', $jobPost->id) }}" class="space-y-4">
                 @csrf
                 @method('PUT')
@@ -54,8 +54,8 @@
                 </div>
             </form>
         @else
-            {{-- �?O --}}
-            <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300">
+
+        <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-300">
                 <p class="mb-2">This job post has already been <strong>{{ ucfirst($jobPost->status) }}</strong>.</p>
                 <a href="{{ route('admin.jobpost.show', $jobPost->id) }}"
                    class="text-indigo-600 hover:underline">�+? Back to Job Details</a>
