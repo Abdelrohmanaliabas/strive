@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class JobListingController extends Controller
 {
+    
+
     /**
      * Display a listing of approved job posts with filters.
      */

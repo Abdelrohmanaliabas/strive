@@ -9,7 +9,7 @@
     description="Review posting details, applicants, and discussion in a single view.">
     <div class="max-w-6xl mx-auto space-y-8">
 
-        {{-- �o. Flash Messages --}}
+        {{-- Flash Messages --}}
         @if (session('success'))
             <div class="p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-100 dark:bg-green-900 dark:text-green-200">
                 {{ session('success') }}
@@ -22,13 +22,13 @@
             </div>
         @endif
 
-        {{-- dYZ_ Job Details --}}
+        {{-- Job Details --}}
         <div class="space-y-4">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $jobPost->title }}</h2>
 
                 <div class="flex items-center gap-3">
-                    {{-- �o?�,? Edit Status (only if pending) --}}
+                    {{-- Edit Status (only if pending) --}}
                     @if ($jobPost->status === 'pending')
                         <a href="{{ route('admin.jobpost.edit', $jobPost->id) }}"
                            class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg shadow hover:bg-indigo-500 transition">
@@ -37,7 +37,7 @@
                         </a>
                     @endif
 
-                    {{-- dY-`�,? Delete Job --}}
+                    {{-- Delete Job --}}
                     <form action="{{ route('admin.jobpost.destroy', $jobPost->id) }}" method="POST"
                           onsubmit="return confirm('Are you sure you want to delete this job post?');">
                         @csrf
@@ -59,9 +59,9 @@
                 <p><strong>Location:</strong> {{ $jobPost->location }}</p>
                 <p><strong>Work Type:</strong> {{ ucfirst($jobPost->work_type) }}</p>
                 <p><strong>Status:</strong>
-                    <span class="font-medium 
-                        @if($jobPost->status === 'approved') text-green-600 
-                        @elseif($jobPost->status === 'pending') text-yellow-600 
+                    <span class="font-medium
+                        @if($jobPost->status === 'approved') text-green-600
+                        @elseif($jobPost->status === 'pending') text-yellow-600
                         @else text-red-600 @endif">
                         {{ ucfirst($jobPost->status) }}
                     </span>
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        {{-- dY_ Applications Section --}}
+        {{--Applications Section --}}
         <div>
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2 mb-4">
                 Applications ({{ $jobPost->applications->count() }})
@@ -98,7 +98,7 @@
                                     <td class="px-4 py-3">{{ $app->phone ?? '�?"' }}</td>
                                     <td class="px-4 py-3">
                                         @if ($app->resume)
-                                            <a href="{{ asset('storage/' . $app->resume) }}" target="_blank" 
+                                            <a href="{{ asset('storage/' . $app->resume) }}" target="_blank"
                                                class="text-indigo-600 hover:text-indigo-500">
                                                 <i class="bi bi-file-earmark-arrow-down"></i> Download
                                             </a>
@@ -115,7 +115,7 @@
             @endif
         </div>
 
-        {{-- dY'� Comments Section --}}
+        {{--  Comments Section --}}
         <div>
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2 mb-4">
                 Comments ({{ $jobPost->comments->count() }})

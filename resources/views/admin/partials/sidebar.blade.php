@@ -75,6 +75,7 @@
             justify-content: center;
             align-items: center;
             display: flex;
+            
         }
     </style>
 </aside>

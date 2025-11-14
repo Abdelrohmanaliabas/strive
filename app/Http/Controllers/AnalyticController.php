@@ -8,6 +8,11 @@ use App\Http\Requests\UpdateAnalyticRequest;
 
 class AnalyticController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:admin']);
+    }
+
     /**
      * Display a listing of the resource.
      */
