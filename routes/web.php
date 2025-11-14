@@ -62,6 +62,7 @@ Route::get('/companies/{employer}', [EmployerProfileController::class, 'show'])
 
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact/send', [PageController::class, 'sendMessage'])->name('contact.send');
 
 Route::get('/categories', [CategoryListingController::class, 'index'])->name('public_categories.index');
 Route::get('/employers', [EmployerListingController::class, 'index'])->name('public_employers.index');
