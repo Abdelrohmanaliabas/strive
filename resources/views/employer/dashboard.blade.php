@@ -38,7 +38,7 @@
                         <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
                         New job post
                     </a>
-                    <a href="{{ Route::has('employer.applications.index')? route('employer.applications.index'): (Route::has('applications.index') ? route('applications.index') : '#'); }}"
+                    <a href="{{ Route::has('employer.applications.index')? route('employer.applications.index'): (Route::has('applications.index') ? route('applications.index') : '#')}}"
                     class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/15">
                         <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
                         Review applicants
