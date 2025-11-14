@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Notifications\CommentDeletedNotification;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 
@@ -31,7 +32,17 @@ class CommentController extends Controller
     }
     public function destroy(Comment $comment)
     {
+        // Load relationships before deleting (needed for notification)
+        $comment->load('user', 'commentable');
+        $user = $comment->user;
+
+        // Create notification before deleting (notification is queued, so object is serialized)
+        if ($user) {
+            $user->notify(new CommentDeletedNotification($comment));
+        }
+
         $comment->delete();
+
         return redirect()->route('admin.comments.index')
             ->with('success', 'Comment deleted successfully.');
     }

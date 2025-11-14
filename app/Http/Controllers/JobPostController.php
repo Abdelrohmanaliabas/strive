@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\JobPost;
+use App\Models\User;
 use App\Http\Requests\StoreJobPostRequest;
 use App\Http\Requests\UpdateJobPostRequest;
+use App\Notifications\JobApprovedNotification;
+use App\Notifications\JobRejectedNotification;
+use App\Notifications\JobPublishedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class JobPostController extends Controller
 {
@@ -100,7 +105,26 @@ class JobPostController extends Controller
             'status' => 'required|in:approved,rejected',
         ]);
 
+        $oldStatus = $post->status;
         $post->update(['status' => $validated['status']]);
+        $post->load('employer');
+
+        // Notify employer about approval or rejection
+        if ($validated['status'] === 'approved') {
+            if ($post->employer) {
+                $post->employer->notify(new JobApprovedNotification($post));
+            }
+
+            // Notify all candidates about the published job
+            $candidates = User::where('role', 'candidate')->get();
+            if ($candidates->isNotEmpty()) {
+                Notification::send($candidates, new JobPublishedNotification($post));
+            }
+        } elseif ($validated['status'] === 'rejected') {
+            if ($post->employer) {
+                $post->employer->notify(new JobRejectedNotification($post));
+            }
+        }
 
         return redirect()->route('admin.jobpost.show', $post->id)
             ->with('success', 'Job status updated successfully.');

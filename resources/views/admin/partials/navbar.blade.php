@@ -16,6 +16,11 @@
             <i class="bi bi-moon text-lg"></i>
         </button>
 
+        {{-- Notifications --}}
+        @auth
+            <x-notification-dropdown />
+        @endauth
+
         {{-- Profile dropdown --}}
         <div class="relative group">
             @auth
