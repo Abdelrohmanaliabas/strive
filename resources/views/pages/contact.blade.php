@@ -21,7 +21,24 @@
         <!-- Contact Form -->
         <div class="p-8 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
             <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">Send Us a Message</h2>
-            <form action="#" method="POST" class="space-y-4">
+            
+            @if(session('success'))
+                <div class="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300">
+                    <p class="text-sm">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="mb-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">
+                    <ul class="text-sm list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('contact.store') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Full Name</label>

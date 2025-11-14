@@ -32,19 +32,25 @@
                         Track hiring momentum and stay ahead of every application in one cinematic overview.
                     </p>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{  Route::has('employer.jobs.create')? route('employer.jobs.create'): (Route::has('jobs.create') ? route('jobs.create') : '#') }}"
-                    class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
-                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
-                        New job post
-                    </a>
-                    <a href="{{ Route::has('employer.applications.index')? route('employer.applications.index'): (Route::has('applications.index') ? route('applications.index') : '#')}}"
-                    class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/15">
-                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
-                        Review applicants
-                    </a>
+<div class="flex flex-wrap items-center gap-3">
+    {{-- Notifications Bell Icon --}}
+    @auth
+        <x-notification-dropdown />
+    @endauth
 
-                </div>
+    <a href="{{ $jobCreateLink ?? (Route::has('employer.jobs.create') ? route('employer.jobs.create') : (Route::has('jobs.create') ? route('jobs.create') : '#')) }}"
+        class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
+        New job post
+    </a>
+
+    <a href="{{ Route::has('employer.applications.index') ? route('employer.applications.index') : (Route::has('applications.index') ? route('applications.index') : '#') }}"
+        class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/15">
+        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
+        Review applicants
+    </a>
+</div>
+
             </header>
 
             <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">

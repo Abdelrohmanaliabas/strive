@@ -17,6 +17,20 @@
                 <span class="ml-3 sidebar-text">Dashboard</span>
             </a>
 
+            <a href="{{ route('admin.notifications') }}"
+               class="flex items-center px-5 py-1 mx-5 rounded-full transition-all {{ request()->routeIs('admin.notifications') ? 'bg-blue-900/30' : '' }} relative">
+                <i class="bi bi-bell text-xl border-2 w-10 h-10 text-center" style="border-radius: 50%;"></i>
+                <span class="ml-3 sidebar-text">Notifications</span>
+                @auth
+                    @php
+                        $unreadCount = auth()->user()->unreadNotifications()->count();
+                    @endphp
+                    @if($unreadCount > 0)
+                        <span class="absolute top-0 right-2 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full sidebar-text">{{ $unreadCount }}</span>
+                    @endif
+                @endauth
+            </a>
+
             <a href="{{ route('admin.users.index') }}"
                class="flex items-center px-5 py-1 mx-5 rounded-full transition-all {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') ? 'bg-blue-900/30' : '' }}">
                 <i class="bi bi-people text-xl border-2 w-10 h-10 text-center" style="border-radius: 50%;"></i>

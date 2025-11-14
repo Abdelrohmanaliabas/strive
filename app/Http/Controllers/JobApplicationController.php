@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Application;
 use App\Models\JobPost;
+use App\Notifications\JobAppliedNotification;
 use Illuminate\Http\Request;
 
 class JobApplicationController extends Controller
@@ -29,7 +30,7 @@ class JobApplicationController extends Controller
         $path = $request->file('resume')->store('resumes', 'public');
 
         // Create the application
-        Application::create([
+        $application = Application::create([
             'job_post_id' => $validated['job_post_id'],
             'candidate_id' => Auth::id() ?? null,
             'name' => $validated['name'],
@@ -48,6 +49,14 @@ class JobApplicationController extends Controller
                 'last_viewed_at' => now()
             ]
         );
+
+        // Notify employer about the new application
+        $application->load('jobPost.employer');
+        if ($application->jobPost && $application->jobPost->employer) {
+            // Ensure jobPost relationship is loaded for the notification
+            $application->load('jobPost');
+            $application->jobPost->employer->notify(new JobAppliedNotification($application));
+        }
 
         return redirect()->route('jobs.show', $validated['job_post_id'])
                          ->with('success', 'Your application was submitted successfully!');
