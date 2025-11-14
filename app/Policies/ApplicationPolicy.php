@@ -13,7 +13,7 @@ class ApplicationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer();
     }
 
     /**
@@ -21,7 +21,9 @@ class ApplicationPolicy
      */
     public function view(User $user, Application $application): bool
     {
-        return false;
+        return $user->isAdmin() ||
+               ($user->isCandidate() && $application->candidate_id === $user->id) ||
+               ($user->isEmployer() && $application->jobPost->employer_id === $user->id);
     }
 
     /**
@@ -29,7 +31,7 @@ class ApplicationPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isCandidate();
     }
 
     /**
@@ -37,7 +39,7 @@ class ApplicationPolicy
      */
     public function update(User $user, Application $application): bool
     {
-        return false;
+        return $user->isAdmin() || ($user->isEmployer() && $application->jobPost->employer_id === $user->id);
     }
 
     /**
@@ -45,7 +47,7 @@ class ApplicationPolicy
      */
     public function delete(User $user, Application $application): bool
     {
-        return false;
+        return $user->isAdmin() || ($user->isCandidate() && $application->candidate_id === $user->id);
     }
 
     /**
