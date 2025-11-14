@@ -94,9 +94,8 @@
             <div class="rounded-2xl border border-white/10 bg-slate-950/60 p-6 text-sm text-slate-200">
                 @if ($application->resume)
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                        <p class="truncate text-slate-300">
-                            {{ basename($application->resume) }}
-                        </p>
+                        <i class="bi bi-file-earmark-pdf text-red-500 text-xl"></i>
+                        <span class="text-slate-300">Candidate Resume</span>
 
                         <div class="flex items-center gap-2">
                             <!-- Preview Button -->
