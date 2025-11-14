@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ApplicationEmployerController extends Controller
 {
+    
     public function index(Request $request): View
     {
         $employerId = Auth::id();
-        $jobId = $request->query('job_id'); 
+        $jobId = $request->query('job_id');
 
         $applicationsQuery = Application::query()
             ->whereHas('jobPost', fn($query) => $query->where('employer_id', $employerId))
@@ -85,7 +86,7 @@ class ApplicationEmployerController extends Controller
 
     public function download($id)
     {
-        $application = Application::findOrFail($id);    
+        $application = Application::findOrFail($id);
         $resumePath = $application->resume;
 
         if (preg_match('#^https?://#i', $resumePath)) {

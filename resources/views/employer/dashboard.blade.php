@@ -1,12 +1,6 @@
 <x-employer-layout>
     @php
-        $metricCards = collect($metricCards ?? []);
-        $jobSnapshots = collect($jobSnapshots ?? []);
-        $recentApplicants = collect($recentApplicants ?? []);
-        $pipeline = collect($pipeline ?? []);
 
-        $trendLabels = collect($trendLabels ?? [])->values();
-        $trendSeries = collect($trendData ?? [])->values();
 
         $statusLabels = collect($statusLabels ?? [])->values();
         $statusSeries = collect($statusSeries ?? [])->values();
@@ -21,12 +15,6 @@
         $topJobSeries = collect($topJobSeries ?? [])->values();
         $topJobRows = collect($topJobs ?? []);
 
-        $jobCreateLink = Route::has('employer.jobs.create')
-            ? route('employer.jobs.create')
-            : (Route::has('jobs.create') ? route('jobs.create') : '#');
-        $applicationsLink = Route::has('employer.applications.index')
-            ? route('employer.applications.index')
-            : (Route::has('applications.index') ? route('applications.index') : '#');
     @endphp
 
     <div class="relative min-h-full bg-slate-950 text-slate-100">
@@ -44,21 +32,25 @@
                         Track hiring momentum and stay ahead of every application in one cinematic overview.
                     </p>
                 </div>
-                <div class="flex flex-wrap items-center gap-3">
-                    {{-- Notifications Bell Icon - Prominent Placement in Header --}}
-                    @auth
-                        <x-notification-dropdown />
-                    @endauth
-                    
-                    <a href="{{ $jobCreateLink }}" class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
-                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
-                        New job post
-                    </a>
-                    <a href="{{ $applicationsLink }}" class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/15">
-                        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
-                        Review applicants
-                    </a>
-                </div>
+<div class="flex flex-wrap items-center gap-3">
+    {{-- Notifications Bell Icon --}}
+    @auth
+        <x-notification-dropdown />
+    @endauth
+
+    <a href="{{ $jobCreateLink ?? (Route::has('employer.jobs.create') ? route('employer.jobs.create') : (Route::has('jobs.create') ? route('jobs.create') : '#')) }}"
+        class="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-cyan-200 transition hover:-translate-y-0.5 hover:bg-cyan-400/20">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-200">+</span>
+        New job post
+    </a>
+
+    <a href="{{ Route::has('employer.applications.index') ? route('employer.applications.index') : (Route::has('applications.index') ? route('applications.index') : '#') }}"
+        class="inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-emerald-400/10 px-5 py-2.5 text-sm font-semibold tracking-wide text-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-400/15">
+        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-300"></span>
+        Review applicants
+    </a>
+</div>
+
             </header>
 
             <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -223,32 +215,6 @@
 
 
 
-                    {{-- <section class="rounded-3xl border border-white/5 bg-slate-950/60 p-6 shadow-2xl">
-                        <header class="flex items-center justify-between">
-                            <h2 class="text-base font-semibold uppercase tracking-[0.28em] text-slate-300">Recent applicants</h2>
-                            <a href="{{ $applicationsLink }}" class="text-xs font-semibold text-cyan-200 hover:text-cyan-100">See all</a>
-                        </header>
-                        <ul class="mt-5 space-y-3">
-                            @forelse ($recentApplicants as $applicant)
-                                <li class="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-3">
-                                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-semibold text-white">
-                                        {{ strtoupper(substr($applicant['name'], 0, 2)) }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-semibold text-white">{{ $applicant['name'] }}</p>
-                                        <p class="text-xs text-slate-400">{{ $applicant['role'] }} &middot; {{ $applicant['applied_at'] }}</p>
-                                    </div>
-                                    <span class="rounded-full bg-emerald-400/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-200">
-                                        {{ $applicant['status'] }}
-                                    </span>
-                                </li>
-                            @empty
-                                <li class="rounded-2xl border border-dashed border-white/10 p-6 text-center text-xs text-slate-400">
-                                    Applicants will appear here as soon as you start receiving submissions.
-                                </li>
-                            @endforelse
-                        </ul>
-                    </section> --}}
                 </aside>
             </section>
         </div>
@@ -257,8 +223,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.5/dist/chart.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const trendLabels = @json($trendLabels);
-            const trendSeries = @json($trendSeries);
+            const trendLabels = @json( collect($trendLabels ?? [])->values());
+            const trendSeries = @json(collect($trendData ?? [])->values());
             const statusLabels = @json($statusLabels);
             const statusSeries = @json($statusSeries);
             const jobLabels = @json($topJobLabels);
