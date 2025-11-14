@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class EmployerProfileController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:admin ,candidate,employer']);
+    }
+
     public function show(User $employer)
     {
 
