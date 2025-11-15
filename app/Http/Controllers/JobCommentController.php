@@ -34,13 +34,13 @@ class JobCommentController extends Controller
         // Notify only the employer (employee) who owns the job post
         // Comments should NOT appear in admin notifications
         $jobPost->load('employer');
-        
+
         // Notify only the employer who owns this job post
         if ($jobPost->employer) {
             $jobPost->employer->notify(new CommentAddedNotification($comment));
         }
 
         return redirect()->route('jobs.show', $jobPost->id)
-                         ->with('success', 'Your comment was added successfully!');
+                        ->with('success', 'Your comment was added successfully!');
     }
 }
