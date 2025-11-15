@@ -19,6 +19,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialLiteController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // ================= Public pages ===================
@@ -29,6 +30,7 @@ Route::get('/categories', [CategoryListingController::class, 'index'])->name('pu
 Route::get('/employers', [EmployerListingController::class, 'index'])->name('public_employers.index');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 
 // ================= Authenticated general features ===================
 Route::middleware('auth')->group(function () {
@@ -38,6 +40,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Notification routes
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/page', function () {
+            return view('notifications.index');
+        })->name('page');
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::get('/count', [NotificationController::class, 'count'])->name('count');
+        Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // ================= Social auth ===================

@@ -371,6 +371,7 @@
         </main>
     </div>
 
+    <script src="//unpkg.com/alpinejs" defer></script>
     <script>
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('main-content');

@@ -13,7 +13,7 @@ class JobPostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -21,7 +21,7 @@ class JobPostPolicy
      */
     public function view(User $user, JobPost $jobPost): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -29,7 +29,7 @@ class JobPostPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isEmployer() || $user->isAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class JobPostPolicy
      */
     public function update(User $user, JobPost $jobPost): bool
     {
-        return false;
+         return $user->isAdmin() || ($user->isEmployer() && $jobPost->employer_id === $user->id);
     }
 
     /**
@@ -45,7 +45,7 @@ class JobPostPolicy
      */
     public function delete(User $user, JobPost $jobPost): bool
     {
-        return false;
+         return $user->isAdmin() || ($user->isEmployer() && $jobPost->employer_id === $user->id);
     }
 
     /**

@@ -17,13 +17,12 @@ class NotificationFactory extends Factory
     public function definition(): array
     {
         return [
-            //    protected $fillable = ['user_id', 'type', 'message', 'is_read'];
-
-            'user_id' => \App\Models\User::factory(),
-            'type' => $this->faker->randomElement(['success', 'info', 'warning', 'error']),
-            'message' => $this->faker->text(),
-            'is_read' => $this->faker->boolean(),
-
+            'id' => $this->faker->uuid(),
+            'type' => 'App\Notifications\GenericNotification',
+            'notifiable_id' => \App\Models\User::factory(),
+            'notifiable_type' => 'App\Models\User',
+            'data' => ['message' => $this->faker->text()],
+            'read_at' => null,
         ];
     }
 }
