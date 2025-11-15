@@ -136,8 +136,8 @@ Route::middleware(['auth', 'role:employer'])
         Route::get('jobs/{job}/comments', [CommentEmployerController::class, 'forJob'])->name('jobs.comments');
         Route::get('candidates/{user}', [CommentEmployerController::class, 'showUser'])->name('candidates.show');
 
-        Route::view('analytics', 'employer.analytics')->name('analytics');
-        Route::view('notifications', 'employer.notifications')->name('notifications');
+        // Route::view('analytics', 'employer.analytics')->name('analytics');
+        // Route::view('notifications', 'employer.notifications')->name('notifications');
     });
 
 require __DIR__ . '/auth.php';
