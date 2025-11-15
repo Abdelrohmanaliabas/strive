@@ -168,8 +168,11 @@ class DashboardController extends Controller
         $jobSnapshots = JobPost::with('category')
             ->withCount('applications')
             ->where('employer_id', $employerId)
-            ->where('status', 'approved')
-            ->where('application_deadline', '<=', Carbon::now())
+            ->whereIn('status', ['approved'])
+            ->where(function ($query) {
+                $query->whereNull('application_deadline')
+                    ->orWhere('application_deadline', '>=', Carbon::now());
+            })
             ->orderByDesc('created_at')
             ->limit(5)
             ->get()
