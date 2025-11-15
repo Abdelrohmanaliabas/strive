@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\AnalyticController;
 use App\Http\Controllers\CategoryListingController;
 use App\Http\Controllers\CommentController;
@@ -102,6 +103,7 @@ Route::middleware(['auth', 'role:admin'])
                 Route::delete('/{comment}', 'destroy')->name('destroy');
             });
 
+        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications');
         Route::get('/analytics', [AnalyticController::class, 'index'])->name('analytics.index');
     });
 
