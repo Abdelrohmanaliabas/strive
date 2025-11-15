@@ -8,21 +8,21 @@ use Illuminate\Http\Request;
 
 class JobListingController extends Controller
 {
-    
 
-    /**
-     * Display a listing of approved job posts with filters.
-     */
     public function index(Request $request)
     {
         $perPage = 12;
 
-        // Base query: only approved posts
+        // Base query — only approved jobs
         $query = JobPost::query()
             ->with(['employer', 'category'])
             ->where('status', 'approved');
 
-        // Keyword search.
+        /*
+        |--------------------------------------------------------------------------
+        | KEYWORD SEARCH
+        |--------------------------------------------------------------------------
+        */
         if ($q = $request->query('q')) {
             $query->where(function ($sub) use ($q) {
                 $sub->where('title', 'like', "%{$q}%")
@@ -32,47 +32,83 @@ class JobListingController extends Controller
             });
         }
 
-        // Category filter (assume category id passed).
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORY FILTER
+        |--------------------------------------------------------------------------
+        */
         if ($category = $request->query('category')) {
             $query->where('category_id', $category);
         }
 
-        // Location filter
+        /*
+        |--------------------------------------------------------------------------
+        | LOCATION FILTER
+        |--------------------------------------------------------------------------
+        */
         if ($location = $request->query('location')) {
             $query->where('location', 'like', "%{$location}%");
         }
 
-        // Work type
+        /*
+        |--------------------------------------------------------------------------
+        | WORK TYPE FILTER (remote, onsite, hybrid)
+        |--------------------------------------------------------------------------
+        */
         if ($workType = $request->query('work_type')) {
             $query->where('work_type', $workType);
         }
 
-        // Technology filter (job_posts.technologies contains the tech string)
+        /*
+        |--------------------------------------------------------------------------
+        | TECHNOLOGY FILTER
+        | technologies is stored as a comma-separated string
+        |--------------------------------------------------------------------------
+        */
         if ($tech = $request->query('technology')) {
-            // assume technologies stored as comma-separated text like "PHP, Laravel, MySQL"
-            // Use LIKE to find tech; wrap with separators to reduce false positives.
             $search = trim($tech);
-            $query->where(function($q2) use ($search) {
-                $q2->where('technologies', 'like', "{$search},%")
-                   ->orWhere('technologies', 'like', "%, {$search},%")
-                   ->orWhere('technologies', 'like', "%, {$search}")
-                   ->orWhere('technologies', 'like', "%{$search}%"); // fallback
+
+            $query->where(function ($q2) use ($search) {
+                $q2->where('technologies', 'like', "%{$search}%");
             });
         }
 
-        // filter by salary_range string (simple contains)
+        /*
+        |--------------------------------------------------------------------------
+        | SALARY FILTER
+        | salary_range is a plain string ("3000-6000 EGP")
+        |--------------------------------------------------------------------------
+        */
         if ($salary = $request->query('salary')) {
             $query->where('salary_range', 'like', "%{$salary}%");
         }
 
-        // Sorting: newest first
-        $jobs = $query->latest('created_at')->paginate($perPage)->withQueryString();
+        /*
+        |--------------------------------------------------------------------------
+        | DATE POSTED FILTER
+        | Values could be: 1 day, 3 days, 7 days, 30 days, etc.
+        |--------------------------------------------------------------------------
+        */
+        if ($posted = $request->query('posted')) {
+            if (is_numeric($posted)) {
+                $query->where('created_at', '>=', now()->subDays($posted));
+            }
+        }
 
-        // For filters UI: list of categories
+        /*
+        |--------------------------------------------------------------------------
+        | SORT & PAGINATE
+        |--------------------------------------------------------------------------
+        */
+        $jobs = $query->latest('created_at')
+                      ->paginate($perPage)
+                      ->withQueryString();
+
         $categories = JobCategory::orderBy('name')->get();
 
         return view('jobs.index', compact('jobs', 'categories'));
     }
+
 
     /**
      * Display a single job post.
