@@ -13,7 +13,7 @@ class NotificationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -21,7 +21,7 @@ class NotificationPolicy
      */
     public function view(User $user, Notification $notification): bool
     {
-        return false;
+        return $user->isAdmin() || $notification->user_id === $user->id;
     }
 
     /**
@@ -29,7 +29,7 @@ class NotificationPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class NotificationPolicy
      */
     public function update(User $user, Notification $notification): bool
     {
-        return false;
+        return $user->isAdmin() || $notification->user_id === $user->id;
     }
 
     /**
@@ -45,7 +45,7 @@ class NotificationPolicy
      */
     public function delete(User $user, Notification $notification): bool
     {
-        return false;
+        return $user->isAdmin() || $notification->user_id === $user->id;
     }
 
     /**

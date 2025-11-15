@@ -13,7 +13,7 @@ class AnalyticPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer();
     }
 
     /**
@@ -21,7 +21,7 @@ class AnalyticPolicy
      */
     public function view(User $user, Analytic $analytic): bool
     {
-        return false;
+        return $user->isAdmin() || ($user->isEmployer() && $analytic->jobPost->employer_id === $user->id);
     }
 
     /**
@@ -29,7 +29,7 @@ class AnalyticPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -37,7 +37,7 @@ class AnalyticPolicy
      */
     public function update(User $user, Analytic $analytic): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -45,7 +45,7 @@ class AnalyticPolicy
      */
     public function delete(User $user, Analytic $analytic): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**

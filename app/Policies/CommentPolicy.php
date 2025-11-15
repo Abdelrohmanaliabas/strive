@@ -13,7 +13,7 @@ class CommentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -21,7 +21,7 @@ class CommentPolicy
      */
     public function view(User $user, Comment $comment): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -29,7 +29,7 @@ class CommentPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin() || $user->isEmployer() || $user->isCandidate();
     }
 
     /**
@@ -37,7 +37,7 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment): bool
     {
-        return false;
+        return $user->isAdmin() || $comment->user_id === $user->id;
     }
 
     /**
@@ -45,6 +45,17 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
+        if ($user->isAdmin()) {
+            return true;
+        }
+        if ($comment->user_id === $user->id) {
+            return true;
+        }
+        // If comment is on a JobPost, allow employer of the post to delete
+        if ($comment->commentable_type === JobPost::class) {
+            $jobPost = $comment->commentable;
+            return $user->isEmployer() && $jobPost->employer_id === $user->id;
+        }
         return false;
     }
 
