@@ -14,12 +14,8 @@ class NotificationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $user = Auth::user();
-        
-        $notifications = $user->notifications()
-            ->when($request->has('unread_only'), function ($query) {
-                $query->whereNull('read_at');
-            })
+        $notifications = Auth::user()->notifications()
+            ->when($request->has('unread_only'), fn($q) => $q->whereNull('read_at'))
             ->latest()
             ->take($request->get('limit', 20))
             ->get();
@@ -37,7 +33,7 @@ class NotificationController extends Controller
                     'route_url' => $data['route_url'] ?? '#',
                 ];
             }),
-            'unread_count' => $user->unreadNotifications()->count(),
+            'unread_count' => Auth::user()->unreadNotifications()->count(),
         ]);
     }
 
@@ -46,9 +42,9 @@ class NotificationController extends Controller
      */
     public function count(): JsonResponse
     {
-        $count = Auth::user()->unreadNotifications()->count();
-        
-        return response()->json(['count' => $count]);
+        return response()->json([
+            'count' => Auth::user()->unreadNotifications()->count()
+        ]);
     }
 
     /**
@@ -57,13 +53,13 @@ class NotificationController extends Controller
     public function markAsRead(string $id): JsonResponse
     {
         $notification = Auth::user()->notifications()->find($id);
-        
+
         if ($notification) {
             $notification->markAsRead();
             return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
+        return response()->json(['success' => false, 'message' => 'Not found'], 404);
     }
 
     /**
@@ -71,8 +67,7 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(): JsonResponse
     {
-        Auth::user()->unreadNotifications->markAsRead();
-        
+        Auth::user()->unreadNotifications()->update(['read_at' => now()]);
         return response()->json(['success' => true]);
     }
 
@@ -82,12 +77,12 @@ class NotificationController extends Controller
     public function destroy(string $id): JsonResponse
     {
         $notification = Auth::user()->notifications()->find($id);
-        
+
         if ($notification) {
             $notification->delete();
             return response()->json(['success' => true]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Notification not found'], 404);
+        return response()->json(['success' => false], 404);
     }
 }
