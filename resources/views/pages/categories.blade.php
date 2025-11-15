@@ -14,13 +14,13 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         @foreach($categories as $category)
-            <a href="{{ route('jobs.index', ['category' => $category->id]) }}" 
-               class="relative flex flex-col justify-between p-6 h-56 rounded-2xl 
-                      overflow-hidden text-gray-900 dark:text-white shadow-xl border border-white/10 
+            <a href="{{ route('jobs.index', ['category' => $category->id]) }}"
+               class="relative flex flex-col justify-between p-6 h-56 rounded-2xl
+                      overflow-hidden text-gray-900 dark:text-white shadow-xl border border-white/10
                       backdrop-blur-xl bg-white/70 dark:bg-white/5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:border-white/20">
 
                 <!-- Aurora overlay -->
-                <div class="absolute inset-0 z-0 opacity-80 mix-blend-screen blur-2xl animate-[aurora_8s_ease-in-out_infinite_alternate]" 
+                <div class="absolute inset-0 z-0 opacity-80 mix-blend-screen blur-2xl animate-[aurora_8s_ease-in-out_infinite_alternate]"
                      style="background:linear-gradient(135deg,rgba(0,255,200,0.15),rgba(0,140,255,0.15),rgba(180,100,255,0.15));background-size:200% 200%;">
                 </div>
 
@@ -29,7 +29,7 @@
                     <h3 class="text-xl font-semibold mb-2">{{ $category->name }}</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
                         {{ $category->description ?? 'Explore jobs in this category' }}
-                        
+
                     </p>
                 </div>
 
@@ -44,6 +44,10 @@
     </div>
 
 </section>
+
+<div class="my-10 flex justify-center">
+    {{ $categories->links() }}
+</div>
 
 <style>
 @keyframes aurora {
