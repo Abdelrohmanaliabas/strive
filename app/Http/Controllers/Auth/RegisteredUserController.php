@@ -14,9 +14,6 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
@@ -24,27 +21,43 @@ class RegisteredUserController extends Controller
 
     /**
      * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validate image first
+        // Validate
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'          => ['required', 'string', 'max:255'],
+            'email'         => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'phone'         => ['nullable', 'string', 'max:30'],
+            'linkedin_url'  => ['nullable', 'url', 'max:255'],
+            'role'          => ['required', 'string', 'in:candidate,employer'],
+            'password'      => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar_path'   => ['nullable', 'image', 'max:2048'], // هنا فقط
         ]);
 
+        // Handle image upload
+        $avatarPath = null;
+
+        if ($request->hasFile('avatar_path')) {
+            $avatarPath = $request->file('avatar_path')->store('avatars', 'public');
+        }
+
+        // Create user
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => Hash::make($request->password),
+            'phone'         => $request->phone,
+            'linkedin_url'  => $request->linkedin_url,
+            'role'          => $request->role,
+            'avatar_path'   => $avatarPath, // ← هنا بيتخزن المسار
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('jobs.index', absolute: false));
+        return redirect()->route('jobs.index');
     }
 }

@@ -24,11 +24,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [JobListingController::class, 'index'])->name('jobs.index');
 Route::get('/jobs/{jobPost}', [JobListingController::class, 'show'])->name('jobs.show');
-// Route::post('/comments', [JobCommentController::class, 'store'])->name('comments.store');
 Route::post('/comments', [JobCommentController::class, 'store'])
     ->middleware('auth')
     ->name('comments.store');
-// Route::post('/applications', [JobApplicationController::class, 'store'])->name('applications.store');
 Route::post('/applications', [JobApplicationController::class, 'store'])
     ->middleware('auth')
     ->name('applications.store');

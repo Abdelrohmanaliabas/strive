@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Notification;
 
 class JobCommentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'role:candidate'])->only(['store']);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

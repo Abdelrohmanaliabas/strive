@@ -8,7 +8,7 @@
     eyebrow="Analytics"
     description="Track views, applications, and engagement signals across every posting.">
     <div class="space-y-8">
-        {{-- dY_ Table --}}
+        {{--Table --}}
         <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
             <table class="min-w-full text-sm text-gray-700 dark:text-gray-300">
                 <thead class="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white uppercase text-xs">
@@ -26,7 +26,7 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
                             <td class="px-4 py-3">{{ $index + 1 }}</td>
 
-                            {{-- dY`�??dY'� Title --}}
+                            {{-- Title --}}
                             <td class="px-4 py-3">
                                 @if($item->jobPost)
                                     <a href="{{ route('admin.jobpost.show', $item->jobPost->id) }}"
@@ -41,17 +41,17 @@
                                 @endif
                             </td>
 
-                            {{-- dY`? Views --}}
+                            {{--  Views --}}
                             <td class="px-4 py-3 text-center font-semibold text-indigo-600 dark:text-indigo-400">
                                 {{ $item->views_count }}
                             </td>
 
-                            {{-- dY"� Applications --}}
+                            {{-- Applications --}}
                             <td class="px-4 py-3 text-center font-semibold text-green-600 dark:text-green-400">
                                 {{ $item->applications_count }}
                             </td>
 
-                            {{-- dY' Last viewed --}}
+                            {{--  Last viewed --}}
                             <td class="px-4 py-3 text-right">
                                 @if($item->last_viewed_at)
                                     {{ \Carbon\Carbon::parse($item->last_viewed_at)->diffForHumans() }}
@@ -71,7 +71,7 @@
             </table>
         </div>
 
-        {{-- dY", Pagination --}}
+        {{--  Pagination --}}
         <div class="pt-4 border-t border-white/5">
             {{ $analytics->links('pagination::tailwind') }}
         </div>
