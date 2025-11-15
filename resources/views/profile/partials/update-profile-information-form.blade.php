@@ -13,11 +13,20 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
         <div>
+            {{-- profile picture --}}
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1 text-gray-800 dark:text-white">Profile Picture</label>
+                <div class="flex items-center gap-4">
+                    <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover border border-white/20">
+                    <input type="file" name="avatar" accept="image/*" class="text-sm text-gray-800 dark:text-white">
+                </div>
+            </div>
+
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -54,5 +55,11 @@ class JobPost extends Model
         if (! $this->technologies) return [];
         // Trim and split by comma, strip whitespace
         return array_filter(array_map('trim', explode(',', $this->technologies)));
+    }
+
+    public function applicationForCurrentUser()
+    {
+        return $this->hasOne(Application::class)
+            ->where('candidate_id', auth::id());
     }
 }

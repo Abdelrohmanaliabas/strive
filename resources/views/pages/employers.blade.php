@@ -42,4 +42,7 @@
     </div>
 </section>
 
+<div class="my-10 flex justify-center">
+    {{ $employers->links() }}
+</div>
 @endsection

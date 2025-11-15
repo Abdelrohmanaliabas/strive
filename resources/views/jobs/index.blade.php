@@ -39,6 +39,16 @@
           @endforeach
         </select>
 
+        <select name="posted"
+            class="w-full md:w-1/4 px-4 py-3 rounded-lg border-0 shadow text-gray-900 focus:ring-2 focus:ring-blue-500">
+            <option value="">Any time</option>
+            <option value="1" @selected(request('posted')==1)>Last 24 hours</option>
+            <option value="3" @selected(request('posted')==3)>Last 3 days</option>
+            <option value="7" @selected(request('posted')==7)>Last 7 days</option>
+            <option value="30" @selected(request('posted')==30)>Last 30 days</option>
+        </select>
+
+
         <button class="px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white font-semibold shadow-md hover:brightness-110 transition">
           Go
         </button>
@@ -121,7 +131,7 @@
     </div>
 
     <div class="flex justify-center mt-10">
-      {{ $jobs->links('pagination::bootstrap-5') }}
+      {{ $jobs->links() }}
     </div>
   </div>
 </section>
