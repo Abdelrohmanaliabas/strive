@@ -1,4 +1,6 @@
+{{-- candidate side pagination --}}
 @if ($paginator->hasPages())
+
     @php
         $baseBtn = 'inline-flex items-center justify-center w-10 h-10 rounded-full border transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400';
         $muted =
