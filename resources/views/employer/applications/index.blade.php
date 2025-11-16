@@ -35,6 +35,7 @@
                                 $statusPalette = match ($statusKey) {
                                     'accepted' => ['dot' => 'bg-emerald-400', 'classes' => 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200', 'label' => 'Accepted'],
                                     'rejected' => ['dot' => 'bg-rose-400', 'classes' => 'border-rose-400/40 bg-rose-400/10 text-rose-200', 'label' => 'Rejected'],
+                                    'cancelled' => ['dot' => 'bg-red-400', 'classes' => 'border-red-400/40 bg-red-400/10 text-red-200', 'label' => 'Cancelled'],
                                     default => ['dot' => 'bg-amber-300', 'classes' => 'border-white/10 bg-white/5 text-amber-200', 'label' => 'Pending'],
                                 };
                             @endphp
