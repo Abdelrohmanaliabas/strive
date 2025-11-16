@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -34,7 +35,7 @@ class JobPostFactory extends Factory
             //     'logo',
             //     'status',];
 
-            'employer_id' => \App\Models\User::factory(),
+            'employer_id' => User::where('role', 'employer')->inRandomOrder()->first()->id,
             'category_id' => \App\Models\JobCategory::factory(),
             'title' => $this->faker->jobTitle(),
             'description' => $this->faker->text(),

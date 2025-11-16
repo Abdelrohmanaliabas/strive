@@ -13,6 +13,6 @@ class JobPostSeeder extends Seeder
      */
     public function run(): void
     {
-        JobPost::factory(100)->create();
+        JobPost::factory(count: 100)->create();
     }
 }
