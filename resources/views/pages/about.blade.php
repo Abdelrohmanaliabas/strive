@@ -99,10 +99,10 @@
         <div class="space-y-10">
             <div class="grid gap-8 md:grid-cols-3">
                 @foreach(array_slice($teamMembers, 0, 3) as $member)
-                    <div class="p-9 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
+                    <div class="p-5 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
                         <img src="{{ $member['image']  }}"
                              alt="{{ $member['name'] }}"
-                             class="h-52 w-52 mx-auto rounded-full mb-4 object-cover border border-white/20 dark:border-white/10 shadow-md">
+                             class=" w-60 h-60 mx-auto rounded-full mb-4 object-cover border border-white/20 dark:border-white/10 shadow-md">
                         <h3 class="font-semibold text-lg text-gray-800 dark:text-white/70">{{ $member['name'] }}</h3>
                         <h4 class="text-sm text-gray-700 dark:text-gray-300">{{ $member['role'] }}</h4>
                     </div>
