@@ -7,7 +7,7 @@
 $applied = $jobPost->applicationForCurrentUser;
 @endphp
 
-<section class="container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
+<section class="job-show-shell container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
 @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
         {{ session('success') }}
@@ -22,51 +22,58 @@ $applied = $jobPost->applicationForCurrentUser;
     </div>
 @endif
 
-<!-- ===== header ===== -->
-<div class="relative p-8 rounded-2xl border border-white/10 shadow-xl
-            bg-white/60 dark:bg-white/5 backdrop-blur-xl mb-10">
-
-  <div class="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
-    <a href="{{ route('companies.show', $jobPost->employer) }}">
-      <img src="{{ optional($jobPost->employer)->avatar_url ?? asset('images/avatar.jpg') }}"
-           alt="Company Logo"
-           class="w-20 h-20 rounded-xl border border-white/30 object-cover shadow-md">
-    </a>
-
-    <div class="flex-1">
-      <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ $jobPost->title }}</h1>
-      <div class="space-y-1 text-sm text-gray-700 dark:text-white/70">
-        <p><strong>Employer:</strong> {{ optional($jobPost->employer)->name ?? 'Unknown Employer' }}</p>
-        <p><strong>Category:</strong> {{ optional($jobPost->category)->name ?? 'Uncategorized' }}</p>
-        <p><strong>Work Type:</strong> {{ ucfirst($jobPost->work_type) }}</p>
-        @if($jobPost->salary_range)
-          <p><strong>Salary:</strong> ${{ $jobPost->salary_range }}</p>
-        @endif
-        <p><strong>Location:</strong> {{ $jobPost->location }}</p>
+<!-- ===== hero ===== -->
+<div class="job-hero relative overflow-hidden rounded-3xl mb-10 text-white">
+  <div class="job-hero__blur job-hero__blur--one"></div>
+  <div class="job-hero__blur job-hero__blur--two"></div>
+  <div class="relative z-10 grid gap-8 lg:grid-cols-3 p-8">
+    <div class="flex items-center gap-4 lg:col-span-2">
+      <a href="{{ route('companies.show', $jobPost->employer) }}">
+        <img src="{{ optional($jobPost->employer)->avatar_url ?? asset('images/avatar.jpg') }}"
+             alt="Company Logo"
+             class="w-20 h-20 rounded-2xl border border-white/40 object-cover shadow-2xl">
+      </a>
+      <div>
+        <span class="job-pill text-xs uppercase tracking-[0.3em]">Featured role</span>
+        <h1 class="text-3xl font-bold mt-3">{{ $jobPost->title }}</h1>
+        <p class="text-white/80 text-sm">{{ optional($jobPost->employer)->name ?? 'Unknown Employer' }} • {{ ucfirst($jobPost->work_type) }}</p>
       </div>
     </div>
-
-    <div class="flex flex-col items-end gap-3">
-      <p class="text-xs text-gray-500 dark:text-gray-400">
+    <div class="flex flex-col items-start lg:items-end gap-3">
+      <p class="text-xs text-white/70">
         <i class="bi bi-clock"></i> Posted {{ $jobPost->created_at->diffForHumans() }}
       </p>
-
       @if(auth()->check() && auth()->user()->role === 'candidate')
         @if($applied && $applied->status !== 'cancelled')
-          <span class="px-4 py-2 text-sm text-green-500 font-semibold">Already Applied</span>
+          <div class="job-applied-badge">Already Applied</div>
           <form action="{{ route('applications.cancel', $applied->id) }}" method="POST" class="mt-2">
             @csrf
-            <button class="px-4 py-2 text-sm text-red-500 hover:text-red-700">
-              Cancel Application
-            </button>
+            <button class="text-sm text-red-200 hover:text-white">Cancel Application</button>
           </form>
         @else
-          <button class="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-md shadow-md hover:brightness-110 transition"
-                  data-bs-toggle="modal" data-bs-target="#applyModal">
+          <button class="job-cta" data-bs-toggle="modal" data-bs-target="#applyModal">
             <i class="bi bi-send-fill mr-1"></i> Apply Now
           </button>
         @endif
       @endif
+    </div>
+  </div>
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 px-8 pb-8 text-sm text-white/80">
+    <div class="job-stat-card">
+      <p class="text-xs uppercase tracking-wide">Category</p>
+      <p class="text-lg font-semibold">{{ optional($jobPost->category)->name ?? 'Uncategorized' }}</p>
+    </div>
+    <div class="job-stat-card">
+      <p class="text-xs uppercase tracking-wide">Salary</p>
+      <p class="text-lg font-semibold">{{ $jobPost->salary_range ? '$'.$jobPost->salary_range : 'Not specified' }}</p>
+    </div>
+    <div class="job-stat-card">
+      <p class="text-xs uppercase tracking-wide">Location</p>
+      <p class="text-lg font-semibold">{{ $jobPost->location }}</p>
+    </div>
+    <div class="job-stat-card">
+      <p class="text-xs uppercase tracking-wide">Applicants</p>
+      <p class="text-lg font-semibold">{{ $jobPost->applications()->count() }}</p>
     </div>
   </div>
 </div>
@@ -77,7 +84,7 @@ $applied = $jobPost->applicationForCurrentUser;
   <!-- ===== main content ===== -->
   <div class="lg:col-span-2 space-y-8">
 
-    <div class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl">
+    <div class="job-card p-8 rounded-2xl border border-white/10 shadow-lg bg-white/75 dark:bg-white/5 backdrop-blur-xl">
       <h3 class="text-xl font-semibold mb-3">Description</h3>
       <p class="text-gray-700 dark:text-white/70 leading-relaxed">{!! nl2br(e($jobPost->description)) !!}</p>
 
@@ -111,7 +118,7 @@ $applied = $jobPost->applicationForCurrentUser;
     </div>
 
     <!-- ===== Comments ===== -->
-    <div class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl">
+    <div class="job-card p-8 rounded-2xl border border-white/10 shadow-lg bg-white/75 dark:bg-white/5 backdrop-blur-xl">
       <h4 class="text-xl font-semibold mb-4">Comments ({{ $jobPost->comments()->count() }})</h4>
 
       <form action="{{ route('comments.store') }}" method="POST" class="mb-6 space-y-3">
@@ -161,7 +168,7 @@ $applied = $jobPost->applicationForCurrentUser;
   </div>
 
   <!-- ===== sidebar ===== -->
-  <aside class="p-8 rounded-2xl border border-white/10 shadow-lg bg-white/70 dark:bg-white/5 backdrop-blur-xl h-fit">
+  <aside class="job-card p-8 rounded-2xl border border-white/10 shadow-lg bg-white/75 dark:bg-white/5 backdrop-blur-xl h-fit">
     <h4 class="text-xl font-semibold mb-4">Company Info</h4>
     <ul class="space-y-2 text-sm">
       <li><i class="bi bi-building text-blue-400 mr-2"></i>{{ optional($jobPost->employer)->name ?? 'Unknown Employer' }}</li>
@@ -232,9 +239,77 @@ $applied = $jobPost->applicationForCurrentUser;
 </div>
 
 <style>
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-}
+  .job-show-shell {
+    position: relative;
+  }
+  .job-hero {
+    background: radial-gradient(circle at top left, rgba(52, 201, 235, 0.5), transparent 60%),
+      radial-gradient(circle at top right, rgba(168, 85, 247, 0.35), transparent 55%),
+      linear-gradient(135deg, #312e81, #111827 70%);
+    color: white;
+    box-shadow: 0 35px 55px rgba(49, 46, 129, 0.35);
+  }
+  .job-hero__blur {
+    position: absolute;
+    width: 32rem;
+    height: 32rem;
+    border-radius: 999px;
+    filter: blur(130px);
+    opacity: 0.4;
+    animation: job-float 18s ease-in-out infinite;
+  }
+  .job-hero__blur--one { top: -8rem; left: -8rem; background: #ffd5ff; }
+  .job-hero__blur--two { bottom: -8rem; right: -8rem; background: #c3e5ff; animation-delay: 6s; }
+  .job-pill {
+    border-radius: 999px;
+    padding: 0.3rem 1.2rem;
+    background: rgba(255, 255, 255, 0.2);
+    letter-spacing: 0.3em;
+  }
+  .job-cta {
+    border: none;
+    border-radius: 999px;
+    padding: 0.85rem 1.6rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #06b6d4, #3b82f6, #a855f7);
+    color: white;
+    box-shadow: 0 25px 45px rgba(37, 99, 235, 0.35);
+  }
+  .job-applied-badge {
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.2);
+    color: #86efac;
+    font-weight: 600;
+  }
+  .job-stat-card {
+    border-radius: 1.3rem;
+    padding: 1rem;
+    background: rgba(17, 24, 39, 0.45);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+  .job-card {
+    position: relative;
+  }
+  .job-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+  }
+  .dark .job-card::after {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  @keyframes job-float {
+    0% { transform: translate3d(0,0,0); }
+    50% { transform: translate3d(0,-18px,0); }
+    100% { transform: translate3d(0,0,0); }
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+  }
 </style>
 @endsection

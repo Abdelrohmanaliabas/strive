@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -58,6 +59,18 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('jobs.index');
+        $role = strtolower((string) $user->role);
+
+        $targetRoute = match ($role) {
+            'employer' => 'employer.dashboard',
+            'candidate' => 'dashboard',
+            default => 'jobs.index',
+        };
+
+        if (!Route::has($targetRoute)) {
+            $targetRoute = 'jobs.index';
+        }
+
+        return redirect()->route($targetRoute);
     }
 }
