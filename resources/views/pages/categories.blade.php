@@ -3,7 +3,7 @@
 @section('title', 'Job Categories — Strive')
 
 @section('content')
-<section class="container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
+<section class="categories-shell container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
 
     <h1 class="text-4xl font-bold mb-8 text-center text-gray-900 dark:text-white">
         Explore Job Categories
@@ -57,6 +57,45 @@
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+}
+
+.categories-shell {
+  position: relative;
+  border-radius: 2.25rem;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 35px 60px rgba(56, 71, 108, 0.15);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.dark .categories-shell {
+  background: rgba(7, 11, 21, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 35px 60px rgba(0, 0, 0, 0.65);
+}
+
+.categories-shell::before,
+.categories-shell::after {
+  content: "";
+  position: absolute;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.categories-shell::before {
+  top: 2rem;
+  right: -5rem;
+  background: #ffdff8;
+}
+
+.categories-shell::after {
+  bottom: -4rem;
+  left: -4rem;
+  background: #c9e7ff;
 }
 </style>
 @endsection
