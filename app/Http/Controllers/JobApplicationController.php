@@ -89,8 +89,13 @@ class JobApplicationController extends Controller
             ->where('candidate_id', Auth::id())
             ->firstOrFail();
 
+        if (in_array($application->status, ['accepted', 'rejected'])) {
+            return back()->with('error', 'You cannot cancel an application that is already accepted or rejected.');
+        }
+
         $application->update(['status' => 'cancelled']);
 
         return back()->with('success', 'Your application has been cancelled.');
     }
+
 }
