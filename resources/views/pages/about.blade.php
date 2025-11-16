@@ -87,22 +87,38 @@
 <section class="py-16 bg-gray-50 dark:bg-gray-900">
     <div class="container mx-auto px-6 lg:px-20 text-center">
         <h2 class="text-3xl font-bold mb-12 text-gray-800 dark:text-white/70">Meet the Team</h2>
-        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            @foreach([
-                ['name'=>'Abdelrahman Ali','role'=>'Team Leader'],
-                ['name'=>'Aya Basheer','role'=>'Team Member'],
-                ['name'=>'Basel Esam','role'=>'Team Member'],
-                ['name'=>'Amira Mahmoud','role'=>'Team Member'],
-                ['name'=>'Asmaa Othman','role'=>'Team Member'],
-            ] as $member)
-            <div class="p-6 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
-                <img src="{{ asset('images/avatar.jpg') }}"
-                     alt="{{ $member['name'] }}"
-                     class="w-32 h-32 mx-auto rounded-full mb-4 object-cover border border-white/20 dark:border-white/10 shadow-md">
-                <h4 class="font-semibold text-lg text-gray-800 dark:text-white/70">{{ $member['name'] }}</h4>
-                <p class="text-sm text-gray-700 dark:text-gray-300">{{ $member['role'] }}</p>
+        @php
+            $teamMembers = [
+                ['name'=>'Abdelrahman Ali','role'=>'Team Leader','image'=>asset('images/team/abdelrahman.jpg')],
+                ['name'=>'Aya Basheer','role'=>'Team Member','image'=>asset('images/aya.jpg')],
+                ['name'=>'Basel Esam','role'=>'Team Member','image'=>asset('images/team/basel.jpg')],
+                ['name'=>'Amira Mahmoud','role'=>'Team Member','image'=>asset('images/team/amira.jpg')],
+                ['name'=>'Asmaa Othman','role'=>'Team Member','image'=>asset('images/team/asmaa.jpg')],
+            ];
+        @endphp
+        <div class="space-y-10">
+            <div class="grid gap-8 md:grid-cols-3">
+                @foreach(array_slice($teamMembers, 0, 3) as $member)
+                    <div class="p-9 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
+                        <img src="{{ $member['image']  }}"
+                             alt="{{ $member['name'] }}"
+                             class="h-52 w-52 mx-auto rounded-full mb-4 object-cover border border-white/20 dark:border-white/10 shadow-md">
+                        <h3 class="font-semibold text-lg text-gray-800 dark:text-white/70">{{ $member['name'] }}</h3>
+                        <h4 class="text-sm text-gray-700 dark:text-gray-300">{{ $member['role'] }}</h4>
+                    </div>
+                @endforeach
             </div>
-            @endforeach
+            <div class="grid gap-8 md:grid-cols-2 md:max-w-3xl mx-auto">
+                @foreach(array_slice($teamMembers, 3) as $member)
+                    <div class="p-9 bg-white/80 dark:bg-gray-800/40 rounded-2xl shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl transition-colors duration-300">
+                        <img src="{{ $member['image']  }}"
+                             alt="{{ $member['name'] }}"
+                             class="h-52 w-52 mx-auto rounded-full mb-4 object-cover border border-white/20 dark:border-white/10 shadow-md">
+                        <h3 class="font-semibold text-lg text-gray-800 dark:text-white/70">{{ $member['name'] }}</h3>
+                        <h4 class="text-sm text-gray-700 dark:text-gray-300">{{ $member['role'] }}</h4>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
 </section>

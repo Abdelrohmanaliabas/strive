@@ -139,7 +139,7 @@
         <input type="hidden" name="category" value="{{ request('category') }}">
 
         <select name="work_type"
-                class="jobs-chip-input">
+                class="jobs-input jobs-chip-input w-auto">
           <option value="">All types</option>
           <option value="remote" @selected(request('work_type')=='remote')>Remote</option>
           <option value="onsite" @selected(request('work_type')=='onsite')>Onsite</option>
@@ -235,11 +235,23 @@
   .jobs-input {
     width: 100%;
     border-radius: 1rem;
-    border: 1px solid rgba(15, 23, 42, 0.1);
+    border: 1px solid rgba(15, 23, 42, 0.15);
     padding: 0.8rem 1rem;
     font-size: 0.95rem;
-    background: rgba(15, 18, 33, 0.03);
-    transition: border 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(255, 255, 255, 0.92);
+    color: #0f172a;
+    transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .jobs-input::placeholder {
+    color: #475569;
+  }
+  .dark .jobs-input {
+    background: rgba(15, 23, 42, 0.7);
+    border-color: rgba(148, 163, 184, 0.4);
+    color: #f8fafc;
+  }
+  .dark .jobs-input::placeholder {
+    color: rgba(226, 232, 240, 0.7);
   }
   .jobs-input:focus {
     outline: none;
