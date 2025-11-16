@@ -7,7 +7,11 @@
 $applied = $jobPost->applicationForCurrentUser;
 @endphp
 
-<section class="job-show-shell container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
+<section
+  x-data="{ showApplyModal: false }"
+  x-init="$watch('showApplyModal', value => document.body.classList.toggle('overflow-hidden', value))"
+  @keydown.window.escape="showApplyModal = false"
+  class="job-show-shell container mx-auto px-6 lg:px-20 py-12 text-gray-800 dark:text-white/70">
 @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
         {{ session('success') }}
@@ -23,7 +27,7 @@ $applied = $jobPost->applicationForCurrentUser;
 @endif
 
 <!-- ===== hero ===== -->
-<div class="job-hero relative overflow-hidden rounded-3xl mb-10 text-white">
+<div class="job-hero relative overflow-hidden rounded-3xl mb-10 text-gray-900 dark:text-white">
   <div class="job-hero__blur job-hero__blur--one"></div>
   <div class="job-hero__blur job-hero__blur--two"></div>
   <div class="relative z-10 grid gap-8 lg:grid-cols-3 p-8">
@@ -36,11 +40,11 @@ $applied = $jobPost->applicationForCurrentUser;
       <div>
         <span class="job-pill text-xs uppercase tracking-[0.3em]">Featured role</span>
         <h1 class="text-3xl font-bold mt-3">{{ $jobPost->title }}</h1>
-        <p class="text-white/80 text-sm">{{ optional($jobPost->employer)->name ?? 'Unknown Employer' }} • {{ ucfirst($jobPost->work_type) }}</p>
+        <p class="text-gray-600 dark:text-white/80 text-sm">{{ optional($jobPost->employer)->name ?? 'Unknown Employer' }} • {{ ucfirst($jobPost->work_type) }}</p>
       </div>
     </div>
     <div class="flex flex-col items-start lg:items-end gap-3">
-      <p class="text-xs text-white/70">
+      <p class="text-xs text-gray-500 dark:text-white/70">
         <i class="bi bi-clock"></i> Posted {{ $jobPost->created_at->diffForHumans() }}
       </p>
       @if(auth()->check() && auth()->user()->role === 'candidate')
@@ -51,29 +55,29 @@ $applied = $jobPost->applicationForCurrentUser;
             <button class="text-sm text-red-200 hover:text-white">Cancel Application</button>
           </form>
         @else
-          <button class="job-cta" data-bs-toggle="modal" data-bs-target="#applyModal">
+          <button type="button" class="job-cta" @click="showApplyModal = true">
             <i class="bi bi-send-fill mr-1"></i> Apply Now
           </button>
         @endif
       @endif
     </div>
   </div>
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 px-8 pb-8 text-sm text-white/80">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 px-8 pb-8 text-sm text-gray-600 dark:text-white/80">
     <div class="job-stat-card">
-      <p class="text-xs uppercase tracking-wide">Category</p>
-      <p class="text-lg font-semibold">{{ optional($jobPost->category)->name ?? 'Uncategorized' }}</p>
+      <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-white/70">Category</p>
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ optional($jobPost->category)->name ?? 'Uncategorized' }}</p>
     </div>
     <div class="job-stat-card">
-      <p class="text-xs uppercase tracking-wide">Salary</p>
-      <p class="text-lg font-semibold">{{ $jobPost->salary_range ? '$'.$jobPost->salary_range : 'Not specified' }}</p>
+      <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-white/70">Salary</p>
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $jobPost->salary_range ? '$'.$jobPost->salary_range : 'Not specified' }}</p>
     </div>
     <div class="job-stat-card">
-      <p class="text-xs uppercase tracking-wide">Location</p>
-      <p class="text-lg font-semibold">{{ $jobPost->location }}</p>
+      <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-white/70">Location</p>
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $jobPost->location }}</p>
     </div>
     <div class="job-stat-card">
-      <p class="text-xs uppercase tracking-wide">Applicants</p>
-      <p class="text-lg font-semibold">{{ $jobPost->applications()->count() }}</p>
+      <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-white/70">Applicants</p>
+      <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $jobPost->applications()->count() }}</p>
     </div>
   </div>
 </div>
@@ -186,63 +190,89 @@ $applied = $jobPost->applicationForCurrentUser;
                 </button>
             </form>
         @else
-            <button class="w-full mt-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-md shadow hover:brightness-110 transition"
-                    data-bs-toggle="modal" data-bs-target="#applyModal">
+            <button type="button" class="w-full mt-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-md shadow hover:brightness-110 transition"
+                    @click="showApplyModal = true">
                 Apply Now
             </button>
         @endif
     @endif
   </aside>
-</div>
-</section>
-
 <!-- ===== apply modal ===== -->
-<div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg rounded-2xl">
-      <form action="{{ route('applications.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" name="job_post_id" value="{{ $jobPost->id }}">
-        <div class="modal-header border-0">
-          <h5 class="text-lg font-semibold" id="applyModalLabel">Apply for {{ $jobPost->title }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body space-y-3">
+@if(auth()->check() && auth()->user()->role === 'candidate')
+  <div
+    x-cloak
+    x-show="showApplyModal"
+    x-transition.opacity.duration.200ms
+    class="fixed inset-0 z-50 flex items-center justify-center px-4 py-6">
+    <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" @click="showApplyModal = false"></div>
+    <div
+      x-show="showApplyModal"
+      x-transition.scale.origin-top
+      class="relative w-full max-w-lg">
+      <div class="rounded-3xl bg-white dark:bg-slate-900 border border-white/30 dark:border-white/10 shadow-2xl overflow-hidden">
+        <div class="flex items-start justify-between px-6 pt-6">
           <div>
-            <label class="block text-sm font-medium mb-1">Full Name</label>
-            <input type="text" name="name" value="{{ old('name', optional($applied)->name) }}"
-                   class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-500" required>
+            <p class="text-xs uppercase tracking-[0.3em] text-blue-500">Apply for</p>
+            <h5 class="text-xl font-semibold text-gray-900 dark:text-white">{{ $jobPost->title }}</h5>
           </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Email</label>
-            <input type="email" name="email" value="{{ old('email', optional($applied)->email) }}"
-                   class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-500" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Phone</label>
-            <input type="text" name="phone" value="{{ old('phone', optional($applied)->phone) }}"
-                   class="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 focus:ring-2 focus:ring-blue-500" required>
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Upload Resume (PDF)</label>
-            <input type="file" name="resume" accept="application/pdf" class="w-full text-sm" required>
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <button class="w-full py-2 text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-semibold hover:brightness-110 transition">
-            Submit Application
+          <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-white" @click="showApplyModal = false">
+            <i class="bi bi-x-lg text-xl"></i>
           </button>
         </div>
-      </form>
+        <form action="{{ route('applications.store') }}" method="POST" enctype="multipart/form-data" class="px-6 pb-6 space-y-4">
+          @csrf
+          <input type="hidden" name="job_post_id" value="{{ $jobPost->id }}">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Full Name</label>
+            <input type="text" name="name" value="{{ old('name', optional($applied)->name) }}"
+                   class="w-full px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Email</label>
+            <input type="email" name="email" value="{{ old('email', optional($applied)->email) }}"
+                   class="w-full px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Phone</label>
+            <input type="text" name="phone" value="{{ old('phone', optional($applied)->phone) }}"
+                   class="w-full px-4 py-2.5 rounded-xl bg-white/70 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Upload Resume (PDF)</label>
+            <input type="file" name="resume" accept="application/pdf"
+                   class="w-full text-sm text-gray-700 dark:text-gray-200" required>
+          </div>
+          <div class="pt-2">
+            <button class="w-full py-3 text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 rounded-xl font-semibold shadow-lg shadow-blue-500/30 hover:brightness-110 transition">
+              Submit Application
+            </button>
+            <button type="button" class="w-full mt-3 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white" @click="showApplyModal = false">
+              Skip for now
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
+@endif
+
+</section>
 
 <style>
   .job-show-shell {
     position: relative;
   }
+  [x-cloak] {
+    display: none !important;
+  }
   .job-hero {
+    background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.15), transparent 65%),
+      radial-gradient(circle at top right, rgba(168, 85, 247, 0.12), transparent 60%),
+      linear-gradient(135deg, #ffffff 0%, #eef2ff 55%, #fdf2ff 100%);
+    color: inherit;
+    box-shadow: 0 25px 45px rgba(15, 23, 42, 0.08);
+  }
+  .dark .job-hero {
     background: radial-gradient(circle at top left, rgba(52, 201, 235, 0.5), transparent 60%),
       radial-gradient(circle at top right, rgba(168, 85, 247, 0.35), transparent 55%),
       linear-gradient(135deg, #312e81, #111827 70%);
@@ -285,6 +315,10 @@ $applied = $jobPost->applicationForCurrentUser;
   .job-stat-card {
     border-radius: 1.3rem;
     padding: 1rem;
+    background: rgba(255, 255, 255, 0.75);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+  }
+  .dark .job-stat-card {
     background: rgba(17, 24, 39, 0.45);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
   }
