@@ -19,7 +19,7 @@ class ApplicationFactory extends Factory
         return [
             // protected $fillable = ['candidate_id', 'job_post_id', 'resume', 'name', 'email', 'phone', 'status'];
 
-            'candidate_id' => \App\Models\User::factory(),
+            'candidate_id' => \App\Models\User::where('role', 'candidate')->inRandomOrder()->first()->id,
             'job_post_id' => \App\Models\JobPost::factory(),
             'resume' => $this->faker->url(),
             'name' => $this->faker->name(),

@@ -20,8 +20,8 @@ class CommentFactory extends Factory
     {
         return [
             //     protected $fillable = ['user_id', 'content'];
-            'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
-            'commentable_id' => JobPost::inRandomOrder()->first()?->id ?? JobPost::factory(),
+            'user_id' => User::inRandomOrder()->first()?->id,
+            'commentable_id' => JobPost::inRandomOrder()->first()?->id,
             'commentable_type' => JobPost::class,
             'content' => $this->faker->sentence(),
         ];
