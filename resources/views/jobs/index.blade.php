@@ -9,7 +9,7 @@
 @endphp
 
 <!-- ===== hero ===== -->
-<section class="jobs-hero relative overflow-hidden text-white py-20">
+<section class="jobs-hero relative overflow-hidden text-white py-20 h-96 md:h-[500px] lg:h-[600px] flex items-center">
   <div class="jobs-hero__slider">
     @foreach ($heroImages as $url)
       <div class="jobs-hero__slide @if ($loop->first) is-active @endif" style="background-image: url('{{ $url }}');"></div>
@@ -27,20 +27,7 @@
       <p class="text-lg text-white/80 mb-8">
         Explore verified openings for developers, designers, and creators in a single cinematic dashboard.
       </p>
-      {{-- <div class="grid grid-cols-3 gap-5 jobs-stats">
-        <div class="jobs-stat">
-          <p class="text-3xl font-bold">{{ $jobs->total() }}</p>
-          <p class="text-xs uppercase tracking-wide opacity-80">Active jobs</p>
-        </div>
-        <div class="jobs-stat">
-          <p class="text-3xl font-bold">{{ $categories->count() }}</p>
-          <p class="text-xs uppercase tracking-wide opacity-80">Categories</p>
-        </div>
-        <div class="jobs-stat">
-          <p class="text-3xl font-bold">48 hrs</p>
-          <p class="text-xs uppercase tracking-wide opacity-80">Avg. response</p>
-        </div>
-      </div> --}}
+      
     </div>
 
     <!-- Search form -->
@@ -170,7 +157,7 @@
     </div>
 
     <div class="flex justify-center mt-10">
-      {{ $jobs->links() }}
+      {{ $jobs->links('pagination::candidatePagination') }}
     </div>
   </div>
 </section>

@@ -102,7 +102,7 @@
 
         {{-- Pagination --}}
         <div class="pt-4 border-t border-white/5">
-            {{ $users->links('pagination::tailwind') }}
+            {{ $users->links() }}
         </div>
     </div>
 </x-admin.module-frame>

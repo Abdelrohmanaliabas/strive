@@ -74,7 +74,7 @@
 
         {{-- Pagination --}}
         <div class="pt-4 border-t border-white/5">
-            {{ $comments->links('pagination::tailwind') }}
+            {{ $comments->links() }}
         </div>
     </div>
 </x-admin.module-frame>

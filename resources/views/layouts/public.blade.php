@@ -186,6 +186,12 @@
           </button>
 
           @auth
+          @php
+            $user = Auth::user();
+            $dashboardRoute = $user?->role === 'admin'
+              ? route('admin.dashboard')
+              : ($user?->role === 'employer' ? route('employer.dashboard') : null);
+          @endphp
           <!-- Notifications -->
           <x-notification-dropdown />
 
@@ -208,10 +214,17 @@
             </button>
             <!-- Dropdown -->
             <div id="profile-menu" class="absolute right-0 mt-2 w-40 hidden bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700">
-              <a href="{{ route('profile.edit') }}"
-                class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                <i class="bi bi-person-circle mr-1"></i> Profile
-              </a>
+              @if($dashboardRoute)
+                <a href="{{ $dashboardRoute }}"
+                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <i class="bi bi-speedometer2 mr-1"></i> Dashboard
+                </a>
+              @else
+                <a href="{{ route('profile.edit') }}"
+                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <i class="bi bi-person-circle mr-1"></i> Profile
+                </a>
+              @endif
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
