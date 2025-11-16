@@ -170,7 +170,7 @@
     </div>
 
     <div class="flex justify-center mt-10">
-      {{ $jobs->links() }}
+      {{ $jobs->links('pagination::strive') }}
     </div>
   </div>
 </section>

@@ -73,7 +73,7 @@
 
         {{--  Pagination --}}
         <div class="pt-4 border-t border-white/5">
-            {{ $analytics->links('pagination::tailwind') }}
+            {{ $analytics->links() }}
         </div>
     </div>
 </x-admin.module-frame>

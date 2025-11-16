@@ -46,7 +46,7 @@
 </section>
 
 <div class="my-10 flex justify-center">
-    {{ $categories->links() }}
+    {{ $categories->links('pagination::strive') }}
 </div>
 
 <style>

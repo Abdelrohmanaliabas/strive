@@ -140,4 +140,3 @@ function notificationHandler() {
 }
 </script>
 @endsection
-

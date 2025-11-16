@@ -69,7 +69,7 @@
 </section>
 
 <div class="my-10 flex justify-center">
-    {{ $employers->links() }}
+    {{ $employers->links('pagination::strive') }}
 </div>
 
 <style>

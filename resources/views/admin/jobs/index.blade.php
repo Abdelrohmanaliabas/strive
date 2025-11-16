@@ -122,7 +122,7 @@
 
         {{-- Pagination --}}
         <div class="pt-4 border-t border-white/5">
-            {{ $jobPost->links('pagination::tailwind') }}
+            {{ $jobPost->links() }}
         </div>
     </div>
 </x-admin.module-frame>

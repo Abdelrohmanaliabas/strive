@@ -61,7 +61,7 @@
 
         @if(method_exists($jobPosts, 'links'))
             <div class="mt-6">
-                {{ $jobPosts->links() }}
+                {{ $jobPosts->links('pagination::strive') }}
             </div>
         @endif
     </div>
