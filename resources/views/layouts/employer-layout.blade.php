@@ -375,7 +375,7 @@
 
             <div class="container-fluid">
                 <div class="row flex-nowrap min-vh-100">
-                    <aside class="employer-shell__sidebar d-none d-lg-flex flex-column col-lg-3 col-xl-2 px-0">
+                    <aside class="employer-shell__sidebar d-none d-lg-flex flex-column col-lg-3 col-xl-2 px-0 ">
                         <div class="px-4 pt-4 pb-3 border-bottom border-secondary-subtle">
                             <div class="d-flex align-items-start justify-content-between gap-3">
                                 <div>
@@ -402,7 +402,7 @@
                                 </button>
                             </div>
                         </div>
-                        <nav class="nav nav-pills flex-column gap-2 px-3 py-4 flex-grow-1 d-flex justify-content-between">
+                        <nav class="nav nav-pills flex-column gap-2 py-4 flex-grow-1 d-flex justify-content-between">
                             <div>
                             @foreach ($navLinks as $link)
                                 @php
@@ -441,6 +441,7 @@
                                 <span class="tracking-[0.45em] text-xs">Logout</span>
                             </button>
                         </form>
+
                         </nav>
 
                     </aside>
@@ -464,7 +465,6 @@
                                         <a
                                             class="nav-link d-flex align-items-center gap-3 {{ $isActive ? 'active' : '' }}"
                                             href="{{ $link['href'] }}"
-                                            data-bs-dismiss="offcanvas"
                                         >
                                             <span class="d-inline-flex align-items-center justify-content-center rounded-circle border border-secondary-subtle p-2">
                                                 <svg

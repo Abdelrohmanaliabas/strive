@@ -38,6 +38,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments', [JobCommentController::class, 'store'])->name('comments.store');
     Route::post('/applications', [JobApplicationController::class, 'store'])->name('applications.store');
 
+    Route::post('/applications/cancel/{id}', [JobApplicationController::class, 'cancel'])
+    ->name('applications.cancel')
+    ->middleware(['auth', 'role:candidate']);
+
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

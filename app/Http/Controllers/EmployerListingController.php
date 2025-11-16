@@ -14,7 +14,7 @@ class EmployerListingController extends Controller
 
     public function index()
     {
-        $employers = User::where('role', 'employer')->get();
+        $employers = User::where('role', 'employer')->paginate(12);
         return view('pages.employers', compact('employers'));
     }
 }
