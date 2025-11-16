@@ -34,13 +34,13 @@ Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 
 // ================= Authenticated general features ===================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/comments', [JobCommentController::class, 'store'])->name('comments.store');
     Route::post('/applications', [JobApplicationController::class, 'store'])->name('applications.store');
 
     Route::post('/applications/cancel/{id}', [JobApplicationController::class, 'cancel'])
-    ->name('applications.cancel')
-    ->middleware(['auth', 'role:candidate']);
+        ->name('applications.cancel')
+        ->middleware(['auth', 'role:candidate']);
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -70,7 +70,7 @@ Route::prefix('auth/linkedin')
     });
 
 // ================= Admin ===================
-Route::middleware(['auth', 'role:admin'])
+Route::middleware(['auth', 'role:admin', 'verified'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -113,7 +113,7 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 // ================= Employer ===================
-Route::middleware(['auth', 'role:employer'])
+Route::middleware(['auth', 'role:employer', 'verified'])
     ->prefix('employer')
     ->name('employer.')
     ->group(function () {
