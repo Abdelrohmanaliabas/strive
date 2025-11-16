@@ -29,10 +29,12 @@ class DatabaseSeeder extends Seeder
             'phone' => '01067794270',
             'avatar_path' => 'https://ui-avatars.com/api/?name=Abdelrahman%20ali&background=6366f1&color=fff&size=128',
         ]);
+        //this is a seeder of project
 
 
         $this->call([
             JobPostSeeder::class,
+
             CommentSeeder::class,
             AnalyticSeeder::class,
             JobCategorySeeder::class,
