@@ -176,7 +176,7 @@ Ensure that you have the following installed on your local machine:
 1. Clone the repository from GitHub:
 
     ```bash
-    git clone https://github.com/swarmsTeam/swarms-backend.git
+    git clone https://github.com/Abdelrohmanaliabas/strive.git
     ```
 
 2. Install the PHP dependencies using Composer:
@@ -229,7 +229,30 @@ Ensure that you have the following installed on your local machine:
     php artisan migrate
     ```
 
-8. Install Node.js dependencies and build the frontend assets:
+8. Configure LinkedIn and Mail settings in your `.env` file:
+
+    For LinkedIn authentication:
+
+    ```env
+    LINKEDIN_CLIENT_ID=your_linkedin_client_id
+    LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+    LINKEDIN_REDIRECT_URI=http://localhost:8000/auth/linkedin/callback
+    ```
+
+    For Mail configuration:
+
+    ```env
+    MAIL_MAILER=smtp
+    MAIL_HOST=your_smtp_host
+    MAIL_PORT=587
+    MAIL_USERNAME=your_email@example.com
+    MAIL_PASSWORD=your_email_password
+    MAIL_ENCRYPTION=tls
+    MAIL_FROM_ADDRESS=your_email@example.com
+    MAIL_FROM_NAME="${APP_NAME}"
+    ```
+
+9. Install Node.js dependencies and build the frontend assets:
 
     ```bash
     npm install
