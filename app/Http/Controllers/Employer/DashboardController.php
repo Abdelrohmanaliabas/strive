@@ -26,43 +26,28 @@ class DashboardController extends Controller
         $openJobs = JobPost::where('employer_id', $employerId)->where('status', 'approved')->count();
         $totalApplications = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))->count();
 
-        // get job ids for comment lookup
+        // Get job ids for comment lookup
         $jobIds = JobPost::where('employer_id', $employerId)->pluck('id')->toArray();
 
-        // Robust comments count: support different schema layouts
+        // Count comments (polymorphic)
         $comments = 0;
         if (!empty($jobIds)) {
-            if (Schema::hasColumn('comments', 'job_post_id')) {
-                $comments = Comment::whereIn('job_post_id', $jobIds)->count();
-            } elseif (Schema::hasColumn('comments', 'job_id')) {
-                $comments = Comment::whereIn('job_id', $jobIds)->count();
-            } elseif (Schema::hasColumn('comments', 'commentable_id') && Schema::hasColumn('comments', 'commentable_type')) {
-                // polymorphic comments
-                $comments = Comment::whereIn('commentable_id', $jobIds)
-                    ->where('commentable_type', JobPost::class)
-                    ->count();
-            } else {
-                $comments = 0;
-            }
+            $comments = Comment::whereIn('commentable_id', $jobIds)
+                ->where('commentable_type', JobPost::class)
+                ->count();
         }
 
         // New applications last 7 days
         $newApplicationsWeek = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
             ->where('created_at', '>=', Carbon::now()->subDays(7))
             ->count();
+
+        // Total unique candidates
         $candidateCount = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
             ->distinct('candidate_id')
             ->count('candidate_id');
 
-
-        // Calculate trend percentage for metric cards
-        $lastWeekApplications = Application::whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
-            ->where('created_at', '>=', Carbon::now()->subDays(14))
-            ->where('created_at', '<', Carbon::now()->subDays(7))
-            ->count();
-        $trendPercent = $lastWeekApplications > 0 ? round((($newApplicationsWeek - $lastWeekApplications) / $lastWeekApplications) * 100, 2) : 0;
-
-        // KPI Cards for metrics display
+        // KPI Cards
         $metricCards = [
             [
                 'label' => 'Total Posts',
@@ -72,17 +57,17 @@ class DashboardController extends Controller
             [
                 'label' => 'Applications Received',
                 'value' => $totalApplications,
-                'trend' => $newApplicationsWeek > 0 ? " this week" : 'No new applicants this week',
+                'trend' => $newApplicationsWeek > 0 ? "{$newApplicationsWeek} this week" : 'No new applicants this week',
             ],
             [
                 'label' => 'Candidates',
                 'value' => $candidateCount,
-                'trend' => $candidateCount > 0 ? " engaged" : 'Awaiting applicants',
+                'trend' => $candidateCount > 0 ? "actively engaged" : 'Awaiting applicants',
             ],
             [
                 'label' => 'Total Comments',
                 'value' => $comments,
-                'trend' => $comments > 0 ? 'Feedbacks' : 'No comments yet',
+                'trend' => $comments > 0 ? 'Feedbacks received' : 'No comments yet',
             ],
         ];
 
@@ -116,25 +101,19 @@ class DashboardController extends Controller
         $statusLabels = array_keys($byStatus);
         $statusSeries = array_values($byStatus);
 
+        // Pipeline stages by status
         $totalPipeline = array_sum($byStatus);
         $pipeline = $totalPipeline > 0
             ? collect($byStatus)->map(function ($count, $status) use ($totalPipeline) {
-                $statusKey = strtolower($status);
                 $percentage = round(($count / $totalPipeline) * 100);
 
                 return [
                     'name' => ucfirst($status),
-                    'description' => "Applications marked as {$statusKey}",
+                    'description' => "Applications marked as {$status}",
                     'percentage' => $percentage,
-                    'count' => $count,
                 ];
             })->values()->toArray()
-            : [
-                ['name' => 'Applied', 'description' => 'Initial submissions', 'percentage' => 0, 'count' => 0],
-                ['name' => 'Reviewed', 'description' => 'Screened by employer', 'percentage' => 0, 'count' => 0],
-                ['name' => 'Shortlisted', 'description' => 'Ready for interview', 'percentage' => 0, 'count' => 0],
-                ['name' => 'Offered', 'description' => 'Offers sent', 'percentage' => 0, 'count' => 0],
-            ];
+            : [];
 
         // Top job posts by applications
         $topJobsRaw = Application::select('job_post_id', DB::raw('count(*) as cnt'))
@@ -157,14 +136,7 @@ class DashboardController extends Controller
         $topJobLabels = collect($topJobs)->pluck('title')->values()->toArray();
         $topJobSeries = collect($topJobs)->pluck('applications')->values()->toArray();
 
-        // Recent applicants (latest 6)
-        $recentApplicants = Application::with(['candidate', 'jobPost'])
-            ->whereHas('jobPost', fn($q) => $q->where('employer_id', $employerId))
-            ->latest()
-            ->limit(6)
-            ->get();
-
-        // Job snapshots (active jobs with stats)
+        // Active job snapshots
         $jobSnapshots = JobPost::with('category')
             ->withCount('applications')
             ->where('employer_id', $employerId)
@@ -174,12 +146,10 @@ class DashboardController extends Controller
                     ->orWhere('application_deadline', '>=', Carbon::now());
             })
             ->orderByDesc('created_at')
-            ->limit(5)
+            ->limit(3)
             ->get()
             ->map(function ($job) {
-                $jobShowRoute = Route::has('employer.jobs.show')
-                    ? route('employer.jobs.show', $job)
-                    : (Route::has('jobs.show') ? route('jobs.show', $job) : '#');
+                $jobShowRoute =  route('employer.jobs.show', $job);
 
                 return [
                     'title' => $job->title,
@@ -192,19 +162,13 @@ class DashboardController extends Controller
                         ->count() ?? 0,
                     'status' => ucfirst($job->status ?? 'open'),
                     'url' => $jobShowRoute,
-                    'detail_url' => $jobShowRoute,
                 ];
             })
             ->toArray();
 
-        // Route links (safe fallback if route doesn't exist)
-        $jobCreateLink = Route::has('employer.jobs.create')
-            ? route('employer.jobs.create')
-            : (Route::has('jobs.create') ? route('jobs.create') : '#');
-
-        $applicationsLink = Route::has('employer.applications.index')
-            ? route('employer.applications.index')
-            : (Route::has('applications.index') ? route('applications.index') : '#');
+        // Route links
+        $jobCreateLink = Route::has('employer.jobs.create');
+        $applicationsLink = Route::has('employer.applications.index');
 
         return view('employer.dashboard', compact(
             'metricCards',
@@ -217,7 +181,6 @@ class DashboardController extends Controller
             'topJobs',
             'jobSnapshots',
             'pipeline',
-            'recentApplicants',
             'jobCreateLink',
             'applicationsLink'
         ));

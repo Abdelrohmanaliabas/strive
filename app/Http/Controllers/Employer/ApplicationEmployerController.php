@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ApplicationEmployerController extends Controller
 {
-    
+
     public function index(Request $request): View
     {
         $employerId = Auth::id();
@@ -62,7 +62,7 @@ class ApplicationEmployerController extends Controller
 
         if ($application->status !== $newStatus) {
             $application->forceFill(['status' => $newStatus])->save();
-            
+
             // Notify candidate about status change (only for accepted/rejected, not pending)
             if (in_array($newStatus, ['accepted', 'rejected'])) {
                 // Ensure jobPost relationship is loaded for the notification

@@ -89,11 +89,11 @@
         <h2 class="text-3xl font-bold mb-12 text-gray-800 dark:text-white/70">Meet the Team</h2>
         @php
             $teamMembers = [
-                ['name'=>'Abdelrahman Ali','role'=>'Team Leader','image'=>asset('images/team/abdelrahman.jpg')],
+                ['name'=>'Abdelrahman Ali','role'=>'Team Leader','image'=>asset('images/abdelrahman.jpg')],
+                ['name'=>'Asmaa Othman','role'=>'Team Member','image'=>asset('images/asmaa.jpg')],
                 ['name'=>'Aya Basheer','role'=>'Team Member','image'=>asset('images/aya.jpg')],
-                ['name'=>'Basel Esam','role'=>'Team Member','image'=>asset('images/team/basel.jpg')],
-                ['name'=>'Amira Mahmoud','role'=>'Team Member','image'=>asset('images/team/amira.jpg')],
-                ['name'=>'Asmaa Othman','role'=>'Team Member','image'=>asset('images/team/asmaa.jpg')],
+                ['name'=>'Basel Esam','role'=>'Team Member','image'=>asset('images/basel.jpg')],
+                ['name'=>'Amira Mahmoud','role'=>'Team Member','image'=>asset('images/amira.jpg')],
             ];
         @endphp
         <div class="space-y-10">
