@@ -1,59 +1,256 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Strive
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+Strive is a web-based Job Board system built with Laravel, designed to connect Employers, Candidates, and Admins through a streamlined workflow of job posting, job searching, and job application management.
 
-## About Laravel
+The system solves the difficulty job seekers face in discovering suitable job opportunities and provides employers with a centralized platform to publish and manage job listings. Admins ensure quality control by reviewing and approving job posts before they appear publicly.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Problem Identification
+Our research revealed that job seekers struggled with fragmented information sources, making it difficult to stay informed about upcoming job opportunities.
+Traditional job search methods were ineffective in reaching the job seeker community, and job management was often disorganized.
+This created a gap in communication between employers and candidates, leading to missed opportunities for employment.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Solution
+Strive addresses these challenges by providing a unified platform that allows candidates to easily discover, browse, and apply for jobs in one place.
+Whether it's entry-level positions, internships, or full-time roles, Strive simplifies the process, offering an intuitive and efficient way for candidates to engage with the job market.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+### 1. Public Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+#### 1.1 Job Listings
+- **Description**: Displays a comprehensive list of available job posts from various employers.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### 1.2 Job Details
+- **Description**: Provides detailed information about each job, including description, requirements, location, and application instructions.
 
-## Laravel Sponsors
+#### 1.3 Company Profiles
+- **Description**: Allows viewing of employer profiles to learn more about companies.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+#### 1.4 Categories and Employers Listings
+- **Description**: Browse jobs by categories and view lists of employers.
 
-### Premium Partners
+#### 1.5 About and Contact Pages
+- **Description**: Static pages providing information about the platform and contact details.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Candidate Features
 
-## Contributing
+#### 2.1 Job Applications
+- **Description**: Candidates can apply to jobs and cancel applications if needed.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### 2.2 Job Comments
+- **Description**: Candidates can leave comments on job posts.
 
-## Code of Conduct
+#### 2.3 Profile Management
+- **Description**: Candidates can edit, update, and delete their profiles.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### 2.4 Notifications
+- **Description**: Candidates receive notifications about job updates, application status, etc., and can manage them (view, mark as read).
 
-## Security Vulnerabilities
+### 3. Employer Features
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### 3.1 Dashboard
+- **Description**: Employers have a personalized dashboard to manage their activities.
 
-## License
+#### 3.2 Job Management
+- **Description**: Employers can create, view, edit, update, and delete job posts.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### 3.3 Application Management
+- **Description**: Employers can view applications for their jobs, update application status, download resumes, and preview applications.
+
+#### 3.4 Comment Management
+- **Description**: Employers can view comments on their jobs and manage them.
+
+#### 3.4 Notifications
+- **Description**: Employers receive notifications about job Post approval or rejection updates, application status, etc., and can manage them (view, mark as read).
+
+#### 3.5 Analytics
+- **Description**: Emplolyers can access analytics data.
+
+#### 3.5 Candidate Viewing
+- **Description**: Employers can view candidate profiles.
+
+#### 3.6 Profile Management
+- **Description**: Employers can edit, update, and delete their profiles.
+
+### 4. Admin Features
+
+#### 4.1 Dashboard
+- **Description**: Admins have a dashboard to oversee the platform.
+
+#### 4.2 User Management
+- **Description**: Admins can view, edit, update, and delete user accounts.
+
+#### 4.3 Job Post Management
+- **Description**: Admins can view, edit, update, and delete job posts.
+
+#### 4.4 Comment Management
+- **Description**: Admins can view and delete comments.
+
+#### 4.5 Notifications
+- **Description**: Admins can view notifications.
+
+#### 4.6 Analytics
+- **Description**: Admins can access analytics data.
+
+
+## Used Libraries:
+- **Web Auth With Breeze**
+
+## ROUTS
+
+| HTTP Method | EndPoint                    | Description                                                    |
+|-------------|-----------------------------|----------------------------------------------------------------|
+| GET         | /                           | Job listings index                                             |
+| GET         | /jobs/{jobPost}             | Show specific job details                                      |
+| GET         | /companies/{employer}       | Show employer profile                                          |
+| GET         | /categories                 | Public categories index                                        |
+| GET         | /employers                  | Public employers index                                         |
+| GET         | /about                      | About page                                                     |
+| GET         | /contact                    | Contact page                                                   |
+| POST        | /contact                    | Store contact form                                             |
+| POST        | /comments                   | Store job comment                                              |
+| POST        | /applications               | Store job application                                          |
+| POST        | /applications/cancel/{id}   | Cancel application                                             |
+| GET         | /profile                    | Edit profile                                                   |
+| PATCH       | /profile                    | Update profile                                                 |
+| DELETE      | /profile                    | Destroy profile                                                |
+| GET         | /notifications/page         | Notifications page                                             |
+| GET         | /notifications              | Get notifications                                              |
+| GET         | /notifications/count        | Get notifications count                                        |
+| POST        | /notifications/{id}/read    | Mark notification as read                                      |
+| POST        | /notifications/read-all     | Mark all notifications as read                                 |
+| DELETE      | /notifications/{id}         | Delete notification                                            |
+| GET         | /auth/linkedin/redirect     | LinkedIn auth redirect                                         |
+| GET         | /admin/dashboard            | Admin dashboard                                                |
+| GET         | /admin/users                | Admin users index                                              |
+| GET         | /admin/users/{user}         | Admin show user                                                |
+| GET         | /admin/users/{user}/edit    | Admin edit user                                                |
+| PUT         | /admin/users/{user}         | Admin update user                                              |
+| DELETE      | /admin/users/{user}         | Admin destroy user                                             |
+| GET         | /admin/posts                | Admin job posts index                                          |
+| GET         | /admin/posts/{post}         | Admin show job post                                            |
+| GET         | /admin/posts/{post}/edit    | Admin edit job post                                            |
+| PUT         | /admin/posts/{post}         | Admin update job post                                          |
+| DELETE      | /admin/posts/{post}         | Admin destroy job post                                         |
+| GET         | /admin/comments             | Admin comments index                                           |
+| GET         | /admin/comments/{comment}   | Admin show comment                                             |
+| DELETE      | /admin/comments/{comment}   | Admin destroy comment                                          |
+| GET         | /admin/notifications        | Admin notifications                                            |
+| GET         | /admin/analytics            | Admin analytics index                                          |
+| GET         | /employer/dashboard         | Employer dashboard                                             |
+| GET         | /employer/profile           | Employer edit profile                                          |
+| PUT         | /employer/profile           | Employer update profile                                        |
+| DELETE      | /employer/profile           | Employer destroy profile                                       |
+| GET         | /employer/jobs              | Employer jobs index                                            |
+| GET         | /employer/jobs/create       | Employer create job                                            |
+| GET         | /employer/jobs/{job}/edit   | Employer edit job                                              |
+| GET         | /employer/jobs/{job}        | Employer show job                                              |
+| POST        | /employer/jobs              | Employer store job                                             |
+| PUT         | /employer/jobs/{job}        | Employer update job                                            |
+| DELETE      | /employer/jobs/{job}        | Employer destroy job                                           |
+| GET         | /employer/applications      | Employer applications index                                    |
+| GET         | /employer/applications/{application} | Employer show application                             |
+| PATCH       | /employer/applications/{application}/status | Employer update application status             |
+| GET         | /employer/applications/{application}/download | Employer download application                |
+| GET         | /employer/applications/{application}/preview | Employer preview application                  |
+| GET         | /employer/comments          | Employer comments index                                        |
+| GET         | /employer/comments/{comment}| Employer show comment                                          |
+| GET         | /employer/jobs/{job}/comments | Employer comments for job                                    |
+| GET         | /employer/candidates/{user} | Employer show candidate                                        |
+
+
+
+## Installation Instructions
+
+### Prerequisites
+Ensure that you have the following installed on your local machine:
+
+- [XAMPP](https://www.apachefriends.org/) (which includes PHP, MySQL, and Apache)
+- [Composer](https://getcomposer.org/)
+- [Node.js](https://nodejs.org/) and npm (for frontend assets)
+
+
+### Installation Steps
+
+1. Clone the repository from GitHub:
+
+    ```bash
+    git clone https://github.com/swarmsTeam/swarms-backend.git
+    ```
+
+2. Install the PHP dependencies using Composer:
+
+    ```bash
+    composer install
+    ```
+
+3. Copy the `.env.example` file to create your environment configuration:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+4. Generate an application key:
+
+    ```bash
+    php artisan key:generate
+    ```
+
+5. Install Laravel Breeze:
+
+    ```bash
+    composer require laravel/breeze --dev
+    ```
+
+6. Install Breeze and run the scaffolding (depending on whether you are using Blade or Inertia):
+
+    For Blade:
+
+    ```bash
+    php artisan breeze:install
+    ```
+
+
+7. Create a database and configure your `.env` file:
+
+    - Create a new database in your XAMPP (or other MySQL setup).
+    - Open the `.env` file and update the following lines with your database details:
+
+    ```env
+    DB_DATABASE=your_database_name
+    DB_USERNAME=your_database_username
+    DB_PASSWORD=your_database_password
+    ```
+
+    Once the `.env` file is updated with the correct database information, run the database migrations:
+
+    ```bash
+    php artisan migrate
+    ```
+
+8. Install Node.js dependencies and build the frontend assets:
+
+    ```bash
+    npm install
+    npm run dev
+    ```
+
+### Running the Application
+
+1. Start the local development server:
+
+    ```bash
+    php artisan serve
+    ```
+
+2. Open your browser and navigate to:
+
+    ```
+    http://localhost:8000
+    ```
+
+
+
+
+
