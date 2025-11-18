@@ -167,8 +167,9 @@ class DashboardController extends Controller
             ->toArray();
 
         // Route links
-        $jobCreateLink = Route::has('employer.jobs.create');
-        $applicationsLink = Route::has('employer.applications.index');
+        $jobCreateLink = route('employer.jobs.create');
+        $applicationsLink =route('employer.applications.index');
+
 
         return view('employer.dashboard', compact(
             'metricCards',
