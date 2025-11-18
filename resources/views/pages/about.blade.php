@@ -92,8 +92,8 @@
                 ['name'=>'Abdelrahman Ali','role'=>'Team Leader','image'=>asset('images/abdelrahman.jpg')],
                 ['name'=>'Asmaa Othman','role'=>'Team Member','image'=>asset('images/asmaa.jpg')],
                 ['name'=>'Aya Basheer','role'=>'Team Member','image'=>asset('images/aya.jpg')],
-                ['name'=>'Basel Esam','role'=>'Team Member','image'=>asset('images/basel.jpg')],
-                ['name'=>'Amira Mahmoud','role'=>'Team Member','image'=>asset('images/amira.jpg')],
+                ['name'=>'Bassel Essam','role'=>'Team Member','image'=>asset('images/basel.jpg')],
+                ['name'=>'Amira Mohamed','role'=>'Team Member','image'=>asset('images/amira.jpg')],
             ];
         @endphp
         <div class="space-y-10">
