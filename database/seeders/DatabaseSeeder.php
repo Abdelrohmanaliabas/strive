@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(10)->state(['role' => 'candidate'])->create();
         User::factory()->create([
             'name' => 'Abdelrahman ali',
-            'email' => 'abdelrahmanali2310@example.com',
-            'role' => 'admin',
+            'email' => 'abdelrahmanali2310@gmail.com',
+            'role' => 'employer',
             'password' => Hash::make('123123123'),
             'linkedin_url' => 'https://www.linkedin.com/in/abdelrahman-ali-aa5a6b1b5/',
             'phone' => '01067794270',
